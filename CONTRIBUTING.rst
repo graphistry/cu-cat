@@ -1,10 +1,19 @@
+<<<<<<< HEAD
 Contributing to skrub
 =====================
+=======
+Contributing to cu_cat
+=========================
+>>>>>>> cu-cat/DT5
 
 First off, thanks for taking the time to contribute!
 
 The following is a set of guidelines for contributing to
+<<<<<<< HEAD
 `skrub <https://github.com/skrub-data/skrub>`__.
+=======
+`cu_cat <https://github.com/cu-cat/cu_cat>`__.
+>>>>>>> cu-cat/DT5
 
 |
 .. contents::
@@ -16,11 +25,16 @@ I just have a question
 ----------------------
 
 We use GitHub Discussions for general chat and Q&As. `Check it
+<<<<<<< HEAD
 out! <https://github.com/skrub-data/skrub/discussions>`__
+=======
+out! <https://github.com/cu-cat/cu_cat/discussions>`__
+>>>>>>> cu-cat/DT5
 
 What should I know before I get started?
 ----------------------------------------
 
+<<<<<<< HEAD
 To understand in more depth the incentives behind skrub,
 read our `vision statement. <https://skrub-data.org/stable/vision.html>`__
 Also, if scientific literature doesn't scare you, we greatly
@@ -30,6 +44,14 @@ encourage you to read the two following papers:
   with dirty categorical variables <https://hal.inria.fr/hal-01806175>`__
 - `Encoding high-cardinality string categorical
   variables <https://hal.inria.fr/hal-02171256v4>`__.
+=======
+If you want to truly understand what are the incentives behind
+cu_cat, and if scientific literature doesn’t scare you, we greatly
+encourage you to read the two papers `Similarity encoding for learning
+with dirty categorical variables <https://hal.inria.fr/hal-01806175>`__
+and `Encoding high-cardinality string categorical
+variables <https://hal.inria.fr/hal-02171256v4>`__.
+>>>>>>> cu-cat/DT5
 
 How can I contribute?
 ---------------------
@@ -39,8 +61,13 @@ Reporting bugs
 
 Using the library is the best way to discover new bugs and limitations.
 
+<<<<<<< HEAD
 If you find one, please `check whether a similar issue already
 exists. <https://github.com/skrub-data/skrub/issues?q=is%3Aissue>`__
+=======
+If you stumble upon one, please `check if a similar or identical issue already
+exists <https://github.com/cu-cat/cu_cat/issues?q=is%3Aissue>`__
+>>>>>>> cu-cat/DT5
 
 - If so...
 
@@ -48,9 +75,16 @@ exists. <https://github.com/skrub-data/skrub/issues?q=is%3Aissue>`__
     let us know there are several users affected by this issue.
   - **Issue has been closed**:
 
+<<<<<<< HEAD
     - **By a merged pull request** (1) update your skrub version,
       or (2) the fix has not been released yet.
     - **Without pull request**, there might be a ``wontfix`` label, and/or a reason at the bottom of the conversation.
+=======
+    - **It has been closed by a merged pull request** (1) update your cu_cat version,
+      or (2) the fix has not been released in a version yet
+    - **Otherwise**, there might be a ``wontfix`` label, and / or a reason at the bottom of the conversation
+- If not, `file a new issue <https://github.com/cu-cat/cu_cat/issues/new>`__ (see following section)
+>>>>>>> cu-cat/DT5
 
 - Otherwise, `file a new issue <https://github.com/skrub-data/skrub/issues/new>`__.
 
@@ -66,7 +100,11 @@ additional details to help maintainers easily reproduce the problem:
    situations where the bug should have appeared but didn't.
 -  **Include a snippet of code that reproduces the error**, if any, as it allows
    maintainers to reproduce it in a matter of seconds!
+<<<<<<< HEAD
 -  **Specify versions** of Python, skrub, and other dependencies
+=======
+-  **Specify versions** of Python, cu_cat, and other dependencies
+>>>>>>> cu-cat/DT5
    which might be linked to the issue (e.g., scikit-learn, numpy,
    pandas, etc.).
 
@@ -74,6 +112,7 @@ Suggesting enhancements
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 This section will guide you through submitting a new enhancement for
+<<<<<<< HEAD
 skrub, whether it is a small fix or a new feature.
 
 First, you should `check whether the feature has not already been proposed or
@@ -81,6 +120,16 @@ implemented <https://github.com/skrub-data/skrub/pulls?q=is%3Apr>`__.
 
 If not, before writing any code, `submit a new
 issue <https://github.com/skrub-data/skrub/issues/new>`__ proposing
+=======
+cu_cat, whether it is a small fix or a new feature.
+
+First, you should `check if the feature has not already been proposed or
+implemented <https://github.com/cu-cat/cu_cat/pulls?q=is%3Apr>`__.
+
+If not, the next thing you should do, before writing any code, is to
+`submit a new
+issue <https://github.com/cu-cat/cu_cat/issues/new>`__ proposing
+>>>>>>> cu-cat/DT5
 the change.
 
 How do I submit an enhancement proposal?
@@ -110,11 +159,19 @@ Let maintainers know whether:
 If the enhancement is refused
 '''''''''''''''''''''''''''''
 
+<<<<<<< HEAD
 There are specific incentives behind skrub. While most enhancement
 ideas are good, they don't always fit in the context of the library.
 
 If you'd like to implement your idea regardless, we'd be very glad if
 you create a new package that builds on top of skrub! In some cases,
+=======
+There are specific incentives behind cu_cat. While most enhancement
+ideas are good, they don’t always fit in the context of the library.
+
+If you’d like to implement your idea regardless, we’d be very glad if
+you create a new package that builds on top of cu_cat! In some cases,
+>>>>>>> cu-cat/DT5
 we might even feature it on the official repository!
 
 .. _writing-your-first-pull-request:
@@ -141,14 +198,23 @@ Then, clone the repo on your computer:
 
 .. code:: console
 
+<<<<<<< HEAD
    git clone https://github.com/<YOUR_NAME>/skrub
+=======
+   conda create python=3.10 --name cu_cat
+   conda activate cu_cat
+>>>>>>> cu-cat/DT5
 
 It is advised to create a new branch every time you work on a new issue,
 to avoid confusion:
 
 .. code:: console
 
+<<<<<<< HEAD
    git switch -c branch_name
+=======
+   git clone https://github.com/cu-cat/cu_cat
+>>>>>>> cu-cat/DT5
 
 Finally, install the dependencies by heading to the `installation process <https://skrub-data.org/stable/install.html#advanced-usage-for-contributors>`__,
 advanced usage section.
@@ -179,8 +245,24 @@ There are a few specific project goals to keep in mind:
 Submitting your code
 ^^^^^^^^^^^^^^^^^^^^
 
+<<<<<<< HEAD
 After pushing your commits to your remote repository, you can use the Github “Compare & pull request” button to submit
 your branch code as a PR targeting the skrub repository.
+=======
+First, you’ll want to fork cu_cat on Github.
+
+That will enable you to push your commits to a branch *on your fork*.
+It is advised to create a new branch every time you work on a new issue,
+to avoid confusion.
+Use the following command to create a branch:
+
+.. code:: console
+
+   git checkout -b branch_name
+
+Next, you can use the Github “Compare & pull request” button to submit
+your branch code as a PR.
+>>>>>>> cu-cat/DT5
 
 Integration
 ^^^^^^^^^^^

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 #
+<<<<<<< HEAD
 # skrub documentation build configuration file, created by
+=======
+# cu_cat documentation build configuration file, created by
+>>>>>>> cu-cat/DT5
 # sphinx-quickstart on Tue Mar 13 14:34:47 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -98,19 +102,29 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
+<<<<<<< HEAD
 project = "skrub"
 copyright = (
     f"2018-2023, the dirty_cat developers, 2023-{datetime.now().year}, the skrub"
     " developers"
 )
 author = "skrub contributors"
+=======
+project = "cu_cat"
+copyright = f"2018-{datetime.now().year}, the cu_cat developers"
+author = "cu_cat developers"
+>>>>>>> cu-cat/DT5
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
+<<<<<<< HEAD
 version_file = os.path.join("..", "skrub", "VERSION.txt")
+=======
+version_file = os.path.join("..", "cu_cat", "VERSION.txt")
+>>>>>>> cu-cat/DT5
 with open(version_file) as fh:
     version = fh.read().strip()
 # The full version, including alpha/beta/rc tags.
@@ -155,6 +169,7 @@ html_theme = "pydata_sphinx_theme"
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
+<<<<<<< HEAD
     "logo": {
         "image_relative": "_static/skrub.svg",
         "image_light": "_static/skrub.svg",
@@ -221,6 +236,23 @@ html_context = {
     "github_repo": "skrub",
     "github_version": "main",
     "doc_path": "doc",
+=======
+    "logo": "cu_cat.svg",
+    "github_user": "cu-cat",
+    "github_repo": "cu_cat",
+    "github_button": "true",
+    "github_type": "star",
+    "github_count": "true",
+    "show_powered_by": "false",
+    "logo_name": "true",
+    "gray_1": "#030",
+    "gray_2": "#F1FFF1",
+    "link": "#076B00",
+    #    'gray_3': "#090",
+    "fixed_sidebar": "true",
+    "note_bg": "rgb(246, 248, 250);",
+    "topic_bg": "rgb(246, 248, 250);",
+>>>>>>> cu-cat/DT5
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -239,13 +271,21 @@ html_logo = "_static/skrub.svg"
 
 
 # Modify the title to get good social-media links
+<<<<<<< HEAD
 html_title = "skrub"
+=======
+html_title = "cu_cat"
+>>>>>>> cu-cat/DT5
 
 
 # -- Options for HTMLHelp output ----------------------------------------------
 
 # Output file base name for HTML help builder.
+<<<<<<< HEAD
 htmlhelp_basename = "skrubdoc"
+=======
+htmlhelp_basename = "cu_catdoc"
+>>>>>>> cu-cat/DT5
 
 
 # -- Options for LaTeX output -------------------------------------------------
@@ -271,9 +311,15 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
+<<<<<<< HEAD
         "skrub.tex",
         "skrub Documentation",
         "skrub developers",
+=======
+        "cu_cat.tex",
+        "dirty\\_cat Documentation",
+        "dirty\\_cat developers",
+>>>>>>> cu-cat/DT5
         "manual",
     ),
 ]
@@ -283,7 +329,11 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
+<<<<<<< HEAD
 man_pages = [(master_doc, "skrub", "skrub Documentation", [author], 1)]
+=======
+man_pages = [(master_doc, "cu_cat", "cu_cat Documentation", [author], 1)]
+>>>>>>> cu-cat/DT5
 
 
 # -- Options for Texinfo output -----------------------------------------------
@@ -294,11 +344,19 @@ man_pages = [(master_doc, "skrub", "skrub Documentation", [author], 1)]
 texinfo_documents = [
     (
         master_doc,
+<<<<<<< HEAD
         "skrub",
         "skrub Documentation",
         author,
         "skrub",
         "Prepping tables for machine learning.",
+=======
+        "cu_cat",
+        "cu_cat Documentation",
+        author,
+        "cu_cat",
+        "Learning on non-curated categorical data.",
+>>>>>>> cu-cat/DT5
         "Data Science",
     ),
 ]
@@ -407,11 +465,20 @@ def notebook_modification_function(notebook_content, notebook_filename):
 
 
 sphinx_gallery_conf = {
+<<<<<<< HEAD
     "doc_module": "skrub",
     "backreferences_dir": os.path.join("generated"),
     "reference_url": {
         # The module we locally document (so, skrub) uses None
         "skrub": None,
+=======
+    "doc_module": "cu_cat",
+    "filename_pattern": "",
+    "backreferences_dir": os.path.join("generated"),
+    "reference_url": {
+        # The module we locally document (so, cu_cat) uses None
+        "cu_cat": None,
+>>>>>>> cu-cat/DT5
         # We don't specify the other modules as we use the intershpinx ext.
         # See https://sphinx-gallery.github.io/stable/configuration.html#link-to-documentation  # noqa
     },
@@ -421,8 +488,13 @@ sphinx_gallery_conf = {
     "within_subsection_order": FileNameSortKey,
     "download_all_examples": False,
     "binder": {
+<<<<<<< HEAD
         "org": "skrub-data",
         "repo": "skrub",
+=======
+        "org": "cu-cat",
+        "repo": "cu-cat.github.io",
+>>>>>>> cu-cat/DT5
         "binderhub_url": "https://mybinder.org",
         "branch": binder_branch,
         "dependencies": "./binder/requirements.txt",
@@ -434,11 +506,19 @@ if with_jupyterlite:
         "notebook_modification_function": notebook_modification_function
     }
 
+<<<<<<< HEAD
 # -- sphinx.ext.opengraph configuration ---------------------------------------
 ogp_site_url = "https://skrub-data.github.io/stable/"
 ogp_image = "https://skrub-data.github.io/stable/_static/skrub.svg"
 ogp_use_first_image = True
 ogp_site_name = "skrub"
+=======
+# -- sphinxext.opengraph configuration -------------------------------------
+ogp_site_url = "https://cu-cat.github.io/stable/"
+ogp_image = "https://cu-cat.github.io/stable/_static/cu_cat.svg"
+ogp_use_first_image = True
+ogp_site_name = "cu_cat"
+>>>>>>> cu-cat/DT5
 
 # -- numpydoc configuration ---------------------------------------------------
 
@@ -517,12 +597,21 @@ favicons = {"rel": "icon", "href": "_static/skrub.svg", "type": "image/svg+xml"}
 # -- github links -------------------------------------------------------------
 
 # we use the issues path for PRs since the issues URL will forward
+<<<<<<< HEAD
 issues_github_path = "skrub-data/skrub"
+=======
+issues_github_path = "cu-cat/cu_cat"
+>>>>>>> cu-cat/DT5
 
 # The following is used by sphinx.ext.linkcode to provide links to GitHub
 linkcode_resolve = make_linkcode_resolve(
+<<<<<<< HEAD
     "skrub",
     "https://github.com/skrub-data/skrub/blob/{revision}/{package}/{path}#L{lineno}",
+=======
+    "cu_cat",
+    "https://github.com/cu-cat/cu-cat/blob/{revision}/{package}/{path}#L{lineno}",
+>>>>>>> cu-cat/DT5
 )
 
 # -- Sphinx-Copybutton configuration -----------------------------------------

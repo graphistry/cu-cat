@@ -1,6 +1,10 @@
 BSD 3-Clause License
 
+<<<<<<< HEAD
 Copyright (c) 2018-2023, The dirty_cat developers, 2023-2023 the skrub developers.
+=======
+Copyright (c) 2018-2022, The cu_cat developers.
+>>>>>>> cu-cat/DT5
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

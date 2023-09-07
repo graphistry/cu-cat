@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 `skrub`
 =======
 
@@ -33,6 +34,26 @@ See our `examples <https://skrub-data.org/stable/auto_examples>`_.
 
 What `skrub` cannot do
 ~~~~~~~~~~~~~~~~~~~~~~
+=======
+`cu_cat`
+===========
+
+`cu_cat` is an end-to-end gpu Python library that encodes categorical variables into machine-learnable numerics.
+It is a cuda accelerated port of what was dirty_cat, now rebranded as `skrub <https://github.com/skrub-data/skrub>`_
+
+What can `cu_cat` do?
+------------------------
+
+`cu_cat` provides tools (``TableVectorizer``...) and
+encoders (``GapEncoder``...) for **morphological similarities**,
+for which we usually identify three common cases: **similarities, typos and variations**
+
+`Example notebooks <https://github.com/graphistry/cu-cat/tree/master/examples/cu-cat_demo.ipynb>`_
+goes in-depth on how to identify and deal with dirty data (biological in this case) using the `cu_cat` library.
+
+What `cu_cat` does not
+~~~~~~~~~~~~~~~~~~~~~~~~~
+>>>>>>> cu-cat/DT5
 
 `Semantic similarities <https://en.wikipedia.org/wiki/Semantic_similarity>`_
 are currently not supported.
@@ -43,12 +64,17 @@ This kind of problem is tackled by
 `Natural Language Processing <https://en.wikipedia.org/wiki/Natural_language_processing>`_
 methods.
 
+<<<<<<< HEAD
 `skrub` can still help with handling typos and variations in this kind of setting.
+=======
+`cu_cat` can still help with handling typos and variations in this kind of setting.
+>>>>>>> cu-cat/DT5
 
 For a detailed description of the problem of encoding dirty categorical data, see
 `Similarity encoding for learning with dirty categorical variables <https://hal.inria.fr/hal-01806175>`_ [1]_
 and `Encoding high-cardinality string categorical variables <https://hal.inria.fr/hal-02171256v4>`_ [2]_.
 
+<<<<<<< HEAD
 Installation (WIP)
 ------------------
 
@@ -59,15 +85,25 @@ You can still install the package from the GitHub repository with:
 
     pip install git+https://github.com/skrub-data/skrub.git
 
+=======
+cu_cat v 0.04 can be easily installed via `pip`::
+
+    pip install git+http://github.com/graphistry/cu-cat.git@v0.04.0
+>>>>>>> cu-cat/DT5
 
 Dependencies
 ~~~~~~~~~~~~
 
+<<<<<<< HEAD
 Dependencies and minimal versions are listed in the `setup <https://github.com/skrub-data/skrub/blob/main/setup.cfg#L27>`_ file.
+=======
+Major dependencies the cuml and cudf libraries, as well as `standard python libraries <https://github.com/skrub-data/skrub/blob/main/setup.cfg>`_
+>>>>>>> cu-cat/DT5
 
 Related projects
 ----------------
 
+<<<<<<< HEAD
 Are listed on the `skrub's website <https://skrub-data.github.io/stable/#related-projects>`_
 
 Contributing
@@ -92,3 +128,7 @@ References
 
 .. [1] Patricio Cerda, Gaël Varoquaux, Balázs Kégl. Similarity encoding for learning with dirty categorical variables. 2018. Machine Learning journal, Springer.
 .. [2] Patricio Cerda, Gaël Varoquaux. Encoding high-cardinality string categorical variables. 2020. IEEE Transactions on Knowledge & Data Engineering.
+=======
+dirty_cat is now rebranded as part of the sklearn family as `skrub <https://github.com/skrub-data/skrub>`_
+
+>>>>>>> cu-cat/DT5

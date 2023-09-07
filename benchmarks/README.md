@@ -1,13 +1,25 @@
+<<<<<<< HEAD
 # skrub benchmarks
 
 ## Objectives
 
 This folder contains benchmarks used by the skrub maintainers to:
+=======
+# cu_cat benchmarks
+
+## Objectives
+
+This folder contains benchmarks used by the cu_cat maintainers to:
+>>>>>>> cu-cat/DT5
 - Experiment on new algorithms
 - Validate decisions based on empirical evidence
 - Tune (hyper)parameters in the library
 
+<<<<<<< HEAD
 These benchmarks do not aim at replacing the tests within skrub.
+=======
+These benchmarks do not aim at replacing the tests within cu_cat.
+>>>>>>> cu-cat/DT5
 
 ## Implementing a benchmark
 

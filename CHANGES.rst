@@ -1,8 +1,12 @@
 .. _changes:
 
+<<<<<<< HEAD
 ========
 Changes
 ========
+=======
+.. currentmodule:: cu_cat
+>>>>>>> cu-cat/DT5
 
 .. currentmodule:: skrub
 
@@ -348,7 +352,7 @@ Major changes
     End users should not see any difference regarding this.
   - The frontend, however, changed a little: the fetching functions stay the same
     but their return values were modified in favor of a more Pythonic interface.
-    Refer to the docstrings of functions `dirty_cat.datasets.fetch_*`
+    Refer to the docstrings of functions `cu_cat.datasets.fetch_*`
     for more information.
   - The example notebooks were updated to reflect these changes. :pr:`155` by :user:`Lilian Boulard <LilianBoulard>`
 
@@ -369,7 +373,7 @@ Major changes
 Notes
 -----
 
-* Removed hard-coded CSV file `dirty_cat/data/FiveThirtyEight_Midwest_Survey.csv`.
+* Removed hard-coded CSV file `cu_cat/data/FiveThirtyEight_Midwest_Survey.csv`.
 
 
 * Improvements to the :class:`TableVectorizer`
@@ -386,11 +390,11 @@ Dirty-cat Release 0.2.0a1
 Version 0.2.0a1 is a pre-release.
 To try it, you have to install it manually using::
 
-    pip install --pre dirty_cat==0.2.0a1
+    pip install --pre cu_cat==0.2.0a1
 
 or from the GitHub repository::
 
-    pip install git+https://github.com/dirty-cat/dirty_cat.git
+    pip install git+https://github.com/cu-cat/cu_cat.git
 
 Major changes
 -------------

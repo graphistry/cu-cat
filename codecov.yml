@@ -22,5 +22,9 @@ coverage:
         threshold: 1%
 
 ignore:
+<<<<<<< HEAD
   - "skrub/_check_dependencies.py"
+=======
+  - "cu_cat/_check_dependencies.py"
+>>>>>>> cu-cat/DT5
   - "**/setup.py"

@@ -4,7 +4,11 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
+<<<<<<< HEAD
 SPHINXPROJ    = skrub
+=======
+SPHINXPROJ    = cu_cat
+>>>>>>> cu-cat/DT5
 SOURCEDIR     = .
 BUILDDIR      = _build
 

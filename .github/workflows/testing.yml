@@ -34,9 +34,15 @@ jobs:
     strategy:
         fail-fast: false
         matrix:
+<<<<<<< HEAD
             os: ["ubuntu-latest", "macos-latest", "windows-latest"]
             python-version: ["3.10", "3.11"]
             # Install the min or latest dependencies for skrub
+=======
+            os: ["ubuntu-latest", "macos-latest"]
+            python-version: ["3.8", "3.9", "3.10"]
+            # Install the min or latest dependencies for cu_cat
+>>>>>>> cu-cat/DT5
             # as defined in setup.cfg at [options.extra_require].
             #
             # Installing these extra dependencies will overwrite the already
@@ -67,7 +73,11 @@ jobs:
         name: 'Setup python'
       - shell: bash {0}
         run: ./build_tools/github/install.sh
+<<<<<<< HEAD
         name: 'Install skrub'
+=======
+        name: 'Install cu_cat'
+>>>>>>> cu-cat/DT5
         env:
           DEPS_VERSION: ${{ matrix.dependencies-version }}
       - shell: bash {0}
