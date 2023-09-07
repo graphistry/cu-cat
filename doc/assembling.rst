@@ -5,13 +5,13 @@
 Assembling: joining multiple tables
 ====================================
 
-.. currentmodule:: skrub
+.. currentmodule:: cu_cat
 
 Assembling is the process of collecting and joining together tables. 
 Good analytics requires including as much information as possible,
 often from different sources.
 
-skrub allows you to join tables on keys of different types
+cu_cat allows you to join tables on keys of different types
 (string, numerical, datetime) with imprecise correspondance.
 
 Fuzzy joining tables
@@ -36,7 +36,7 @@ Joining is pretty straigthforward for two tables: you only need to identify
 the common key.
 
 However, for more complex analysis, merging multiple tables is necessary.
-skrub provides the :class:`Joiner` as a convenient solution:
+cu_cat provides the :class:`Joiner` as a convenient solution:
 multiple fuzzy joins can be performed at the same time, given a set of 
 input tables and key columns.
 
@@ -52,7 +52,7 @@ essential process of table assembling.
 Although many datasets are available on the internet, it is not
 always easy to find the right one for your analysis.
 
-skrub has some very helpful methods that gives you easy
+cu_cat has some very helpful methods that gives you easy
 access to embeddings, or vectorial representations of an entity,
 of all common entities from Wikipedia. 
 You can use :func:`datasets.get_ken_embeddings` to search for the right

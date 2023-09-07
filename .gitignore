@@ -52,7 +52,7 @@ coverage.xml
 .vscode
 
 # Ignore fetched datasets
-skrub/datasets/data/*
+cu_cat/datasets/data/*
 
 # Generated files for doc
 doc/_build

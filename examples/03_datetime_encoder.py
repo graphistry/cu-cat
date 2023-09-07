@@ -15,10 +15,10 @@ It is used by default in the |TableVectorizer|.
 
 
 .. |DatetimeEncoder| replace::
-    :class:`~skrub.DatetimeEncoder`
+    :class:`~cu_cat.DatetimeEncoder`
 
 .. |TableVectorizer| replace::
-    :class:`~skrub.TableVectorizer`
+    :class:`~cu_cat.TableVectorizer`
 
 .. |OneHotEncoder| replace::
     :class:`~sklearn.preprocessing.OneHotEncoder`
@@ -75,7 +75,7 @@ X
 
 from sklearn.preprocessing import OneHotEncoder
 
-from skrub import DatetimeEncoder
+from cu_cat import DatetimeEncoder
 
 from sklearn.compose import make_column_transformer
 
@@ -103,10 +103,10 @@ encoder.get_feature_names_out()
 # As mentioned earlier, the |TableVectorizer| makes use of the
 # |DatetimeEncoder| by default.
 
-from skrub import TableVectorizer
+from cu_cat import TableVectorizer
 from pprint import pprint
 
-from skrub import TableVectorizer
+from cu_cat import TableVectorizer
 
 table_vec = TableVectorizer()
 table_vec.fit_transform(X)

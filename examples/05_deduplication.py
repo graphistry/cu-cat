@@ -11,7 +11,7 @@ Such misspelling break data analysis steps that require
 exact matching, such as a ``GROUP BY`` operation.
 
 Merging multiple variants of the same category is known as
-*deduplication*. It is implemented in skrub with the |deduplicate| function.
+*deduplication*. It is implemented in cu_cat with the |deduplicate| function.
 
 Deduplication relies on *unsupervised learning*. It finds structures in
 the data without providing a-priori known and explicit labels/categories.
@@ -22,13 +22,13 @@ misspelled category names in an unsupervised manner.
 
 
 .. |deduplicate| replace::
-    :func:`~skrub.deduplicate`
+    :func:`~cu_cat.deduplicate`
 
 .. |Gap| replace::
-     :class:`~skrub.GapEncoder`
+     :class:`~cu_cat.GapEncoder`
 
 .. |MinHash| replace::
-     :class:`~skrub.MinHashEncoder`
+     :class:`~cu_cat.MinHashEncoder`
 """
 
 ###############################################################################
@@ -49,7 +49,7 @@ misspelled category names in an unsupervised manner.
 
 import pandas as pd
 import numpy as np
-from skrub.datasets import make_deduplication_data
+from cu_cat.datasets import make_deduplication_data
 
 duplicated_names = make_deduplication_data(
     examples=["Contrivan", "Genericon", "Zipholan"],  # our three medication names
@@ -94,7 +94,7 @@ plt.show()
 #
 # Let's deduplicate our data:
 
-from skrub import deduplicate
+from cu_cat import deduplicate
 
 deduplicated_data = deduplicate(duplicated_names)
 
@@ -156,7 +156,7 @@ translation_table.head()
 # (i.e. more similar), a lighter color means a larger distance.
 #
 
-from skrub import compute_ngram_distance
+from cu_cat import compute_ngram_distance
 from scipy.spatial.distance import squareform
 
 ngram_distances = compute_ngram_distance(unique_examples)

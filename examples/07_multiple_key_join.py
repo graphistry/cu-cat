@@ -20,9 +20,9 @@ The following example uses US domestic flights data
 to illustrate how space and time information from a
 pool of tables are combined for machine learning.
 
-.. |fj| replace:: :func:`~skrub.fuzzy_join`
+.. |fj| replace:: :func:`~cu_cat.fuzzy_join`
 
-.. |joiner| replace:: :func:`~skrub.Joiner`
+.. |joiner| replace:: :func:`~cu_cat.Joiner`
 
 .. |Pipeline| replace::
      :class:`~sklearn.pipeline.Pipeline`
@@ -44,7 +44,7 @@ pool of tables are combined for machine learning.
 #       Here, we consider only flights from 2008.
 
 import pandas as pd
-from skrub.datasets import fetch_figshare
+from cu_cat.datasets import fetch_figshare
 
 flights = fetch_figshare("41771418").X
 # Sampling for faster computation.
@@ -105,7 +105,7 @@ aux.head()
 # Then we join this table with the airports so that we get all auxilliary
 # tables into one.
 
-from skrub import Joiner
+from cu_cat import Joiner
 
 joiner = Joiner(tables=(airports, ["lat", "long"]), main_key=["LATITUDE", "LONGITUDE"])
 
@@ -131,7 +131,7 @@ flights.drop(columns=["TailNum", "FlightNum"])
 # our main table.
 # - We will use this main table to model the prediction of flight delay.
 
-from skrub import TableVectorizer
+from cu_cat import TableVectorizer
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.pipeline import make_pipeline
 
@@ -171,6 +171,6 @@ scores.mean()
 #
 # In this example, we have combined multiple tables with complex joins
 # on imprecise and multiple-key correspondences.
-# This is made easy by skrub's |Joiner| transformer.
+# This is made easy by cu_cat's |Joiner| transformer.
 #
 # Our final cross-validated accuracy score is 0.58.

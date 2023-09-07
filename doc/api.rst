@@ -10,9 +10,9 @@ API reference
   }
   </style>
 
-This page lists all available functions and classes of `skrub`.
+This page lists all available functions and classes of `cu_cat`.
 
-.. currentmodule:: skrub
+.. currentmodule:: cu_cat
 
 .. raw:: html
 

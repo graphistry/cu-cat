@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# skrub documentation build configuration file, created by
+# cu_cat documentation build configuration file, created by
 # sphinx-quickstart on Tue Mar 13 14:34:47 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -98,19 +98,19 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "skrub"
+project = "cu_cat"
 copyright = (
-    f"2018-2023, the dirty_cat developers, 2023-{datetime.now().year}, the skrub"
+    f"2018-2023, the dirty_cat developers, 2023-{datetime.now().year}, the cu_cat"
     " developers"
 )
-author = "skrub contributors"
+author = "cu_cat contributors"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version_file = os.path.join("..", "skrub", "VERSION.txt")
+version_file = os.path.join("..", "cu_cat", "VERSION.txt")
 with open(version_file) as fh:
     version = fh.read().strip()
 # The full version, including alpha/beta/rc tags.
@@ -156,9 +156,9 @@ html_theme = "pydata_sphinx_theme"
 # documentation.
 html_theme_options = {
     "logo": {
-        "image_relative": "_static/skrub.svg",
-        "image_light": "_static/skrub.svg",
-        "image_dark": "_static/skrub.svg",
+        "image_relative": "_static/cu_cat.svg",
+        "image_light": "_static/cu_cat.svg",
+        "image_dark": "_static/cu_cat.svg",
     },
     # "external_links": [
     #     {
@@ -170,17 +170,17 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "Twitter",
-            "url": "https://twitter.com/skrub_data",
+            "url": "https://twitter.com/cu_cat_data",
             "icon": "fa-brands fa-twitter",
         },
         {
             "name": "GitHub",
-            "url": "https://github.com/skrub-data/skrub/",
+            "url": "https://github.com/cu_cat-data/cu_cat/",
             "icon": "fa-brands fa-github",
         },
         {
             "name": "PyPI",
-            "url": "https://pypi.org/project/skrub",
+            "url": "https://pypi.org/project/cu_cat",
             "icon": "fa-custom fa-pypi",
         },
     ],
@@ -194,7 +194,7 @@ html_theme_options = {
     # "navbar_center": ["version-switcher", "navbar-nav"],
     "navbar_center": ["navbar-nav"],
     "announcement": (
-        "https://raw.githubusercontent.com/skrub-data/skrub/main/doc/announcement.html"
+        "https://raw.githubusercontent.com/cu_cat-data/cu_cat/main/doc/announcement.html"
     ),
     # "show_nav_level": 2,
     # "navbar_start": ["navbar-logo"],
@@ -217,8 +217,8 @@ html_additional_pages = {"index": "index.html"}
 
 # Needed for the edit button
 html_context = {
-    "github_user": "skrub-data",
-    "github_repo": "skrub",
+    "github_user": "cu_cat-data",
+    "github_repo": "cu_cat",
     "github_version": "main",
     "doc_path": "doc",
 }
@@ -235,17 +235,17 @@ html_js_files = []
 
 
 # Project logo, to place at the top of the sidebar.
-html_logo = "_static/skrub.svg"
+html_logo = "_static/cu_cat.svg"
 
 
 # Modify the title to get good social-media links
-html_title = "skrub"
+html_title = "cu_cat"
 
 
 # -- Options for HTMLHelp output ----------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "skrubdoc"
+htmlhelp_basename = "cu_catdoc"
 
 
 # -- Options for LaTeX output -------------------------------------------------
@@ -271,9 +271,9 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "skrub.tex",
-        "skrub Documentation",
-        "skrub developers",
+        "cu_cat.tex",
+        "cu_cat Documentation",
+        "cu_cat developers",
         "manual",
     ),
 ]
@@ -283,7 +283,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "skrub", "skrub Documentation", [author], 1)]
+man_pages = [(master_doc, "cu_cat", "cu_cat Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output -----------------------------------------------
@@ -294,10 +294,10 @@ man_pages = [(master_doc, "skrub", "skrub Documentation", [author], 1)]
 texinfo_documents = [
     (
         master_doc,
-        "skrub",
-        "skrub Documentation",
+        "cu_cat",
+        "cu_cat Documentation",
         author,
-        "skrub",
+        "cu_cat",
         "Prepping tables for machine learning.",
         "Data Science",
     ),
@@ -351,12 +351,12 @@ def notebook_modification_function(notebook_content, notebook_filename):
     else:
         message_class = "warning"
         message = (
-            "Running the skrub examples in JupyterLite is experimental and you may"
+            "Running the cu_cat examples in JupyterLite is experimental and you may"
             "encounter some unexpected behavior.\n\n"
             "The main difference is that imports will take a lot longer than usual, "
-            "for example the first `import skrub` can take roughly 10-20s.\n\n"
+            "for example the first `import cu_cat` can take roughly 10-20s.\n\n"
             "If you notice problems, feel free to open an "
-            "[issue](https://github.com/skrub-data/skrub/issues/new/choose) about it."
+            "[issue](https://github.com/cu_cat-data/cu_cat/issues/new/choose) about it."
         )
 
     markdown = warning_template.format(message_class=message_class, message=message)
@@ -366,7 +366,7 @@ def notebook_modification_function(notebook_content, notebook_filename):
 
     # TODO: in the next release, we need to uncomment the following line that should
     # replace the manual install from TestPyPI
-    # code_lines = ["%pip install skrub"]
+    # code_lines = ["%pip install cu_cat"]
     code_lines = []
     code_lines.extend(
         [
@@ -375,7 +375,7 @@ def notebook_modification_function(notebook_content, notebook_filename):
                 "await micropip.install("
                 "'https://test-files.pythonhosted.org/packages/3c/03/"
                 "e1598c7abe536e56834f568f61497ad075d966c4c8fb7d0ad004b81e7bfc/"
-                "skrub-0.0.1.dev1-py3-none-any.whl')"
+                "cu_cat-0.0.1.dev1-py3-none-any.whl')"
             ),
         ]
     )
@@ -407,11 +407,11 @@ def notebook_modification_function(notebook_content, notebook_filename):
 
 
 sphinx_gallery_conf = {
-    "doc_module": "skrub",
+    "doc_module": "cu_cat",
     "backreferences_dir": os.path.join("generated"),
     "reference_url": {
-        # The module we locally document (so, skrub) uses None
-        "skrub": None,
+        # The module we locally document (so, cu_cat) uses None
+        "cu_cat": None,
         # We don't specify the other modules as we use the intershpinx ext.
         # See https://sphinx-gallery.github.io/stable/configuration.html#link-to-documentation  # noqa
     },
@@ -421,8 +421,8 @@ sphinx_gallery_conf = {
     "within_subsection_order": FileNameSortKey,
     "download_all_examples": False,
     "binder": {
-        "org": "skrub-data",
-        "repo": "skrub",
+        "org": "cu_cat-data",
+        "repo": "cu_cat",
         "binderhub_url": "https://mybinder.org",
         "branch": binder_branch,
         "dependencies": "./binder/requirements.txt",
@@ -435,10 +435,10 @@ if with_jupyterlite:
     }
 
 # -- sphinx.ext.opengraph configuration ---------------------------------------
-ogp_site_url = "https://skrub-data.github.io/stable/"
-ogp_image = "https://skrub-data.github.io/stable/_static/skrub.svg"
+ogp_site_url = "https://cu_cat-data.github.io/stable/"
+ogp_image = "https://cu_cat-data.github.io/stable/_static/cu_cat.svg"
 ogp_use_first_image = True
-ogp_site_name = "skrub"
+ogp_site_name = "cu_cat"
 
 # -- numpydoc configuration ---------------------------------------------------
 
@@ -490,21 +490,21 @@ numpydoc_xref_aliases = {
     "pandas.Index": "pandas.Index",
     "read_csv": "pandas.read_csv",
     "pandas.merge": "pandas.merge",
-    # Skrub
-    "fetch_ken_table_aliases": "skrub.datasets.fetch_ken_table_aliases",
-    "fetch_ken_types": "skrub.datasets.fetch_ken_types",
-    "fetch_ken_embeddings": "skrub.datasets.fetch_ken_embeddings",
-    "fuzzy_join": "skrub.fuzzy_join",
-    "Joiner": "skrub.Joiner",
-    "GapEncoder": "skrub.GapEncoder",
-    "MinHashEncoder": "skrub.MinHashEncoder",
-    "SimilarityEncoder": "skrub.SimilarityEncoder",
-    "DatetimeEncoder": "skrub.DatetimeEncoder",
-    "deduplicate": "skrub.deduplicate",
-    "TableVectorizer": "skrub.TableVectorizer",
-    "DatasetInfoOnly": "skrub.datasets._fetching.DatasetInfoOnly",
-    "DatasetAll": "skrub.datasets._fetching.DatasetAll",
-    "_replace_false_missing": "skrub._table_vectorizer._replace_false_missing",
+    # cu_cat
+    "fetch_ken_table_aliases": "cu_cat.datasets.fetch_ken_table_aliases",
+    "fetch_ken_types": "cu_cat.datasets.fetch_ken_types",
+    "fetch_ken_embeddings": "cu_cat.datasets.fetch_ken_embeddings",
+    "fuzzy_join": "cu_cat.fuzzy_join",
+    "Joiner": "cu_cat.Joiner",
+    "GapEncoder": "cu_cat.GapEncoder",
+    "MinHashEncoder": "cu_cat.MinHashEncoder",
+    "SimilarityEncoder": "cu_cat.SimilarityEncoder",
+    "DatetimeEncoder": "cu_cat.DatetimeEncoder",
+    "deduplicate": "cu_cat.deduplicate",
+    "TableVectorizer": "cu_cat.TableVectorizer",
+    "DatasetInfoOnly": "cu_cat.datasets._fetching.DatasetInfoOnly",
+    "DatasetAll": "cu_cat.datasets._fetching.DatasetAll",
+    "_replace_false_missing": "cu_cat._table_vectorizer._replace_false_missing",
 }
 
 # -- sphinx.ext.autodoc configuration -----------------------------------------
@@ -512,17 +512,17 @@ numpydoc_xref_aliases = {
 autodoc_typehints = "none"
 
 # -- sphinx_favicon configuration ---------------------------------------------
-favicons = {"rel": "icon", "href": "_static/skrub.svg", "type": "image/svg+xml"}
+favicons = {"rel": "icon", "href": "_static/cu_cat.svg", "type": "image/svg+xml"}
 
 # -- github links -------------------------------------------------------------
 
 # we use the issues path for PRs since the issues URL will forward
-issues_github_path = "skrub-data/skrub"
+issues_github_path = "cu_cat-data/cu_cat"
 
 # The following is used by sphinx.ext.linkcode to provide links to GitHub
 linkcode_resolve = make_linkcode_resolve(
-    "skrub",
-    "https://github.com/skrub-data/skrub/blob/{revision}/{package}/{path}#L{lineno}",
+    "cu_cat",
+    "https://github.com/cu_cat-data/cu_cat/blob/{revision}/{package}/{path}#L{lineno}",
 )
 
 # -- Sphinx-Copybutton configuration -----------------------------------------

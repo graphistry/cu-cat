@@ -22,10 +22,10 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils import gen_even_slices, murmurhash3_32
 from utils import default_parser, find_result, monitor
 
-from skrub._fast_hash import ngram_min_hash
-from skrub._string_distances import get_unique_ngrams
-from skrub._utils import LRUDict, check_input
-from skrub.tests.utils import generate_data
+from cu_cat._fast_hash import ngram_min_hash
+from cu_cat._string_distances import get_unique_ngrams
+from cu_cat._utils import LRUDict, check_input
+from cu_cat.tests.utils import generate_data
 
 NoneType = type(None)
 

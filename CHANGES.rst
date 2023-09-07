@@ -4,12 +4,12 @@
 Changes
 ========
 
-.. currentmodule:: skrub
+.. currentmodule:: cu_cat
 
 Ongoing development
 =====================
 
-Skrub has not been released yet. It is currently undergoing fast
+cu_cat has not been released yet. It is currently undergoing fast
 development and backward compatibility is not ensured.
 
 Major changes
@@ -94,7 +94,7 @@ Minor changes
 * Added the `analyzer` parameter to the :class:`SimilarityEncoder` to allow word counts
   for similarity measures. :pr:`619` by :user:`Jovan Stojanovic <jovan-stojanovic>`
 
-* skrub now uses modern type hints introduced in PEP 585.
+* cu_cat now uses modern type hints introduced in PEP 585.
   :pr:`609` by :user:`Lilian Boulard <LilianBoulard>`
 
 * Some bug fixes for :class:`TableVectorizer` ( :pr:`579`):
@@ -137,10 +137,10 @@ Minor changes
   which provides some more information about the job title.
   :pr:`581` by :user:`Lilian Boulard <LilianBoulard>`
 
-Before skrub: dirty_cat
+Before cu_cat: dirty_cat
 ========================
 
-Skrub was born from the `dirty_cat <http://dirty-cat.github.io>`__
+cu_cat was born from the `dirty_cat <http://dirty-cat.github.io>`__
 package.
 
 Dirty-cat release 0.4.1

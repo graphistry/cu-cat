@@ -27,7 +27,7 @@ Installing
 
 .. warning::
 
-   skrub has not yet been released. See the "From source" tab.
+   cu_cat has not yet been released. See the "From source" tab.
 
 .. raw:: html
 
@@ -37,7 +37,7 @@ Installing
 
 .. warning::
 
-   skrub has not yet been released. See the "From source" tab.
+   cu_cat has not yet been released. See the "From source" tab.
 
 .. raw:: html
 
@@ -47,7 +47,7 @@ Installing
 
 .. warning::
 
-   skrub has not yet been released. See the "From source" tab.
+   cu_cat has not yet been released. See the "From source" tab.
 
 .. raw:: html
 
@@ -58,36 +58,36 @@ Installing
 Recommended usage, for users
 ----------------------------
 
-To install from `the source <https://github.com/skrub-data/skrub>`_ using pip,
+To install from `the source <https://github.com/cu_cat-data/cu_cat>`_ using pip,
 run the following command in a shell command line:
 
 .. code:: console
 
-    $ pip install git+https://github.com/skrub-data/skrub.git
+    $ pip install git+https://github.com/cu_cat-data/cu_cat.git
 
 Advanced usage, for contributors
 --------------------------------
 
 If you want to contribute to the project, you can install the development version
-of skrub from the source code:
+of cu_cat from the source code:
 
 .. code:: console
 
-    $ git clone https://github.com/skrub-data/skrub
+    $ git clone https://github.com/cu_cat-data/cu_cat
 
 Create a virtual environment, here for example, using `conda <https://docs.conda.io/en/latest/>`_:
 
 .. code:: console
 
-    $ conda create -n skrub python=3.10
-    $ conda activate skrub
+    $ conda create -n cu_cat python=3.10
+    $ conda activate cu_cat
 
 Then, install the local package in editable mode,
 with the development requirements:
 
 .. code:: console
 
-    $ cd skrub
+    $ cd cu_cat
     $ pip install -e '.[dev]'
 
 Next step, enable the pre-commit hooks:
@@ -105,7 +105,7 @@ which can be set in your local repository with:
     $ git config blame.ignoreRevsFile .git-blame-ignore-revs
 
 You're ready to go! If not already done, please have a look at
-the `contributing guidelines <https://skrub-data.org/stable/CONTRIBUTING.html>`_.
+the `contributing guidelines <https://cu_cat-data.org/stable/CONTRIBUTING.html>`_.
 
 .. raw:: html
 

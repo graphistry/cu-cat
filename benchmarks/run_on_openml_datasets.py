@@ -1,5 +1,5 @@
 """
-This script runs the canonical skrub pipeline on all OpenML datasets.
+This script runs the canonical cu_cat pipeline on all OpenML datasets.
 It can be used to check that we can deal with any dataset without failing.
 It can also be used to compare our scores to OpenML scores uploaded by other users,
 using the `--compare_scores` flag (this is slow).
@@ -9,7 +9,7 @@ import openml
 import os
 import numpy as np
 from benchmarks.utils import default_parser
-from skrub import TableVectorizer, MinHashEncoder
+from cu_cat import TableVectorizer, MinHashEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import (
     HistGradientBoostingClassifier,

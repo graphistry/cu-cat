@@ -6,9 +6,9 @@
 
 set -e
 
-USERNAME="skrub-ci";
+USERNAME="cu_cat-ci";
 
-DOC_REPO="skrub-data.github.io"
+DOC_REPO="cu_cat-data.github.io"
 GENERATED_DOC_DIR=$1
 
 if [[ -z "$GENERATED_DOC_DIR" ]]; then
@@ -32,8 +32,8 @@ MSG="Pushing the docs to $dir/ for branch: $CIRCLE_BRANCH, commit $CIRCLE_SHA1"
 
 cd $HOME
 if [ ! -d $DOC_REPO ];
-#then git clone --depth 1 --no-checkout "git@github.com:skrub-data/"$DOC_REPO".git";
-then git clone "git@github.com:skrub-data/"$DOC_REPO".git";
+#then git clone --depth 1 --no-checkout "git@github.com:cu_cat-data/"$DOC_REPO".git";
+then git clone "git@github.com:cu_cat-data/"$DOC_REPO".git";
 fi
 cd $DOC_REPO
 

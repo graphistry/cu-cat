@@ -2,7 +2,7 @@
 This benchmark compares the performance of dirty-cat's fuzzy_join compared
 to other fuzzy joining functions available on small toy datasets.
 
-skrub's fuzzy_join outperforms all other methods.
+cu_cat's fuzzy_join outperforms all other methods.
 
 Date: September 2022
 """
@@ -22,7 +22,7 @@ from thefuzz.fuzz import partial_ratio
 from utils import default_parser, find_result, monitor
 from utils.join import evaluate
 
-from skrub import fuzzy_join
+from cu_cat import fuzzy_join
 
 
 def thefuzz_merge(

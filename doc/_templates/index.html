@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% set title = 'skrub: Prepping tables for machine learning' %}
+{% set title = 'cu_cat: Prepping tables for machine learning' %}
 
 {%- block extrahead %}
     {{ super() }}
@@ -15,7 +15,7 @@ still full-width (unlike the article) #}
     <div class="container sk-landing-container">
 	<div class="row">
 	<div class="col-md-6 mb-3 mb-md-0">
-	    <h1 class="sk-landing-header text-white text-monospace">skrub</h1>
+	    <h1 class="sk-landing-header text-white text-monospace">cu_cat</h1>
 	    <h4 class="sk-landing-subheader text-white font-italic mb-3"><i>Prepping tables for machine learning</i></h4>
 	</div>
 	<div class="col-md-6 d-flex">
@@ -32,7 +32,7 @@ still full-width (unlike the article) #}
 
 {% block docs_main %}
 <div class="container-fluid schema-container">
-    <img src="_static/skrub_pipeline.svg">
+    <img src="_static/cu_cat_pipeline.svg">
 </div>
 
 <article class="bd-article" role="main">
@@ -45,14 +45,14 @@ still full-width (unlike the article) #}
       <div class="sd-card sd-shadow-sm card-landing">
         <div class="card-body">
           <h4 class="card-title"><a href="{{ pathto('assembling') }}">Assembling</a></h4>
-    <p><a class="reference internal" href="generated/skrub.fuzzy_join.html"
-title="skrub.fuzzy_join"><code class="xref py py-func docutils literal
+    <p><a class="reference internal" href="generated/cu_cat.fuzzy_join.html"
+title="cu_cat.fuzzy_join"><code class="xref py py-func docutils literal
 notranslate"><span class="pre">fuzzy_join()</span></code></a>, Joining
 tables on non-normalized categories with approximate matching. <a
 class="reference internal" href="{{ pathto('auto_examples/04_fuzzy_joining') }}"><span class="std std-ref">Example</span></a></p>
 <p><a class="reference internal"
-href="generated/skrub.Joiner.html"
-title="skrub.Joiner"><code class="xref py py-class docutils
+href="generated/cu_cat.Joiner.html"
+title="cu_cat.Joiner"><code class="xref py py-class docutils
 literal notranslate"><span class="pre">Joiner</span></code></a>, a transformer for joining
 multiple tables together. <a class="reference internal" href="{{ pathto('auto_examples/04_fuzzy_joining') }}"><span class="std std-ref">Example</span></a></p>
     </div>
@@ -63,14 +63,14 @@ multiple tables together. <a class="reference internal" href="{{ pathto('auto_ex
     <div class="card-body">
       <h4 class="card-title"><a href="{{ pathto('encoding') }}">Encoding</a></h4><p><a class="reference
 internal"
-href="generated/skrub.TableVectorizer.html#skrub.TableVectorizer"
-title="skrub.TableVectorizer"><code class="xref py py-class docutils
+href="generated/cu_cat.TableVectorizer.html#cu_cat.TableVectorizer"
+title="cu_cat.TableVectorizer"><code class="xref py py-class docutils
 literal notranslate"><span class="pre">TableVectorizer</span></code></a>:
 <strong>turn a pandas dataframe into a numerical array</strong> for
 machine learning. <a class="reference internal" href="auto_examples/01_dirty_categories.html#example-table-vectorizer"><span class="std std-ref">Example</span></a></p>
 <p><a class="reference internal"
-href="generated/skrub.GapEncoder.html#skrub.GapEncoder"
-title="skrub.GapEncoder"><code class="xref py py-class docutils literal
+href="generated/cu_cat.GapEncoder.html#cu_cat.GapEncoder"
+title="cu_cat.GapEncoder"><code class="xref py py-class docutils literal
 notranslate"><span class="pre">GapEncoder</span></code></a>,
 OneHotEncoder but robust to typos or non-normalized categories. <a
 class="reference internal" href="auto_examples/02_investigating_dirty_categories.html#example-gap-encoder"><span class="std std-ref">Example</span></a></p>
@@ -81,8 +81,8 @@ class="reference internal" href="auto_examples/02_investigating_dirty_categories
   <div class="sd-card sd-shadow-sm card-landing">
     <div class="card-body">
       <h4 class="card-title"><a href="{{ pathto('cleaning') }}">Cleaning</a></h4><p><a class="reference
-internal" href="generated/skrub.deduplicate.html#skrub.deduplicate"
-title="skrub.deduplicate"><code class="xref py py-func docutils literal
+internal" href="generated/cu_cat.deduplicate.html#cu_cat.deduplicate"
+title="cu_cat.deduplicate"><code class="xref py py-func docutils literal
 notranslate"><span class="pre">deduplicate()</span></code></a>: merge
 categories of similar morphology (spelling). <a class="reference internal" href="auto_examples/05_deduplication.html"><span class="std std-ref">Example</span></a></p>
         </div>

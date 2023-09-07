@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from skrub.datasets import (
+from cu_cat.datasets import (
     fetch_drug_directory,
     fetch_employee_salaries,
     fetch_medical_charge,
@@ -11,7 +11,7 @@ from skrub.datasets import (
     fetch_road_safety,
     fetch_traffic_violations,
 )
-from skrub.datasets import DatasetAll
+from cu_cat.datasets import DatasetAll
 
 
 def find_result(bench_name: str) -> Path:

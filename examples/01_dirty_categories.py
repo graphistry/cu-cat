@@ -23,7 +23,7 @@ control.
 
 
  .. |TV| replace::
-     :class:`~skrub.TableVectorizer`
+     :class:`~cu_cat.TableVectorizer`
 
  .. |Pipeline| replace::
      :class:`~sklearn.pipeline.Pipeline`
@@ -38,16 +38,16 @@ control.
      :class:`~sklearn.ensemble.RandomForestRegressor`
 
  .. |Gap| replace::
-     :class:`~skrub.GapEncoder`
+     :class:`~cu_cat.GapEncoder`
 
  .. |MinHash| replace::
-     :class:`~skrub.MinHashEncoder`
+     :class:`~cu_cat.MinHashEncoder`
 
  .. |HGBR| replace::
      :class:`~sklearn.ensemble.HistGradientBoostingRegressor`
 
  .. |SE| replace::
-     :class:`~skrub.SimilarityEncoder`
+     :class:`~cu_cat.SimilarityEncoder`
 
  .. |permutation importances| replace::
      :func:`~sklearn.inspection.permutation_importance`
@@ -58,7 +58,7 @@ control.
 # --------
 #
 # We first retrieve the dataset:
-from skrub.datasets import fetch_employee_salaries
+from cu_cat.datasets import fetch_employee_salaries
 
 employee_salaries = fetch_employee_salaries()
 
@@ -149,7 +149,7 @@ X["employee_position_title"].value_counts()
 # We will now experiment with encoders specially made for handling
 # dirty columns:
 
-from skrub import GapEncoder, MinHashEncoder, SimilarityEncoder, TargetEncoder
+from cu_cat import GapEncoder, MinHashEncoder, SimilarityEncoder, TargetEncoder
 
 encoders = {
     "one-hot": one_hot,
@@ -247,10 +247,10 @@ X
 # such as gradient boosted trees, gives **a machine-learning method that
 # can be readily applied to the dataframe**.
 #
-# The |TV| requires at least skrub 0.2.0.
+# The |TV| requires at least cu_cat 0.2.0.
 #
 
-from skrub import TableVectorizer
+from cu_cat import TableVectorizer
 
 pipeline = make_pipeline(
     TableVectorizer(auto_cast=True), HistGradientBoostingRegressor()

@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-from skrub.datasets._utils import get_data_dir
+from cu_cat.datasets._utils import get_data_dir
 
 
 def get_local_data(
@@ -42,7 +42,7 @@ def fetch_data(
 
     data_home: Path or str, optional
         The path to the root data directory.
-        By default, will point to the skrub data directory.
+        By default, will point to the cu_cat data directory.
 
     data_directory: str, optional
         The name of the subdirectory in which data is stored.
@@ -105,7 +105,7 @@ def fetch_big_data(
 
     data_home: Path or str, optional
         The path to the root data directory.
-        By default, will point to the skrub data directory.
+        By default, will point to the cu_cat data directory.
 
     data_directory: str, optional
         The name of the subdirectory in which data is stored.

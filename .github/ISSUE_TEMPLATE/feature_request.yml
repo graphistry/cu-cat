@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest an improvement for skrub
+description: Suggest an improvement for cu_cat
 labels: ["enhancement"]
 
 body:
@@ -7,8 +7,8 @@ body:
     attributes:
       value: >
         #### Before submitting a feature request, please make sure it hasn't been already
-        addressed by searching through [the past issues](https://github.com/skrub-data/skrub/issues)
-        and the [pull requests](https://github.com/skrub-data/skrub/pulls).
+        addressed by searching through [the past issues](https://github.com/cu_cat-data/cu_cat/issues)
+        and the [pull requests](https://github.com/cu_cat-data/cu_cat/pulls).
   - type: textarea
     id: description
     attributes:
@@ -16,7 +16,7 @@ body:
       description: >
         Please describe what problem the feature would solve.
       placeholder: >
-        I wish I could use skrub to ...
+        I wish I could use cu_cat to ...
     validations:
       required: true
   - type: textarea

@@ -22,9 +22,9 @@ machine-learning pipeline. In particular, it enables tuning parameters of
 |fj| to find the matches that maximize prediction accuracy.
 
 
-.. |fj| replace:: :func:`~skrub.fuzzy_join`
+.. |fj| replace:: :func:`~cu_cat.fuzzy_join`
 
-.. |joiner| replace:: :func:`~skrub.Joiner`
+.. |joiner| replace:: :func:`~cu_cat.Joiner`
 """
 
 ###############################################################################
@@ -35,7 +35,7 @@ machine-learning pipeline. In particular, it enables tuning parameters of
 import pandas as pd
 
 df = pd.read_csv(
-    "https://raw.githubusercontent.com/skrub-data/datasets/master/data/Happiness_report_2022.csv",  # noqa
+    "https://raw.githubusercontent.com/cu_cat-data/datasets/master/data/Happiness_report_2022.csv",  # noqa
     thousands=",",
 )
 df.drop(df.tail(1).index, inplace=True)
@@ -65,7 +65,7 @@ df = df[["Country", "Happiness score"]]
 # Interesting tables can be found on `the World Bank open data platform
 # <https://data.worldbank.org/>`_, for which we have a downloading
 # function:
-from skrub.datasets import fetch_world_bank_indicator
+from cu_cat.datasets import fetch_world_bank_indicator
 
 ###############################################################################
 # We extract the table containing GDP per capita by country:
@@ -121,8 +121,8 @@ warnings.filterwarnings("ignore")
 # 1. Joining GDP per capita table
 # ...............................
 #
-# To join them with skrub, we only need to do the following:
-from skrub import fuzzy_join
+# To join them with cu_cat, we only need to do the following:
+from cu_cat import fuzzy_join
 
 df1 = fuzzy_join(
     df,  # our table to join
@@ -366,7 +366,7 @@ y = df["Happiness score"]
 # We gather the auxilliary tables into a
 # list of (tables, keys) for the `tables` parameter.
 # An instance of the transformer with the necessary information is:
-from skrub import Joiner
+from cu_cat import Joiner
 
 joiner = Joiner(
     tables=[

@@ -26,7 +26,7 @@ from utils import (
     monitor,
 )
 
-from skrub import MinHashEncoder, TableVectorizer
+from cu_cat import MinHashEncoder, TableVectorizer
 
 ###############################################
 # Benchmarking TableVectorizer parameters

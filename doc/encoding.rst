@@ -4,7 +4,7 @@
 Encoding: creating feature matrices
 ====================================
 
-.. currentmodule:: skrub
+.. currentmodule:: cu_cat
 
 Encoding or vectorizing creates numerical features from the data,
 converting dataframes, strings, dates... Different encoders are suited
@@ -31,7 +31,7 @@ standard tools to represent categories fail if these strings are not
 normalized into a small number of well-identified form, if they have
 typos, or if there are too many categories.
 
-Skrub provides encoders that represent well open-ended strings or dirty
+cu_cat provides encoders that represent well open-ended strings or dirty
 categories, eg to replace :class:`~sklearn.preprocessing.OneHotEncoder`:
 
 * :class:`GapEncoder`: infers latent categories and represent the data on

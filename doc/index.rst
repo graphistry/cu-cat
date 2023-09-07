@@ -2,7 +2,7 @@
 .. toctree::
    :maxdepth: 2
 
-.. currentmodule:: skrub
+.. currentmodule:: cu_cat
 
 
 .. toctree::

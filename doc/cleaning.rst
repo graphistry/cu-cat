@@ -4,7 +4,7 @@
 Cleaning
 =========
 
-.. currentmodule:: skrub
+.. currentmodule:: cu_cat
 
 :func:`deduplicate`: merging variants of the same entry
 =========================================================

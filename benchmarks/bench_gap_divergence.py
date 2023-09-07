@@ -28,7 +28,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from argparse import ArgumentParser
-from skrub._gap_encoder import (
+from cu_cat._gap_encoder import (
     GapEncoder,
     GapEncoderColumn,
     _multiplicative_update_h,
@@ -43,7 +43,7 @@ from sklearn.ensemble import (
 )
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_validate
-from skrub import TableVectorizer
+from cu_cat import TableVectorizer
 from pathlib import Path
 
 from utils import (
@@ -180,7 +180,7 @@ benchmark_name = Path(__file__).stem
             "open_payments",
             "midwest_survey",
             "employee_salaries",
-            # "road_safety",  # https://github.com/skrub-data/skrub/issues/622
+            # "road_safety",  # https://github.com/cu_cat-data/cu_cat/issues/622
             "drug_directory",
             # "traffic_violations",  # Takes way too long and seems to cause memory leaks
         ],

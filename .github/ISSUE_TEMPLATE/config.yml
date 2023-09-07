@@ -1,7 +1,7 @@
 contact_links:
   - name: Discussions
-    url: https://github.com/skrub-data/skrub/discussions
+    url: https://github.com/cu_cat-data/cu_cat/discussions
     about: Ask questions and discuss with other members of the community
   - name: Blank issue
-    url: https://github.com/skrub-data/skrub/issues/new
+    url: https://github.com/cu_cat-data/cu_cat/issues/new
     about: Please note that Github Discussions should be used in most cases instead

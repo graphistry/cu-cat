@@ -30,7 +30,7 @@ improve our results.
      :class:`~sklearn.compose.ColumnTransformer`
 
  .. |MinHash| replace::
-     :class:`~skrub.MinHashEncoder`
+     :class:`~cu_cat.MinHashEncoder`
 
  .. |HGBR| replace::
      :class:`~sklearn.ensemble.HistGradientBoostingRegressor`
@@ -93,32 +93,32 @@ y = y[~mask]
 # We will use KEN embeddings to enrich our data.
 #
 # We will start by checking out the available tables with
-# :class:`~skrub.datasets.fetch_ken_table_aliases`:
-from skrub.datasets import fetch_ken_table_aliases
+# :class:`~cu_cat.datasets.fetch_ken_table_aliases`:
+from cu_cat.datasets import fetch_ken_table_aliases
 
 fetch_ken_table_aliases()
 
 ###############################################################################
 # The *games* table is the most relevant to our case.
 # Let's see what kind of types we can find in it with the function
-# :class:`~skrub.datasets.fetch_ken_types`:
-from skrub.datasets import fetch_ken_types
+# :class:`~cu_cat.datasets.fetch_ken_types`:
+from cu_cat.datasets import fetch_ken_types
 
 fetch_ken_types(embedding_table_id="games")
 
 ###############################################################################
 # Interesting, we have a broad range of topics!
 #
-# Next, we'll use :class:`~skrub.datasets.fetch_ken_embeddings`
+# Next, we'll use :class:`~cu_cat.datasets.fetch_ken_embeddings`
 # to extract the embeddings of entities we need:
-from skrub.datasets import fetch_ken_embeddings
+from cu_cat.datasets import fetch_ken_embeddings
 
 ###############################################################################
 # KEN Embeddings are classified by types.
-# See the example on :class:`~skrub.datasets.fetch_ken_embeddings`
+# See the example on :class:`~cu_cat.datasets.fetch_ken_embeddings`
 # to understand how you can filter types you are interested in.
 #
-# The :class:`~skrub.datasets.fetch_ken_embeddings` function
+# The :class:`~cu_cat.datasets.fetch_ken_embeddings` function
 # allows us to specify the types to be included and/or excluded
 # so as not to load all Wikipedia entity embeddings in a table.
 #
@@ -157,7 +157,7 @@ emb_columns2 = [f"X{j}_aux" for j in range(n_dim)]
 # The entities from the 'embedding_games' table will be merged along the
 # column "Name" and the ones from 'embedding_publisher' table with the
 # column "Publisher"
-from skrub import Joiner
+from cu_cat import Joiner
 
 fa1 = Joiner(tables=(embedding_games, "Entity"), main_key="Name")
 fa2 = Joiner(tables=(embedding_publisher, "Entity"), main_key="Publisher")
@@ -180,7 +180,7 @@ X_full = fa2.fit_transform(X_full)
 from sklearn.compose import make_column_transformer
 from sklearn.preprocessing import OneHotEncoder
 
-from skrub import MinHashEncoder
+from cu_cat import MinHashEncoder
 
 min_hash = MinHashEncoder(n_components=100)
 ohe = OneHotEncoder(handle_unknown="ignore", sparse_output=False)

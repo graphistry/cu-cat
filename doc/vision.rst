@@ -1,36 +1,36 @@
 ===============================
-Vision: where is skrub heading?
+Vision: where is cu_cat heading?
 ===============================
 
-.. currentmodule:: skrub
+.. currentmodule:: cu_cat
 
 Vision statement
 ================
 
-The goal of skrub is to facilitate building and deploying
+The goal of cu_cat is to facilitate building and deploying
 machine-learning models on tables: `pandas <https://pandas.pydata.org>`__
 dataframe, SQL databases...
 
 |
 
-Skrub is high-level, with a philosophy and an API matching that of
+cu_cat is high-level, with a philosophy and an API matching that of
 `scikit-learn <http://scikit-learn.org>`_. It strives to bridge the world
 of databases to that of machine-learning, **enabling imperfect assembly and
 representations of the data when it is noisy**, using the downstream
 target to predict to guide assembly when possible (supervised learning for
 data assembly).
 
-In the long term, as skrub is built on higher-level APIs, it will make it
+In the long term, as cu_cat is built on higher-level APIs, it will make it
 easier for data-scientists to use efficient database patterns and
 backends.
 
-Skrub seeks tradeoffs in terms of flexibility: its high-level APIs are by
+cu_cat seeks tradeoffs in terms of flexibility: its high-level APIs are by
 construction restrictive compared to directly manipulating dataframes.
-This is by design, as skrub does not aim to replace tools such as `Pandas
+This is by design, as cu_cat does not aim to replace tools such as `Pandas
 <https://pandas.pydata.org>`__, `Ibis <https://ibis-project.org>`__,
 `DuckDB <https://duckdb.org/>`_.
 
-To make things simpler, skrub uses defaults that are chosen empirically to
+To make things simpler, cu_cat uses defaults that are chosen empirically to
 give good machine learning, even though these are sometimes heuristic, as
 in the :class:`TableVectorizer`.
 

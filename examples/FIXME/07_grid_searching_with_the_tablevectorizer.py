@@ -9,13 +9,13 @@ In this example, we will see how to customize the |TableVectorizer|,
 and see how we can perform a grid-search with it.
 
 
-.. |TableVectorizer| replace:: :class:`~skrub.TableVectorizer`
+.. |TableVectorizer| replace:: :class:`~cu_cat.TableVectorizer`
 
 .. |OneHotEncoder| replace:: :class:`~sklearn.preprocessing.OneHotEncoder`
 
-.. |GapEncoder| replace:: :class:`~skrub.GapEncoder`
+.. |GapEncoder| replace:: :class:`~cu_cat.GapEncoder`
 
-.. |MinHashEncoder| replace:: :class:`~skrub.MinHashEncoder`
+.. |MinHashEncoder| replace:: :class:`~cu_cat.MinHashEncoder`
 
 """
 
@@ -32,7 +32,7 @@ and see how we can perform a grid-search with it.
 #
 # Throughout this example, we will use the employee salaries dataset.
 
-from skrub.datasets import fetch_employee_salaries
+from cu_cat.datasets import fetch_employee_salaries
 
 dataset = fetch_employee_salaries()
 X = dataset.X
@@ -43,7 +43,7 @@ X.head(10)
 ###############################################################################
 # Let's import the |TableVectorizer| and see what the default assignation is:
 
-from skrub import TableVectorizer
+from cu_cat import TableVectorizer
 from pprint import pprint
 
 tv = TableVectorizer()
@@ -59,7 +59,7 @@ pprint(tv.transformers_)
 # |GapEncoder| for the high cardinality categorical columns.
 # It is easy to do that by using the dedicated parameter:
 
-from skrub import MinHashEncoder
+from cu_cat import MinHashEncoder
 
 tv = TableVectorizer(
     high_card_cat_transformer=MinHashEncoder(),
@@ -110,7 +110,7 @@ pprint(tv.transformers_)
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
 from sklearn.ensemble import HistGradientBoostingClassifier
-from skrub import GapEncoder
+from cu_cat import GapEncoder
 
 pipeline = make_pipeline(
     TableVectorizer(
@@ -137,6 +137,6 @@ grid_search = GridSearchCV(pipeline, param_grid=params)
 # it fits all your needs!
 #
 # If you've got any improvement ideas, please open a feature request on
-# `GitHub <https://github.com/skrub-data/skrub/issues/new?labels=enhancement&template=feature_request.yml>`_!
+# `GitHub <https://github.com/cu_cat-data/cu_cat/issues/new?labels=enhancement&template=feature_request.yml>`_!
 #
 # We are always happy to see new suggestions from the community :)

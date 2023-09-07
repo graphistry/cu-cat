@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug in skrub
+description: Report a bug in cu_cat
 labels: ["bug"]
 
 body:
@@ -7,7 +7,7 @@ body:
   attributes:
     value: >
       #### Before submitting a bug, please make sure the issue hasn't been already
-      addressed by searching through [the past issues](https://github.com/skrub-data/skrub/issues).
+      addressed by searching through [the past issues](https://github.com/cu_cat-data/cu_cat/issues).
 - type: textarea
   attributes:
     label: Describe the bug
@@ -19,11 +19,11 @@ body:
   attributes:
     label: Steps/Code to Reproduce
     description: |
-      Please add a [minimal code example](https://scikit-learn.org/dev/developers/minimal_reproducer.html) that can reproduce the error when running it. Be as succinct as possible, **do not depend on external data files**: instead, you can generate synthetic data using `numpy.random`, [sklearn.datasets.make_regression](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_regression.html), [sklearn.datasets.make_classification](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html) or a few lines of Python code, or use one of the datasets provided as part of the library (`skrub.datasets.fetch_*`). Example:
+      Please add a [minimal code example](https://scikit-learn.org/dev/developers/minimal_reproducer.html) that can reproduce the error when running it. Be as succinct as possible, **do not depend on external data files**: instead, you can generate synthetic data using `numpy.random`, [sklearn.datasets.make_regression](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_regression.html), [sklearn.datasets.make_classification](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html) or a few lines of Python code, or use one of the datasets provided as part of the library (`cu_cat.datasets.fetch_*`). Example:
 
       ```python
-      from skrub import SimilarityEncoder
-      from skrub.datasets import fetch_employee_salaries
+      from cu_cat import SimilarityEncoder
+      from cu_cat.datasets import fetch_employee_salaries
       dataset = fetch_employee_salaries()
       model = SimilarityEncoder(
           similarity="levenshtein",
@@ -63,7 +63,7 @@ body:
       ---------------------------------------------------------------------------
       TypeError                                 Traceback (most recent call last)
       <ipython-input-1-a674e682c281> in <module>
-            4 from skrub.datasets import fetch_employee_salaries
+            4 from cu_cat.datasets import fetch_employee_salaries
             5 dataset = fetch_employee_salaries()
       ----> 6 model = SimilarityEncoder(
             7     similarity="levenshtein",
@@ -82,7 +82,7 @@ body:
     description: |
       Please run the following and paste the output below.
       ```python
-      import sklearn, skrub; sklearn.show_versions(); print(skrub.__version__);
+      import sklearn, cu_cat; sklearn.show_versions(); print(cu_cat.__version__);
       ```
   validations:
     required: true
