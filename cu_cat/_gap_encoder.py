@@ -1,17 +1,4 @@
 """
-<<<<<<< HEAD
-Implements the GapEncoder: a probabilistic encoder for categorical variables.
-"""
-
-from collections.abc import Generator
-from copy import deepcopy
-from typing import Literal
-
-import numpy as np
-import pandas as pd
-import scipy.sparse as sp
-from joblib import Parallel, delayed
-=======
 Online Gamma-Poisson factorization of string arrays.
 The principle is as follows:
     1. Given an input string array X, we build its bag-of-n-grams
@@ -42,31 +29,20 @@ import pandas as pd
 from time import time
 
 from cupyx.scipy.sparse import csr_matrix as csr_gpu
->>>>>>> cu-cat/DT5
 from numpy.random import RandomState
 from numpy.typing import ArrayLike, NDArray
 from scipy import sparse
-<<<<<<< HEAD
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.cluster import KMeans, kmeans_plusplus
-from sklearn.decomposition._nmf import _beta_divergence
-from sklearn.feature_extraction.text import CountVectorizer, HashingVectorizer
-=======
 from scipy.sparse import csr_matrix as csr_cpu
 from sklearn import __version__ as sklearn_version
 from sklearn.base import BaseEstimator, TransformerMixin
 from cuml.cluster import KMeans
 # from cuml.feature_extraction.text import CountVectorizer,HashingVectorizer
->>>>>>> cu-cat/DT5
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import check_random_state, gen_batches
 from sklearn.utils.extmath import row_norms, safe_sparse_dot
 from sklearn.utils.fixes import _object_dtype_isnan
 from sklearn.utils.validation import _num_samples, check_is_fitted
 
-<<<<<<< HEAD
-from ._utils import check_input
-=======
 from ._utils import check_input, parse_version, df_type
 import logging
 
@@ -157,7 +133,6 @@ def resolve_engine(
         '"sklearn", or  "cuml" '
         f"but received: {engine} :: {type(engine)}"
     )
->>>>>>> cu-cat/DT5
 
 
 class GapEncoderColumn(BaseEstimator, TransformerMixin):
@@ -173,11 +148,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
     """
 
     rho_: float
-<<<<<<< HEAD
-    H_dict_: dict[NDArray, NDArray]
-=======
     H_dict_: Dict[pyarrow.StringScalar, cp.ndarray]
->>>>>>> cu-cat/DT5
 
     def __init__(
         self,
@@ -189,27 +160,17 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         rescale_rho: bool = False,
         hashing: bool = False,
         hashing_n_features: int = 2**12,
-<<<<<<< HEAD
-        init: Literal["k-means++", "random", "k-means"] = "k-means++",
-=======
         init: Literal["k-means++", "random", "k-means"] = "random",
         tol: float = 1e-4,
         min_iter: int = 2,
->>>>>>> cu-cat/DT5
         max_iter: int = 5,
         ngram_range: tuple[int, int] = (2, 4),
         analyzer: Literal["word", "char", "char_wb"] = "char",
         add_words: bool = False,
         random_state: int | RandomState | None = None,
         rescale_W: bool = True,
-<<<<<<< HEAD
-        max_iter_e_step: int = 1,
-        max_no_improvement: int = 5,
-        verbose: int = 0,
-=======
         max_iter_e_step: int = 20,
         engine: Engine = "auto",
->>>>>>> cu-cat/DT5
     ):
         
         engine_resolved = resolve_engine(engine)
@@ -237,15 +198,12 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         self.random_state = check_random_state(random_state)
         self.rescale_W = rescale_W
         self.max_iter_e_step = max_iter_e_step
-<<<<<<< HEAD
         self.max_no_improvement = max_no_improvement
         self.verbose = verbose
-=======
         self._CV = CountVectorizer
         self._HV = HashingVectorizer
         self.engine = engine_resolved
         self.gmem = gmem[0]
->>>>>>> cu-cat/DT5
 
     def _init_vars(self, X) -> tuple[NDArray, NDArray, NDArray]:
         """
@@ -294,25 +252,10 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
             unq_V = sparse.hstack((unq_V, unq_V2), format="csr")
 
         if not self.hashing:  # Build n-grams/word vocabulary
-<<<<<<< HEAD
             self.vocabulary = self.ngrams_count_.get_feature_names_out()
             if self.add_words:
                 self.vocabulary = np.concatenate(
                     (self.vocabulary, self.word_count_.get_feature_names_out())
-=======
-            # if parse_version(sklearn_version) < parse_version("1.0"):
-            #     self.vocabulary = self.ngrams_count_.get_feature_names()
-            # else:
-            self.vocabulary = self.ngrams_count_.get_feature_names()
-            if self.add_words:
-                # if parse_version(sklearn_version) < parse_version("1.0"):
-                #     self.vocabulary = np.concatenate(
-                #         (self.vocabulary, self.word_count_.get_feature_names())
-                #     )
-                # else:
-                self.vocabulary = np.concatenate(
-                    (self.vocabulary, self.word_count_.get_feature_names())
->>>>>>> cu-cat/DT5
                 )
         _, self.n_vocab = unq_V.shape
         # Init the topics W given the n-grams counts V
@@ -505,14 +448,11 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         t = time()
         # Copy parameter rho
         self.rho_ = self.rho
-<<<<<<< HEAD
         # Attributes to monitor the convergence
         self._ewa_cost = None
         self._ewa_cost_min = None
         self._no_improvement = 0
-=======
         
->>>>>>> cu-cat/DT5
         # Check if first item has str or np.str_ type
         
         self.Xt_= df_type(X)
@@ -523,23 +463,9 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         # Make n-grams counts matrix unq_V
         unq_X, unq_V, lookup = self._init_vars(X)
         n_batch = (len(X) - 1) // self.batch_size + 1
-<<<<<<< HEAD
-        n_samples = len(X)
-        del X
-=======
->>>>>>> cu-cat/DT5
         # Get activations unq_H
         del X
         unq_H = self._get_H(unq_X)
-<<<<<<< HEAD
-        converged = False
-        for n_iter_ in range(self.max_iter):
-            # Loop over batches
-            for i, (unq_idx, idx) in enumerate(batch_lookup(lookup, n=self.batch_size)):
-                # Update activations unq_H
-                unq_H[unq_idx] = _multiplicative_update_h(
-                    unq_V[unq_idx],
-=======
         unq_V=csr_gpu(unq_V);unq_H=cp.array(unq_H); ## redundant
 
         for n_iter_ in range(self.max_iter):
@@ -555,7 +481,6 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                 W_last = self.W_.copy()
                 unq_H = _multiplicative_update_h_smallfast(
                     unq_V,
->>>>>>> cu-cat/DT5
                     self.W_,
                     unq_H,
                     epsilon=1e-3,
@@ -573,29 +498,6 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                     self.rescale_W,
                     self.rho_,
                 )
-<<<<<<< HEAD
-                batch_cost = _beta_divergence(
-                    unq_V[idx],
-                    unq_H[idx],
-                    self.W_,
-                    "kullback-leibler",
-                    square_root=False,
-                ) / len(idx)
-                if self._minibatch_convergence(
-                    batch_size=len(idx),
-                    batch_cost=batch_cost,
-                    n_samples=n_samples,
-                    step=n_iter_ * n_batch + i,
-                    n_steps=self.max_iter * n_batch,
-                ):
-                    converged = True
-                    break
-            if converged:
-                break
-
-        # Update self.H_dict_ with the learned encoded vectors (activations)
-        self.H_dict_.update(zip(unq_X, unq_H))
-=======
             else:
                 W_type = df_type(self.W_)
                 if self.engine=='cuml' and (sys.getsizeof(unq_V)*sys.getsizeof(unq_V))>self.gmem:
@@ -651,7 +553,6 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         logger.debug(
             f"--GapEncoder Fitting took {(time() - t) / 60:.2f} minutes\n"
         )
->>>>>>> cu-cat/DT5
         return self
 
     def get_feature_names_out(
@@ -676,13 +577,6 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
             The labels that best describe each topic.
         """
 
-<<<<<<< HEAD
-        vectorizer = CountVectorizer()
-        vectorizer.fit(list(self.H_dict_.keys()))
-        vocabulary = np.array(vectorizer.get_feature_names_out())
-        encoding = self.transform(np.array(vocabulary).reshape(-1))
-        encoding = abs(encoding)
-=======
         vectorizer = self._CV()#lowercase=False,preprocessor=None)
 
         if 'cudf'  in self.Xt_:
@@ -700,7 +594,6 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
             encoding = self.transform(pd.Series(vocabulary).reshape(-1))
             encoding = abs(encoding)
 
->>>>>>> cu-cat/DT5
         encoding = encoding / np.sum(encoding, axis=1, keepdims=True)
         n_components = encoding.shape[1]
         topic_labels = []
@@ -712,130 +605,6 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         topic_labels = [prefix + ", ".join(label) for label in topic_labels]
         return topic_labels
 
-<<<<<<< HEAD
-    def score(self, X: ArrayLike) -> float:
-        """Score this instance of `X`.
-
-        Returns the Kullback-Leibler divergence between the n-grams counts
-        matrix `V` of `X`, and its non-negative factorization `HW`.
-
-        Parameters
-        ----------
-        X : array-like, shape (n_samples, )
-            The data to encode.
-
-        Returns
-        -------
-        float
-            The Kullback-Leibler divergence.
-        """
-
-        # Build n-grams/word counts matrix
-        unq_X, lookup = np.unique(X, return_inverse=True)
-        unq_V = self.ngrams_count_.transform(unq_X)
-        if self.add_words:
-            unq_V2 = self.word_count_.transform(unq_X)
-            unq_V = sparse.hstack((unq_V, unq_V2), format="csr")
-
-        self._add_unseen_keys_to_H_dict(unq_X)
-        unq_H = self._get_H(unq_X)
-        # Given the learnt topics W, optimize the activations H to fit V = HW
-        for slice in gen_batches(n=unq_H.shape[0], batch_size=self.batch_size):
-            unq_H[slice] = _multiplicative_update_h(
-                unq_V[slice],
-                self.W_,
-                unq_H[slice],
-                epsilon=1e-3,
-                max_iter=self.max_iter_e_step,
-                rescale_W=self.rescale_W,
-                gamma_shape_prior=self.gamma_shape_prior,
-                gamma_scale_prior=self.gamma_scale_prior,
-            )
-        # Compute the KL divergence between V and HW
-        kl_divergence = _beta_divergence(
-            unq_V[lookup], unq_H[lookup], self.W_, "kullback-leibler", square_root=False
-        )
-        return kl_divergence
-
-    def partial_fit(self, X: ArrayLike, y=None) -> "GapEncoderColumn":
-        """Partial fit this instance on `X`.
-
-        To be used in an online learning procedure where batches of data are
-        coming one by one.
-
-        Parameters
-        ----------
-        X : array-like, shape (n_samples, )
-            The string data to fit the model on.
-        y : None
-            Unused, only here for compatibility.
-
-        Returns
-        -------
-        GapEncoderColumn
-            The fitted GapEncoderColumn instance (self).
-        """
-
-        # Init H_dict_ with empty dict if it's the first call of partial_fit
-        if not hasattr(self, "H_dict_"):
-            self.H_dict_ = dict()
-        # Same thing for the rho_ parameter
-        if not hasattr(self, "rho_"):
-            self.rho_ = self.rho
-        # Check if first item has str or np.str_ type
-        assert isinstance(X[0], str), "Input data is not string. "
-        # Check if it is not the first batch
-        if hasattr(self, "vocabulary"):  # Update unq_X, unq_V with new batch
-            unq_X, lookup = np.unique(X, return_inverse=True)
-            unq_V = self.ngrams_count_.transform(unq_X)
-            if self.add_words:
-                unq_V2 = self.word_count_.transform(unq_X)
-                unq_V = sparse.hstack((unq_V, unq_V2), format="csr")
-
-            unseen_X = np.setdiff1d(unq_X, np.array([*self.H_dict_]))
-            unseen_V = self.ngrams_count_.transform(unseen_X)
-            if self.add_words:
-                unseen_V2 = self.word_count_.transform(unseen_X)
-                unseen_V = sparse.hstack((unseen_V, unseen_V2), format="csr")
-
-            if unseen_V.shape[0] != 0:
-                unseen_H = _rescale_h(
-                    unseen_V, np.ones((len(unseen_X), self.n_components))
-                )
-                for x, h in zip(unseen_X, unseen_H):
-                    self.H_dict_[x] = h
-                del unseen_H
-            del unseen_X, unseen_V
-        else:  # If it is the first batch, call _init_vars to init unq_X, unq_V
-            unq_X, unq_V, lookup = self._init_vars(X)
-
-        unq_H = self._get_H(unq_X)
-        # Update unq_H, the activations
-        unq_H = _multiplicative_update_h(
-            unq_V,
-            self.W_,
-            unq_H,
-            epsilon=1e-3,
-            max_iter=self.max_iter_e_step,
-            rescale_W=self.rescale_W,
-            gamma_shape_prior=self.gamma_shape_prior,
-            gamma_scale_prior=self.gamma_scale_prior,
-        )
-        # Update the topics self.W_
-        _multiplicative_update_w(
-            unq_V[lookup],
-            self.W_,
-            self.A_,
-            self.B_,
-            unq_H[lookup],
-            self.rescale_W,
-            self.rho_,
-        )
-        # Update self.H_dict_ with the learned encoded vectors (activations)
-        self.H_dict_.update(zip(unq_X, unq_H))
-        return self
-=======
->>>>>>> cu-cat/DT5
 
     def _add_unseen_keys_to_H_dict(self, X) -> None:
         """
@@ -884,18 +653,15 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         """
         t = time()
         check_is_fitted(self, "H_dict_")
-<<<<<<< HEAD
         # Copy the state of H before continuing fitting it
         pre_trans_H_dict_ = deepcopy(self.H_dict_)
         # Check if the first item has str or np.str_ type
         assert isinstance(X[0], str), "Input data is not string. "
-        unq_X = np.unique(X)
-=======
+        # unq_X = np.unique(X)
         # Check if first item has str or np.str_ type
         # assert isinstance(X[0], str), "Input data is not string. "
         unq_X = X.unique() # np.unique(X)
 
->>>>>>> cu-cat/DT5
         # Build the n-grams counts matrix V for the string data to encode
         unq_V = self.ngrams_count_.transform(unq_X)
         if self.add_words:  # Add words counts
@@ -905,26 +671,6 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         self._add_unseen_keys_to_H_dict(unq_X) ### need to get this back for transforming obviously
         unq_H = self._get_H(unq_X)
         # Loop over batches
-<<<<<<< HEAD
-        for slc in gen_batches(n=unq_H.shape[0], batch_size=self.batch_size):
-            # Given the learnt topics W, optimize H to fit V = HW
-            unq_H[slc] = _multiplicative_update_h(
-                unq_V[slc],
-                self.W_,
-                unq_H[slc],
-                epsilon=1e-3,
-                max_iter=100,
-                rescale_W=self.rescale_W,
-                gamma_shape_prior=self.gamma_shape_prior,
-                gamma_scale_prior=self.gamma_scale_prior,
-            )
-        # Store and return the encoded vectors of X
-        self.H_dict_.update(zip(unq_X, unq_H))
-        feature_names_out = self._get_H(X)
-        # Restore H
-        self.H_dict_ = pre_trans_H_dict_
-        return feature_names_out
-=======
         logger.info(f"req gpu mem =  `{(sys.getsizeof(unq_V)*sys.getsizeof(unq_V))}`, ie `{unq_V.shape[0]*unq_V.shape[1]}`")
         if self.engine=='cuml' and (sys.getsizeof(unq_V)*sys.getsizeof(unq_V))<self.gmem:
             logger.debug(f"smallfast transform")
@@ -976,7 +722,6 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         )
         
         return self._get_H(X)
->>>>>>> cu-cat/DT5
 
 
 class GapEncoder(TransformerMixin, BaseEstimator):
@@ -985,15 +730,6 @@ class GapEncoder(TransformerMixin, BaseEstimator):
     This encoder can be understood as a continuous encoding on a set of latent
     categories estimated from the data. The latent categories are built by
     capturing combinations of substrings that frequently co-occur.
-
-<<<<<<< HEAD
-    The GapEncoder supports online learning on batches of
-    data for scalability through the GapEncoder.partial_fit
-=======
-    The :class:`~cu_cat.GapEncoder` supports online learning on batches of
-    data for scalability through the :func:`~cu_cat.GapEncoder.partial_fit`
->>>>>>> cu-cat/DT5
-    method.
 
     The principle is as follows:
 
@@ -1089,23 +825,6 @@ class GapEncoder(TransformerMixin, BaseEstimator):
     column_names_ : list of str
         Column names of the data the Gap was fitted on.
 
-    See Also
-    --------
-<<<<<<< HEAD
-    MinHashEncoder :
-        Encode string columns as a numeric array with the minhash method.
-    SimilarityEncoder :
-        Encode string columns as a numeric array with n-gram string similarity.
-    deduplicate :
-=======
-    :class:`~cu_cat.MinHashEncoder` :
-        Encode string columns as a numeric array with the minhash method.
-    :class:`~cu_cat.SimilarityEncoder` :
-        Encode string columns as a numeric array with n-gram string similarity.
-    :class:`~cu_cat.deduplicate` :
->>>>>>> cu-cat/DT5
-        Deduplicate data by hierarchically clustering similar strings.
-
     References
     ----------
     For a detailed description of the method, see
@@ -1124,11 +843,7 @@ class GapEncoder(TransformerMixin, BaseEstimator):
     >>> enc.fit(X)
     GapEncoder(n_components=2)
 
-<<<<<<< HEAD
     The GapEncoder has found the following two topics:
-=======
-    The :class:`~cu_cat.GapEncoder` has found the following two topics:
->>>>>>> cu-cat/DT5
 
     >>> enc.get_feature_names_out()
     ['england, london, uk', 'france, paris, pqris']
@@ -1167,13 +882,9 @@ class GapEncoder(TransformerMixin, BaseEstimator):
         rescale_rho: bool = False,
         hashing: bool = False,
         hashing_n_features: int = 2**12,
-<<<<<<< HEAD
-        init: Literal["k-means++", "random", "k-means"] = "k-means++",
-=======
         init: Literal["k-means++", "random", "k-means"] = "random",
         tol: float = 1e-4,
         min_iter: int = 2,
->>>>>>> cu-cat/DT5
         max_iter: int = 5,
         ngram_range: tuple[int, int] = (2, 4),
         analyzer: Literal["word", "char", "char_wb"] = "char",
@@ -1183,13 +894,8 @@ class GapEncoder(TransformerMixin, BaseEstimator):
         max_iter_e_step: int = 1,
         max_no_improvement: int = 5,
         handle_missing: Literal["error", "empty_impute"] = "zero_impute",
-<<<<<<< HEAD
-        n_jobs: int | None = None,
-        verbose: int = 0,
-=======
         engine: Engine = "auto",
 
->>>>>>> cu-cat/DT5
     ):
         engine_resolved = resolve_engine(engine)
         # FIXME remove as set_new_kwargs will always replace?
@@ -1218,10 +924,6 @@ class GapEncoder(TransformerMixin, BaseEstimator):
         self.max_iter_e_step = max_iter_e_step
         self.max_no_improvement = max_no_improvement
         self.handle_missing = handle_missing
-<<<<<<< HEAD
-        self.n_jobs = n_jobs
-        self.verbose = verbose
-=======
         self._CV = CountVectorizer
         self._HV = HashingVectorizer
         self.engine = engine_resolved
@@ -1233,7 +935,6 @@ class GapEncoder(TransformerMixin, BaseEstimator):
         Used internally by sklearn to ease the estimator checks.
         """
         return {"X_types": ["categorical"]}
->>>>>>> cu-cat/DT5
 
     def _create_column_gap_encoder(self) -> GapEncoderColumn:
         """Helper method for creating a GapEncoderColumn from
@@ -1255,12 +956,9 @@ class GapEncoder(TransformerMixin, BaseEstimator):
             random_state=self.random_state,
             rescale_W=self.rescale_W,
             max_iter_e_step=self.max_iter_e_step,
-<<<<<<< HEAD
             max_no_improvement=self.max_no_improvement,
             verbose=self.verbose,
-=======
             engine=self.engine
->>>>>>> cu-cat/DT5
         )
 
     def _handle_missing(self, X):
@@ -1302,13 +1000,8 @@ class GapEncoder(TransformerMixin, BaseEstimator):
 
         Returns
         -------
-<<<<<<< HEAD
         GapEncoder
             The fitted GapEncoder instance (self).
-=======
-        :class:`~cu_cat.GapEncoder`
-            Fitted :class:`~cu_cat.GapEncoder` instance (self).
->>>>>>> cu-cat/DT5
         """
 
         # Check that n_samples >= n_components
@@ -1323,15 +1016,6 @@ class GapEncoder(TransformerMixin, BaseEstimator):
         if isinstance(X, pd.DataFrame):
             self.column_names_ = list(X.columns)
         # Check input data shape
-<<<<<<< HEAD
-        X = check_input(X)
-        self._check_n_features(X, reset=True)
-        X = self._handle_missing(X)
-        self.fitted_models_ = Parallel(n_jobs=self.n_jobs, verbose=self.verbose)(
-            delayed(self._create_column_gap_encoder().fit)(X[:, k])
-            for k in range(X.shape[1])
-        )
-=======
         self.Xt_ = df_type(X)
         if 'cudf' not in self.Xt_ or 'cuml' != self.engine:
             X = check_input(X)
@@ -1353,7 +1037,6 @@ class GapEncoder(TransformerMixin, BaseEstimator):
                 col_enc = self._create_column_gap_encoder()
                 self.fitted_models_.append(col_enc.fit(X.iloc[:,k]))
             
->>>>>>> cu-cat/DT5
         return self
 
     def transform(self, X: ArrayLike) -> NDArray:
@@ -1380,13 +1063,8 @@ class GapEncoder(TransformerMixin, BaseEstimator):
         check_is_fitted(self, "fitted_models_")
         # Check input data shape
         X = check_input(X)
-<<<<<<< HEAD
-        self._check_n_features(X, reset=False)
-        X = self._handle_missing(X)
-=======
         
         # X = self._handle_missing(X)
->>>>>>> cu-cat/DT5
         X_enc = []
         if 'cudf' in str(getmodule(X)) or 'cuml' == self.engine:
             for k in range(X.shape[1]):
@@ -1397,44 +1075,6 @@ class GapEncoder(TransformerMixin, BaseEstimator):
         X_enc = np.hstack(X_enc)
         return X_enc
 
-<<<<<<< HEAD
-    def partial_fit(self, X: ArrayLike, y=None) -> "GapEncoder":
-        """Partial fit this instance on X.
-
-        To be used in an online learning procedure where batches of data are
-        coming one by one.
-
-        Parameters
-        ----------
-        X : array-like, shape (n_samples, n_features)
-            The string data to fit the model on.
-        y : None
-            Unused, only here for compatibility.
-
-        Returns
-        -------
-        GapEncoder
-            The fitted GapEncoder instance (self).
-        """
-
-        # If X is a dataframe, store its column names
-        if isinstance(X, pd.DataFrame):
-            self.column_names_ = list(X.columns)
-        # Check input data shape
-        X = check_input(X)
-        X = self._handle_missing(X)
-        # Init the `GapEncoderColumn` instances if the model was
-        # not fitted already.
-        if not hasattr(self, "fitted_models_"):
-            self.fitted_models_ = [
-                self._create_column_gap_encoder() for _ in range(X.shape[1])
-            ]
-        for k in range(X.shape[1]):
-            self.fitted_models_[k].partial_fit(X[:, k])
-        return self
-
-=======
->>>>>>> cu-cat/DT5
     def get_feature_names_out(
         self,
         col_names: Literal["auto"] | list[str] | None = None,
@@ -1487,52 +1127,6 @@ class GapEncoder(TransformerMixin, BaseEstimator):
             labels.extend(col_labels)
         return labels
 
-<<<<<<< HEAD
-    def score(self, X: ArrayLike, y=None) -> float:
-        """Score this instance on `X`.
-
-        Returns the sum over the columns of `X` of the Kullback-Leibler
-        divergence between the n-grams counts matrix `V` of `X`, and its
-        non-negative factorization `HW`.
-
-        Parameters
-        ----------
-        X : array-like, shape (n_samples, n_features)
-            The data to encode.
-        y : Ignored
-            Not used, present for API consistency by convention.
-
-        Returns
-        -------
-        float
-            The Kullback-Leibler divergence.
-        """
-        X = check_input(X)
-        kl_divergence = 0
-        for k in range(X.shape[1]):
-            kl_divergence += self.fitted_models_[k].score(X[:, k])
-        return kl_divergence
-
-    def _more_tags(self):
-        """
-        Used internally by sklearn to ease the estimator checks.
-        """
-        return {
-            "X_types": ["2darray", "categorical", "string"],
-            "preserves_dtype": [],
-            "allow_nan": True,
-            "_xfail_checks": {
-                "check_transformer_n_iter": "Don't want to add an `n_iter_` attribute.",
-                "check_estimator_sparse_data": (
-                    "Cannot create sparse matrix with strings."
-                ),
-                "check_estimators_dtypes": "We only support string dtypes.",
-            },
-        }
-
-
-def _rescale_W(W: NDArray, A: NDArray) -> None:
-=======
     def get_feature_names(
         self, input_features=None, col_names: List[str] = None, n_labels: int = 3
     ) -> List[str]:
@@ -1551,7 +1145,6 @@ def _rescale_W(W: NDArray, A: NDArray) -> None:
         return self.get_feature_names_out(col_names, n_labels)
 
 def _rescale_W(W: np.array, A: np.array) -> None:
->>>>>>> cu-cat/DT5
     """
     Rescale the topics `W` to have a L1-norm equal to 1.
     Note that they are modified in-place.
@@ -1585,20 +1178,12 @@ def _special_sparse_dot(H, W, X):
 
 
 def _multiplicative_update_w(
-<<<<<<< HEAD
-    Vt: NDArray,
-    W: NDArray,
-    A: NDArray,
-    B: NDArray,
-    Ht: NDArray,
-=======
     self,
     Vt: np.array,
     W: np.array,
     A: np.array,
     B: np.array,
     Ht: np.array,
->>>>>>> cu-cat/DT5
     rescale_W: bool,
     rho: float,
 ) -> tuple[NDArray, NDArray, NDArray]:
@@ -1663,19 +1248,10 @@ def _multiplicative_update_w_smallfast(
     # W=cp.array(W)
     # Vt=csr_gpu(Vt)
     A *= rho
-<<<<<<< HEAD
-    HtW = _special_sparse_dot(Ht, W, Vt)
-    Vt_data = Vt.data
-    HtW_data = HtW.data
-    np.divide(Vt_data, HtW_data + 1e-10, out=Vt_data)
-    HtVt = safe_sparse_dot(Ht.T, Vt)
-    A += W * HtVt
-=======
     C = cp.matmul(Ht, W)
     R = Vt.multiply(cp.reciprocal(C) + 1e-10)
     T = R.T.dot(Ht).T ## drop .T on sparse Vt
     A += cp.multiply(W, T)
->>>>>>> cu-cat/DT5
     B *= rho
     B += Ht.sum(axis=0).reshape(-1, 1)
     cp.multiply(A, 1/B, out=W)
@@ -1686,12 +1262,7 @@ def _multiplicative_update_w_smallfast(
     cp._default_memory_pool.free_all_blocks()
     return W,A,B
 
-<<<<<<< HEAD
-
-def _rescale_h(V: NDArray, H: NDArray) -> NDArray:
-=======
 def _rescale_h(self, V: np.array, H: np.array) -> np.array:
->>>>>>> cu-cat/DT5
     """
     Rescale the activations `H`.
     """
@@ -1708,16 +1279,10 @@ def _rescale_h(self, V: np.array, H: np.array) -> np.array:
 
 
 def _multiplicative_update_h(
-<<<<<<< HEAD
-    Vt: NDArray,
-    W: NDArray,
-    Ht: NDArray,
-=======
     self,
     Vt: np.array,
     W: np.array,
     Ht: np.array,
->>>>>>> cu-cat/DT5
     epsilon: float = 1e-3,
     max_iter: int = 10,
     rescale_W: bool = False,
@@ -1734,22 +1299,6 @@ def _multiplicative_update_h(
         WT1 = np.sum(W, axis=1) + 1 / gamma_scale_prior
         W_WT1 = W / WT1.reshape(-1, 1)
     const = (gamma_shape_prior - 1) / WT1
-<<<<<<< HEAD
-    squared_epsilon = epsilon**2
-    for vt, ht in zip(Vt, Ht):
-        vt_ = vt.data
-        idx = vt.indices
-        W_WT1_ = W_WT1[:, idx]
-        W_ = W[:, idx]
-        squared_norm = 1
-        for _ in range(max_iter):
-            if squared_norm <= squared_epsilon:
-                break
-            aux = np.dot(W_WT1_, vt_ / (np.dot(ht, W_) + 1e-10))
-            ht_out = ht * aux + const
-            squared_norm = np.dot(ht_out - ht, ht_out - ht) / np.dot(ht, ht)
-            ht[:] = ht_out
-=======
     squared_epsilon = epsilon #**2
     
     if 'cudf' in df_type(Vt) or 'cupy' in df_type(Vt):
@@ -1823,7 +1372,6 @@ def _multiplicative_update_h(
                 ht[squared_norm_mask] = ht_out[squared_norm_mask]
                 if not np.any(squared_norm_mask):
                     break
->>>>>>> cu-cat/DT5
     return Ht
 
 def _multiplicative_update_h_smallfast(
