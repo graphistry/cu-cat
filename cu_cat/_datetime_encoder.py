@@ -1,14 +1,5 @@
 from typing import Literal
 
-<<<<<<< HEAD
-import numpy as np
-import pandas as pd
-from numpy.typing import ArrayLike, NDArray
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.utils.validation import check_is_fitted
-
-from cu_cat._utils import check_input
-=======
 import cupy as cp, numpy as np
 import cudf, pandas as pd
 from sklearn import __version__ as sklearn_version
@@ -16,7 +7,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import check_is_fitted
 
 from cu_cat._utils import check_input, parse_version
->>>>>>> cu-cat/DT5
 
 # Required for ignoring lines too long in the docstrings
 # flake8: noqa: E501
@@ -82,19 +72,11 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
 
     See Also
     --------
-<<<<<<< HEAD
     GapEncoder :
         Encodes dirty categories (strings) by constructing latent topics with continuous encoding.
     MinHashEncoder :
         Encode string columns as a numeric array with the minhash method.
     SimilarityEncoder :
-=======
-    :class:`~cu_cat.GapEncoder` :
-        Encodes dirty categories (strings) by constructing latent topics with continuous encoding.
-    :class:`~cu_cat.MinHashEncoder` :
-        Encode string columns as a numeric array with the minhash method.
-    :class:`~cu_cat.SimilarityEncoder` :
->>>>>>> cu-cat/DT5
         Encode string columns as a numeric array with n-gram string similarity.
 
     Examples
@@ -198,13 +180,8 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
 
         Returns
         -------
-<<<<<<< HEAD
-        DatetimeEncoder
-            Fitted DatetimeEncoder instance (self).
-=======
         :class:`~cu_cat.DatetimeEncoder`
             Fitted :class:`~cu_cat.DatetimeEncoder` instance (self).
->>>>>>> cu-cat/DT5
         """
         self._validate_keywords()
         # Columns to extract for each column,

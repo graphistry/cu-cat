@@ -1,24 +1,22 @@
 `cu_cat`
-<<<<<<< HEAD
-=======
 
-.. image:: https://cu_cat-data.github.io/stable/_static/cu_cat.svg
-   :align: center
-   :width: 50 %
-   :alt: cu_cat logo
+.. .. image:: https://cu_cat-data.github.io/stable/_static/cu_cat.svg
+..    :align: center
+..    :width: 50 %
+..    :alt: cu_cat logo
 
 
-|py_ver| |pypi_var| |pypi_dl| |codecov| |circleci| |black|
+.. |py_ver| |pypi_var| |pypi_dl| |codecov| |circleci| |black|
 
-.. |py_ver| image:: https://img.shields.io/pypi/pyversions/cu_cat
-.. |pypi_var| image:: https://img.shields.io/pypi/v/cu_cat?color=informational
-.. |pypi_dl| image:: https://img.shields.io/pypi/dm/cu_cat
-.. |codecov| image:: https://img.shields.io/codecov/c/github/cu_cat-data/cu_cat/main
-.. |circleci| image:: https://img.shields.io/circleci/build/github/cu_cat-data/cu_cat/main?label=CircleCI
-.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+.. .. |py_ver| image:: https://img.shields.io/pypi/pyversions/cu_cat
+.. .. |pypi_var| image:: https://img.shields.io/pypi/v/cu_cat?color=informational
+.. .. |pypi_dl| image:: https://img.shields.io/pypi/dm/cu_cat
+.. .. |codecov| image:: https://img.shields.io/codecov/c/github/cu_cat-data/cu_cat/main
+.. .. |circleci| image:: https://img.shields.io/circleci/build/github/cu_cat-data/cu_cat/main?label=CircleCI
+.. .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
 
 
-`cu_cat <https://cu_cat-data.github.io/>`_ (formerly *dirty_cat*) is a Python
+`cu_cat <https://cu_cat-data.github.io/>`_ (a fork of skrub enhanced with CUDA gpu magics, formerly *dirty_cat*) is a Python
 library that facilitates prepping your tables for machine learning.
 
 If you like the package, spread the word and ⭐ this repository!
@@ -38,7 +36,7 @@ What `cu_cat` cannot do
 ===========
 
 `cu_cat` is an end-to-end gpu Python library that encodes categorical variables into machine-learnable numerics.
-It is a cuda accelerated port of what was dirty_cat, now rebranded as `skrub <https://github.com/skrub-data/skrub>`_
+It is a CUDA accelerated port of what was dirty_cat, now rebranded as `skrub <https://github.com/skrub-data/skrub>`_
 
 What can `cu_cat` do?
 ------------------------
@@ -52,7 +50,6 @@ goes in-depth on how to identify and deal with dirty data (biological in this ca
 
 What `cu_cat` does not
 ~~~~~~~~~~~~~~~~~~~~~~~~~
->>>>>>> cu-cat/DT5
 
 `Semantic similarities <https://en.wikipedia.org/wiki/Semantic_similarity>`_
 are currently not supported.
@@ -69,61 +66,17 @@ For a detailed description of the problem of encoding dirty categorical data, se
 `Similarity encoding for learning with dirty categorical variables <https://hal.inria.fr/hal-01806175>`_ [1]_
 and `Encoding high-cardinality string categorical variables <https://hal.inria.fr/hal-02171256v4>`_ [2]_.
 
-<<<<<<< HEAD
-Installation (WIP)
-------------------
-
-There are currently no PiPy releases.
-You can still install the package from the GitHub repository with:
-
-.. code-block:: shell
-
-    pip install git+https://github.com/cu_cat-data/cu_cat.git
-
-=======
 cu_cat v 0.04 can be easily installed via `pip`::
 
     pip install git+http://github.com/graphistry/cu-cat.git@v0.04.0
->>>>>>> cu-cat/DT5
 
 Dependencies
 ~~~~~~~~~~~~
 
-<<<<<<< HEAD
-Dependencies and minimal versions are listed in the `setup <https://github.com/cu_cat-data/cu_cat/blob/main/setup.cfg#L27>`_ file.
-=======
 Major dependencies the cuml and cudf libraries, as well as `standard python libraries <https://github.com/skrub-data/skrub/blob/main/setup.cfg>`_
->>>>>>> cu-cat/DT5
 
 Related projects
 ----------------
 
-<<<<<<< HEAD
-Are listed on the `cu_cat's website <https://cu_cat-data.github.io/stable/#related-projects>`_
-
-Contributing
-------------
-
-The best way to support the development of cu_cat is to spread the word!
-
-Also, if you already are a cu_cat user, we would love to hear about your use cases and challenges in the `Discussions <https://github.com/cu_cat-data/cu_cat/discussions>`_ section.
-
-To report a bug or suggest enhancements, please
-`open an issue <https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue>`_ and/or
-`submit a pull request <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request>`_.
-
-Additional resources
---------------------
-
-* `Introductory video (YouTube) <https://youtu.be/_GNaaeEI2tg>`_
-* `Overview poster for EuroSciPy 2023 (Dropbox) <https://www.dropbox.com/scl/fi/89tapbshxtw0kh5uzx8dc/Poster-Euroscipy-2023.pdf?rlkey=u4ycpiyftk7rzttrjll9qlrkx&dl=0>`_
-
-References
-----------
-
-.. [1] Patricio Cerda, Gaël Varoquaux, Balázs Kégl. Similarity encoding for learning with dirty categorical variables. 2018. Machine Learning journal, Springer.
-.. [2] Patricio Cerda, Gaël Varoquaux. Encoding high-cardinality string categorical variables. 2020. IEEE Transactions on Knowledge & Data Engineering.
-=======
 dirty_cat is now rebranded as part of the sklearn family as `skrub <https://github.com/skrub-data/skrub>`_
 
->>>>>>> cu-cat/DT5
