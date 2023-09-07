@@ -32,6 +32,10 @@ from cu_cat.datasets._utils import get_data_dir
 # Ignore lines too long, first docstring lines can't be cut
 # flake8: noqa: E501
 
+<<<<<<< HEAD
+=======
+from cu_cat.datasets._utils import get_data_dir
+>>>>>>> cu-cat/DT5
 
 # Directory where the ``.gz`` files containing the
 # details on downloaded datasets are stored.
@@ -159,9 +163,15 @@ def _fetch_openml_dataset(
     ----------
     dataset_id : int
         The ID of the dataset to fetch.
+<<<<<<< HEAD
     data_directory : pathlib.Path, optional
         The directory where the dataset is stored.
         By default, a subdirectory "openml" in the cu_cat data directory.
+=======
+    data_directory: Path, optional
+        A directory to save the data to.
+        By default, the cu_cat data directory.
+>>>>>>> cu-cat/DT5
 
     Returns
     -------
@@ -243,9 +253,15 @@ def _fetch_world_bank_data(
     ----------
     indicator_id : str
         The ID of the indicator's dataset to fetch.
+<<<<<<< HEAD
     data_directory : pathlib.Path, optional
         The directory where the dataset is stored.
         By default, a subdirectory "world_bank" in the cu_cat data directory.
+=======
+    data_directory: Path, optional
+        A directory to save the data to.
+        By default, the cu_cat data directory.
+>>>>>>> cu-cat/DT5
 
     Returns
     -------
@@ -597,7 +613,11 @@ def _fetch_dataset_as_dataclass(
     pass `load_dataframe=False`.
 
     To save/load the dataset to/from a specific directory,
+<<<<<<< HEAD
     pass `data_directory`. If `None`, uses the default cu_cat
+=======
+    pass `data_directory`. If left default (None), uses the default cu_cat
+>>>>>>> cu-cat/DT5
     data directory.
 
     If the dataset doesn't have a target (unsupervised learning or inapplicable),

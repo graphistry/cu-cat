@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 from inspect import ismodule
 
 import pytest
 
 from cu_cat._utils import LRUDict, import_optional_dependency
+=======
+from cu_cat._utils import LRUDict
+>>>>>>> cu-cat/DT5
 
 
 def test_lrudict():
@@ -17,6 +21,7 @@ def test_lrudict():
 
     for x in range(5):
         assert x not in dict_
+<<<<<<< HEAD
 
 
 def test_import_optional_dependency():
@@ -33,3 +38,5 @@ def test_import_optional_dependency():
     # smoke test for an available dependency
     sklearn_module = import_optional_dependency("sklearn")
     assert ismodule(sklearn_module)
+=======
+>>>>>>> cu-cat/DT5

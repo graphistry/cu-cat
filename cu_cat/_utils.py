@@ -1,4 +1,5 @@
 import collections
+<<<<<<< HEAD
 import importlib
 import re
 from collections.abc import Hashable
@@ -8,6 +9,20 @@ import numpy as np
 from numpy.typing import NDArray
 from sklearn.utils import parse_version  # noqa
 from sklearn.utils import check_array
+=======
+from typing import Any, Hashable
+from inspect import getmodule
+import numpy as np
+from sklearn.utils import check_array
+import cupy as cp
+
+try:
+    # Works for sklearn >= 1.0
+    from sklearn.utils import parse_version  # noqa
+except ImportError:
+    # Works for sklearn < 1.0
+    from sklearn.utils.fixes import _parse_version as parse_version  # noqa
+>>>>>>> cu-cat/DT5
 
 
 class LRUDict:
@@ -39,13 +54,18 @@ class LRUDict:
         return key in self.cache
 
 
+<<<<<<< HEAD
 def check_input(X) -> NDArray:
+=======
+def check_input(X) -> np.ndarray:
+>>>>>>> cu-cat/DT5
     """
     Check input with sklearn standards.
     Also converts X to a numpy array if not already.
     """
     # TODO check for weird type of input to pass scikit learn tests
     #  without messing with the original type too much
+<<<<<<< HEAD
 
     X_ = check_array(
         X,
@@ -121,3 +141,45 @@ def parse_astype_error_message(e):
         if match:
             culprit = match.group(1)
     return culprit
+=======
+    if 'numpy' in str(getmodule(X)):
+        X_ = check_array(
+            X,
+            dtype=None,
+            ensure_2d=True,
+            force_all_finite=False,
+        )
+        # If the array contains both NaNs and strings, convert to object type
+        if X_.dtype.kind in {"U", "S"}:  # contains strings
+            if np.any(X_ == "nan"):  # missing value converted to string
+                return check_array(
+                    cp.array(X, dtype=object),
+                    dtype=None,
+                    ensure_2d=True,
+                    force_all_finite=False,
+                )
+    if 'numpy' not in str(getmodule(X)):
+        for k in range(X.shape[1]):
+            try:
+                X.iloc[:,k]=cudf.to_numeric(X.iloc[:,k], downcast='float').to_cupy()
+                print('passing from cudf to cupy')
+            except:
+                pass
+        X_ = X
+    
+    return X_
+
+def df_type(df):
+    """
+    Returns df type
+    """
+
+    # try: 
+    X = str(getmodule(df))
+    # except:
+    if X == 'None':
+    # try:
+        X = str(cp.get_array_module(df))
+    # except:
+    return X
+>>>>>>> cu-cat/DT5

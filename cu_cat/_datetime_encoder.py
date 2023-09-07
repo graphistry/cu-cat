@@ -1,5 +1,6 @@
 from typing import Literal
 
+<<<<<<< HEAD
 import numpy as np
 import pandas as pd
 from numpy.typing import ArrayLike, NDArray
@@ -7,6 +8,15 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import check_is_fitted
 
 from cu_cat._utils import check_input
+=======
+import cupy as cp, numpy as np
+import cudf, pandas as pd
+from sklearn import __version__ as sklearn_version
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.utils.validation import check_is_fitted
+
+from cu_cat._utils import check_input, parse_version
+>>>>>>> cu-cat/DT5
 
 # Required for ignoring lines too long in the docstrings
 # flake8: noqa: E501
@@ -72,11 +82,19 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
 
     See Also
     --------
+<<<<<<< HEAD
     GapEncoder :
         Encodes dirty categories (strings) by constructing latent topics with continuous encoding.
     MinHashEncoder :
         Encode string columns as a numeric array with the minhash method.
     SimilarityEncoder :
+=======
+    :class:`~cu_cat.GapEncoder` :
+        Encodes dirty categories (strings) by constructing latent topics with continuous encoding.
+    :class:`~cu_cat.MinHashEncoder` :
+        Encode string columns as a numeric array with the minhash method.
+    :class:`~cu_cat.SimilarityEncoder` :
+>>>>>>> cu-cat/DT5
         Encode string columns as a numeric array with n-gram string similarity.
 
     Examples
@@ -132,39 +150,39 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
             )
 
     @staticmethod
-    def _extract_from_date(date_series: pd.Series, feature: str):
+    def _extract_from_date(date_series: cudf.Series, feature: str):
         if feature == "year":
-            return pd.DatetimeIndex(date_series).year.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).year.to_numpy())#.to_cupy()
         elif feature == "month":
-            return pd.DatetimeIndex(date_series).month.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).month.to_numpy())#.to_cupy()
         elif feature == "day":
-            return pd.DatetimeIndex(date_series).day.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).day.to_numpy())#.to_cupy()
         elif feature == "hour":
-            return pd.DatetimeIndex(date_series).hour.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).hour.to_numpy())#.to_cupy()
         elif feature == "minute":
-            return pd.DatetimeIndex(date_series).minute.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).minute.to_numpy())#.to_cupy()
         elif feature == "second":
-            return pd.DatetimeIndex(date_series).second.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).second.to_numpy())#.to_cupy()
         elif feature == "millisecond":
-            return pd.DatetimeIndex(date_series).millisecond.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).millisecond.to_numpy())#.to_cupy()
         elif feature == "microsecond":
-            return pd.DatetimeIndex(date_series).microsecond.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).microsecond.to_numpy())#.to_cupy()
         elif feature == "nanosecond":
-            return pd.DatetimeIndex(date_series).nanosecond.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).nanosecond.to_numpy())#.to_cupy()
         elif feature == "dayofweek":
-            return pd.DatetimeIndex(date_series).dayofweek.to_numpy()
+            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).dayofweek.to_numpy())#.to_cupy()
         elif feature == "total_time":
-            tz = pd.DatetimeIndex(date_series).tz
+            tz = pd.DatetimeIndex(date_series.to_pandas()).tz
             # Compute the time in seconds from the epoch time UTC
             if tz is None:
-                return (
-                    pd.to_datetime(date_series) - pd.Timestamp("1970-01-01")
-                ) // pd.Timedelta("1s")
+                return cudf.Series(
+                    cudf.Series(pd.to_datetime(date_series.to_pandas()) - cudf.Timestamp("1970-01-01")
+                ) // pd.Timedelta("1s"))#.to_cupy()
             else:
-                return (
-                    pd.DatetimeIndex(date_series).tz_convert("utc")
+                return cudf.Series(
+                    (pd.DatetimeIndex(date_series.to_pandas()).tz_convert("utc")
                     - pd.Timestamp("1970-01-01", tz="utc")
-                ) // pd.Timedelta("1s")
+                ) // pd.Timedelta("1s"))#.to_cupy()
 
     def fit(self, X: ArrayLike, y=None) -> "DatetimeEncoder":
         """Fit the instance to X.
@@ -180,8 +198,13 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
 
         Returns
         -------
+<<<<<<< HEAD
         DatetimeEncoder
             Fitted DatetimeEncoder instance (self).
+=======
+        :class:`~cu_cat.DatetimeEncoder`
+            Fitted :class:`~cu_cat.DatetimeEncoder` instance (self).
+>>>>>>> cu-cat/DT5
         """
         self._validate_keywords()
         # Columns to extract for each column,
@@ -189,11 +212,11 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
         self._to_extract = TIME_LEVELS[: TIME_LEVELS.index(self.extract_until) + 1]
         if self.add_day_of_the_week:
             self._to_extract.append("dayofweek")
-        if isinstance(X, pd.DataFrame):
+        if isinstance(X, cudf.DataFrame):
             self.col_names_ = X.columns.to_list()
         else:
             self.col_names_ = None
-        X = check_input(X)
+        # X = check_input(X)
         # Features to extract for each column, after removing constant features
         self.features_per_column_ = {}
         for i in range(X.shape[1]):
@@ -201,18 +224,18 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
         # Check which columns are constant
         for i in range(X.shape[1]):
             for feature in self._to_extract:
-                if np.nanstd(self._extract_from_date(X[:, i], feature)) > 0:
+                if np.nanstd(self._extract_from_date(X.iloc[:, i], feature).to_pandas()) > 0:
                     self.features_per_column_[i].append(feature)
             # If some date features have not been extracted, then add the
             # "total_time" feature, which contains the full time to epoch
-            remainder = (
-                pd.to_datetime(X[:, i])
-                - pd.to_datetime(
-                    pd.DatetimeIndex(X[:, i]).floor(WORD_TO_ALIAS[self.extract_until])
-                )
-            ).seconds.to_numpy()
-            if np.nanstd(remainder) > 0:
-                self.features_per_column_[i].append("total_time")
+            # remainder = (
+            #     cudf.to_datetime(X.iloc[:, i])
+            #     - cudf.to_datetime(
+            #         cudf.DatetimeIndex(X.iloc[:, i]).floor(WORD_TO_ALIAS[self.extract_until])
+            #     )
+            # ).seconds.to_numpy()
+            # if np.nanstd(remainder) > 0:
+            #     self.features_per_column_[i].append("total_time")
 
         self.n_features_in_ = X.shape[1]
         self.n_features_out_ = len(
@@ -249,11 +272,12 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
             )
         # Create a new array with the extracted features,
         # choosing only features that weren't constant during fit
-        X_ = np.empty((X.shape[0], self.n_features_out_), dtype=np.float64)
+        X_ = cudf.DataFrame(np.empty((X.shape[0], self.n_features_out_), dtype=np.float64))
+        X=X.fillna(1500000) ## since cupy cannot handle NaT or inf masks
         idx = 0
         for i in range(X.shape[1]):
             for j, feature in enumerate(self.features_per_column_[i]):
-                X_[:, idx + j] = self._extract_from_date(X[:, i], feature)
+                X_.iloc[:, idx + j] = self._extract_from_date(X.iloc[:, i], feature)#.to_pandas()
             idx += len(self.features_per_column_[i])
         return X_
 

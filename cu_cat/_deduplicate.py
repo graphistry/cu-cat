@@ -183,12 +183,20 @@ def deduplicate(
 
     See Also
     --------
+<<<<<<< HEAD
     GapEncoder :
         Encodes dirty categories (strings) by constructing latent topics with
         continuous encoding.
     MinHashEncoder :
         Encode string columns as a numeric array with the minhash method.
     SimilarityEncoder :
+=======
+    :class:`~cu_cat.GapEncoder` :
+        Encodes dirty categories (strings) by constructing latent topics with continuous encoding.
+    :class:`~cu_cat.MinHashEncoder` :
+        Encode string columns as a numeric array with the minhash method.
+    :class:`~cu_cat.SimilarityEncoder` :
+>>>>>>> cu-cat/DT5
         Encode string columns as a numeric array with n-gram string similarity.
 
     Notes

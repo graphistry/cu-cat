@@ -25,7 +25,10 @@ from utils import default_parser, find_result, monitor
 from cu_cat._fast_hash import ngram_min_hash
 from cu_cat._string_distances import get_unique_ngrams
 from cu_cat._utils import LRUDict, check_input
+<<<<<<< HEAD:benchmarks/bench_minhash_batch_number.py
 from cu_cat.tests.utils import generate_data
+=======
+>>>>>>> cu-cat/DT5:benchmarks/bench_minhash.py
 
 NoneType = type(None)
 
@@ -373,7 +376,22 @@ class MinHashEncoder(BaseEstimator, TransformerMixin):
         return X_out.astype(np.float64)  # The output is an int32 before conversion
 
 
+<<<<<<< HEAD:benchmarks/bench_minhash_batch_number.py
 benchmark_name = "bench_minhash_batch_number"
+=======
+import pickle
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from argparse import ArgumentParser
+
+from pathlib import Path
+
+from utils import monitor, parse_func_repr, find_result, default_parser
+from cu_cat.tests.utils import generate_data
+
+benchmark_name = "minhash_batch_comparison"
+>>>>>>> cu-cat/DT5:benchmarks/bench_minhash.py
 
 
 @monitor(

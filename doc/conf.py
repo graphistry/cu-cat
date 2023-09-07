@@ -99,11 +99,16 @@ master_doc = "index"
 
 # General information about the project.
 project = "cu_cat"
+<<<<<<< HEAD
 copyright = (
     f"2018-2023, the dirty_cat developers, 2023-{datetime.now().year}, the cu_cat"
     " developers"
 )
 author = "cu_cat contributors"
+=======
+copyright = f"2018-{datetime.now().year}, the cu_cat developers"
+author = "cu_cat developers"
+>>>>>>> cu-cat/DT5
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -155,6 +160,7 @@ html_theme = "pydata_sphinx_theme"
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
+<<<<<<< HEAD
     "logo": {
         "image_relative": "_static/cu_cat.svg",
         "image_light": "_static/cu_cat.svg",
@@ -221,6 +227,23 @@ html_context = {
     "github_repo": "cu_cat",
     "github_version": "main",
     "doc_path": "doc",
+=======
+    "logo": "cu_cat.svg",
+    "github_user": "cu-cat",
+    "github_repo": "cu_cat",
+    "github_button": "true",
+    "github_type": "star",
+    "github_count": "true",
+    "show_powered_by": "false",
+    "logo_name": "true",
+    "gray_1": "#030",
+    "gray_2": "#F1FFF1",
+    "link": "#076B00",
+    #    'gray_3': "#090",
+    "fixed_sidebar": "true",
+    "note_bg": "rgb(246, 248, 250);",
+    "topic_bg": "rgb(246, 248, 250);",
+>>>>>>> cu-cat/DT5
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -272,8 +295,13 @@ latex_documents = [
     (
         master_doc,
         "cu_cat.tex",
+<<<<<<< HEAD
         "cu_cat Documentation",
         "cu_cat developers",
+=======
+        "dirty\\_cat Documentation",
+        "dirty\\_cat developers",
+>>>>>>> cu-cat/DT5
         "manual",
     ),
 ]
@@ -298,7 +326,11 @@ texinfo_documents = [
         "cu_cat Documentation",
         author,
         "cu_cat",
+<<<<<<< HEAD
         "Prepping tables for machine learning.",
+=======
+        "Learning on non-curated categorical data.",
+>>>>>>> cu-cat/DT5
         "Data Science",
     ),
 ]
@@ -408,6 +440,10 @@ def notebook_modification_function(notebook_content, notebook_filename):
 
 sphinx_gallery_conf = {
     "doc_module": "cu_cat",
+<<<<<<< HEAD
+=======
+    "filename_pattern": "",
+>>>>>>> cu-cat/DT5
     "backreferences_dir": os.path.join("generated"),
     "reference_url": {
         # The module we locally document (so, cu_cat) uses None
@@ -421,8 +457,13 @@ sphinx_gallery_conf = {
     "within_subsection_order": FileNameSortKey,
     "download_all_examples": False,
     "binder": {
+<<<<<<< HEAD
         "org": "cu_cat-data",
         "repo": "cu_cat",
+=======
+        "org": "cu-cat",
+        "repo": "cu-cat.github.io",
+>>>>>>> cu-cat/DT5
         "binderhub_url": "https://mybinder.org",
         "branch": binder_branch,
         "dependencies": "./binder/requirements.txt",
@@ -434,9 +475,15 @@ if with_jupyterlite:
         "notebook_modification_function": notebook_modification_function
     }
 
+<<<<<<< HEAD
 # -- sphinx.ext.opengraph configuration ---------------------------------------
 ogp_site_url = "https://cu_cat-data.github.io/stable/"
 ogp_image = "https://cu_cat-data.github.io/stable/_static/cu_cat.svg"
+=======
+# -- sphinxext.opengraph configuration -------------------------------------
+ogp_site_url = "https://cu-cat.github.io/stable/"
+ogp_image = "https://cu-cat.github.io/stable/_static/cu_cat.svg"
+>>>>>>> cu-cat/DT5
 ogp_use_first_image = True
 ogp_site_name = "cu_cat"
 
@@ -517,12 +564,20 @@ favicons = {"rel": "icon", "href": "_static/cu_cat.svg", "type": "image/svg+xml"
 # -- github links -------------------------------------------------------------
 
 # we use the issues path for PRs since the issues URL will forward
+<<<<<<< HEAD
 issues_github_path = "cu_cat-data/cu_cat"
+=======
+issues_github_path = "cu-cat/cu_cat"
+>>>>>>> cu-cat/DT5
 
 # The following is used by sphinx.ext.linkcode to provide links to GitHub
 linkcode_resolve = make_linkcode_resolve(
     "cu_cat",
+<<<<<<< HEAD
     "https://github.com/cu_cat-data/cu_cat/blob/{revision}/{package}/{path}#L{lineno}",
+=======
+    "https://github.com/cu-cat/cu-cat/blob/{revision}/{package}/{path}#L{lineno}",
+>>>>>>> cu-cat/DT5
 )
 
 # -- Sphinx-Copybutton configuration -----------------------------------------

@@ -6,9 +6,15 @@
 
 set -e
 
+<<<<<<< HEAD
 USERNAME="cu_cat-ci";
 
 DOC_REPO="cu_cat-data.github.io"
+=======
+USERNAME="cu-cat-ci";
+
+DOC_REPO="cu-cat.github.io"
+>>>>>>> cu-cat/DT5
 GENERATED_DOC_DIR=$1
 
 if [[ -z "$GENERATED_DOC_DIR" ]]; then
@@ -32,8 +38,13 @@ MSG="Pushing the docs to $dir/ for branch: $CIRCLE_BRANCH, commit $CIRCLE_SHA1"
 
 cd $HOME
 if [ ! -d $DOC_REPO ];
+<<<<<<< HEAD
 #then git clone --depth 1 --no-checkout "git@github.com:cu_cat-data/"$DOC_REPO".git";
 then git clone "git@github.com:cu_cat-data/"$DOC_REPO".git";
+=======
+#then git clone --depth 1 --no-checkout "git@github.com:cu-cat/"$DOC_REPO".git";
+then git clone "git@github.com:cu-cat/"$DOC_REPO".git";
+>>>>>>> cu-cat/DT5
 fi
 cd $DOC_REPO
 
@@ -55,7 +66,7 @@ then
 	git rm -rf $dir/ && rm -rf $dir/
 fi
 cp -R $GENERATED_DOC_DIR $dir
-git config user.email "gael.varoquaux+dirty_cat@gmail.com"
+git config user.email "gael.varoquaux+cu_cat@gmail.com"
 git config user.name $USERNAME
 git config push.default matching
 git add -f $dir/

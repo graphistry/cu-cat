@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import numpy as np
 import pandas as pd
 import pytest
@@ -7,6 +8,21 @@ from sklearn.utils.validation import check_is_fitted
 
 from cu_cat import GapEncoder, MinHashEncoder, SuperVectorizer, TableVectorizer
 from cu_cat._table_vectorizer import _infer_date_format
+=======
+from typing import Any, Tuple
+
+import numpy as np
+import pandas as pd
+import cudf
+import pytest
+import sklearn
+from sklearn.exceptions import NotFittedError
+from cuml.preprocessing import StandardScaler
+from sklearn.utils.validation import check_is_fitted
+
+from cu_cat import GapEncoder, SuperVectorizer, TableVectorizer
+from cu_cat._utils import parse_version
+>>>>>>> cu-cat/DT5
 
 
 def check_same_transformers(expected_transformers: dict, actual_transformers: list):
@@ -15,7 +31,11 @@ def check_same_transformers(expected_transformers: dict, actual_transformers: li
     assert actual_transformers_dict == expected_transformers
 
 
+<<<<<<< HEAD
 def type_equality(expected_type, actual_type) -> bool:
+=======
+def type_equality(expected_type, actual_type):
+>>>>>>> cu-cat/DT5
     """
     Checks that the expected type is equal to the actual type,
     assuming object and str types are equivalent
@@ -34,6 +54,7 @@ def _get_clean_dataframe() -> pd.DataFrame:
     Creates a simple DataFrame with various types of data,
     and without missing values.
     """
+<<<<<<< HEAD
     return pd.DataFrame(
         {
             "int": pd.Series([15, 56, 63, 12, 44], dtype="int"),
@@ -48,16 +69,37 @@ def _get_clean_dataframe() -> pd.DataFrame:
             "cat2": pd.Series(
                 ["20K+", "40K+", "60K+", "30K+", "50K+"], dtype="category"
             ),
+=======
+    return cudf.DataFrame(
+        {
+            "int": cudf.Series([15, 56, 63, 12, 44], dtype="float"),
+            "float": cudf.Series([5.2, 2.4, 6.2, 10.45, 9.0], dtype="float"),
+            "str1": cudf.Series(
+                ["public", "private", "private", "private", "public"], dtype="str"
+            ),
+            "str2": cudf.Series(
+                ["officer", "manager", "lawyer", "chef", "teacher"], dtype="str"
+            ),
+            "cat1": cudf.Series(["yes", "yes", "no", "yes", "no"]),
+            "cat2": cudf.Series(
+                ["20K+", "40K+", "60K+", "30K+", "50K+"])
+            # ),
+>>>>>>> cu-cat/DT5
         }
     )
 
 
+<<<<<<< HEAD
 def _get_dirty_dataframe(categorical_dtype="object") -> pd.DataFrame:
+=======
+def _get_dirty_dataframe() -> pd.DataFrame:
+>>>>>>> cu-cat/DT5
     """
     Creates a simple DataFrame with some missing values.
     We'll use different types of missing values (np.nan, pd.NA, None)
     to test the robustness of the vectorizer.
     """
+<<<<<<< HEAD
     return pd.DataFrame(
         {
             "int": pd.Series([15, 56, pd.NA, 12, 44], dtype="Int64"),
@@ -75,10 +117,25 @@ def _get_dirty_dataframe(categorical_dtype="object") -> pd.DataFrame:
             "cat2": pd.Series(
                 ["20K+", "40K+", "60K+", "30K+", np.nan], dtype=categorical_dtype
             ),
+=======
+    return cudf.DataFrame(
+        {
+            "int": cudf.Series([15, 56.0, pd.NA, 12, 44],nan_as_null=False),
+            "float": cudf.Series([5.2, 2.4, 6.2, 10.45, np.nan],dtype='float', nan_as_null=False),
+            "str1": cudf.Series(
+                ["public", np.nan, "private", "private", "public"],dtype='object',nan_as_null=False
+            ),
+            "str2": cudf.Series(
+                ["officer", "manager", None, "chef", "teacher"],dtype='object', nan_as_null=False
+            ),
+            "cat1": cudf.Series([np.nan, "yes", "no", "yes", "no"], dtype='object',nan_as_null=False),
+            "cat2": cudf.Series(["20K+", "40K+", "60K+", "30K+", np.nan],dtype='object',nan_as_null=False),
+>>>>>>> cu-cat/DT5
         }
     )
 
 
+<<<<<<< HEAD
 def _get_mixed_types_dataframe() -> pd.DataFrame:
     return pd.DataFrame(
         {
@@ -116,6 +173,23 @@ def _get_numpy_array() -> np.ndarray:
 
 def _get_list_of_lists() -> list:
     return _get_numpy_array().tolist()
+=======
+# def _get_numpy_array() -> np.ndarray:
+#     return np.array(
+#         [
+#             ["15", "56", pd.NA, "12", ""],
+#             ["?", "2.4", "6.2", "10.45", np.nan],
+#             ["public", np.nan, "private", "private", pd.NA],
+#             ["officer", "manager", None, "chef", "teacher"],
+#             [np.nan, "yes", "no", "yes", "no"],
+#             ["20K+", "40K+", "60K+", "30K+", np.nan],
+#         ]
+#     ).T
+
+
+# def _get_list_of_lists() -> list:
+#     return _get_numpy_array().tolist()
+>>>>>>> cu-cat/DT5
 
 
 def _get_datetimes_dataframe() -> pd.DataFrame:
@@ -123,7 +197,11 @@ def _get_datetimes_dataframe() -> pd.DataFrame:
     Creates a DataFrame with various date formats,
     already converted or to be converted.
     """
+<<<<<<< HEAD
     return pd.DataFrame(
+=======
+    return cudf.DataFrame(
+>>>>>>> cu-cat/DT5
         {
             "pd_datetime": [
                 pd.Timestamp("2019-01-01"),
@@ -165,6 +243,7 @@ def _get_datetimes_dataframe() -> pd.DataFrame:
                 "2015/12/31 01:31:34",
                 "2014/01/31 00:32:45",
             ],
+<<<<<<< HEAD
             # this date format is not found by pandas guess_datetime_format
             # so shoulnd't be found by our _infer_datetime_format
             # but pandas.to_datetime can still parse it
@@ -174,6 +253,29 @@ def _get_datetimes_dataframe() -> pd.DataFrame:
 
 
 def _test_possibilities(X) -> None:
+=======
+        }
+    )
+
+def set_to_datetime(df: pd.DataFrame, cols: List, new_col: str):
+    # eg df["Start_Date"] = pd.to_datetime(df[['Month', 'Day', 'Year']])
+    X_type = str(getmodule(df))
+    if 'cudf' not in X_type:
+        df[new_col] = pd.to_datetime(df[cols], errors="coerce").fillna(0)
+    else:
+        # _, _, cudf = lazy_import_has_dependancy_cuda()
+        # assert cudf is not None
+        for col in df.columns:
+            try:
+                df[col] = cudf.to_datetime(
+                    df[col], errors="raise", infer_datetime_format=True
+                )
+                print(df[col])
+            except:
+                pass
+
+def _test_possibilities(X):
+>>>>>>> cu-cat/DT5
     """
     Do a bunch of tests with the TableVectorizer.
     We take some expected transformers results as argument. They're usually
@@ -198,12 +300,16 @@ def _test_possibilities(X) -> None:
     # Test with higher cardinality threshold and no numeric transformer
     expected_transformers_2 = {
         "low_card_cat": ["str1", "str2", "cat1", "cat2"],
+<<<<<<< HEAD
         "numeric": ["int", "float"],
+=======
+>>>>>>> cu-cat/DT5
     }
     vectorizer_default = TableVectorizer()  # Using default values
     vectorizer_default.fit_transform(X)
     check_same_transformers(expected_transformers_2, vectorizer_default.transformers)
 
+<<<<<<< HEAD
     # Test with a numpy array
     arr = X.to_numpy()
     # Instead of the columns names, we'll have the column indices.
@@ -223,6 +329,27 @@ def _test_possibilities(X) -> None:
     }
     vectorizer_base.fit_transform(X[["cat1"]])
     check_same_transformers(expected_transformers_series, vectorizer_base.transformers)
+=======
+#     # Test with a numpy array
+#     arr = X.to_numpy()
+#     # Instead of the columns names, we'll have the column indices.
+#     expected_transformers_np_no_cast = {
+#         "low_card_cat": [2, 4],
+#         "high_card_cat": [3, 5],
+#         "numeric": [0, 1],
+#     }
+#     vectorizer_base.fit_transform(arr)
+#     check_same_transformers(
+#         expected_transformers_np_no_cast, vectorizer_base.transformers
+#     )
+
+#     # Test with pandas series
+#     expected_transformers_series = {
+#         "low_card_cat": ["cat1"],
+#     }
+#     vectorizer_base.fit_transform(X["cat1"])
+#     check_same_transformers(expected_transformers_series, vectorizer_base.transformers)
+>>>>>>> cu-cat/DT5
 
     # Test casting values
     vectorizer_cast = TableVectorizer(
@@ -231,13 +358,18 @@ def _test_possibilities(X) -> None:
         high_card_cat_transformer=GapEncoder(n_components=2),
         numerical_transformer=StandardScaler(),
     )
+<<<<<<< HEAD
     X_str = X.astype("object")
+=======
+    # X_str = X.astype("object")
+>>>>>>> cu-cat/DT5
     # With pandas
     expected_transformers_plain = {
         "high_card_cat": ["str2", "cat2"],
         "low_card_cat": ["str1", "cat1"],
         "numeric": ["int", "float"],
     }
+<<<<<<< HEAD
     vectorizer_cast.fit_transform(X_str)
     check_same_transformers(expected_transformers_plain, vectorizer_cast.transformers)
     # With numpy
@@ -265,6 +397,21 @@ def test_duplicate_column_names() -> None:
 
 
 def test_with_clean_data() -> None:
+=======
+    vectorizer_cast.fit_transform(X)
+    check_same_transformers(expected_transformers_plain, vectorizer_cast.transformers)
+#     # With numpy
+#     expected_transformers_np_cast = {
+#         "numeric": [0, 1],
+#         "low_card_cat": [2, 4],
+#         "high_card_cat": [3, 5],
+#     }
+#     vectorizer_cast.fit_transform(X_str.to_numpy())
+#     check_same_transformers(expected_transformers_np_cast, vectorizer_cast.transformers)
+
+
+def test_with_clean_data():
+>>>>>>> cu-cat/DT5
     """
     Defines the expected returns of the vectorizer in different settings,
     and runs the tests with a clean dataset.
@@ -277,8 +424,12 @@ def test_with_dirty_data() -> None:
     Defines the expected returns of the vectorizer in different settings,
     and runs the tests with a dataset containing missing values.
     """
+<<<<<<< HEAD
     _test_possibilities(_get_dirty_dataframe(categorical_dtype="object"))
     _test_possibilities(_get_dirty_dataframe(categorical_dtype="category"))
+=======
+    _test_possibilities(_get_dirty_dataframe())
+>>>>>>> cu-cat/DT5
 
 
 def test_auto_cast() -> None:
@@ -289,6 +440,7 @@ def test_auto_cast() -> None:
 
     # Test datetime detection
     X = _get_datetimes_dataframe()
+<<<<<<< HEAD
     # Add weird index to test that it's not used
     X.index = [10, 3, 4, 2, 5]
 
@@ -299,6 +451,15 @@ def test_auto_cast() -> None:
         "ymd/": "datetime64[ns]",
         "ymd/_hms:": "datetime64[ns]",
         "mm/dd/yy": "datetime64[ns]",
+=======
+
+    expected_types_datetimes = {
+        "pd_datetime": "datetime64[us]",
+        "np_datetime": "datetime64[s]",
+        "dmy-": "datetime64[ns]",
+        "ymd/": "datetime64[ns]",
+        "ymd/_hms:": "datetime64[ns]",
+>>>>>>> cu-cat/DT5
     }
     X_trans = vectorizer._auto_cast(X)
     for col in X_trans.columns:
@@ -322,7 +483,11 @@ def test_auto_cast() -> None:
 
     # Test that missing values don't prevent type detection
     expected_types_dirty_dataframe = {
+<<<<<<< HEAD
         "int": "float64",  # int type doesn't support nans
+=======
+        "int": "float64",  # int type doesn't support nans -- NO SHIT
+>>>>>>> cu-cat/DT5
         "float": "float64",
         "str1": "object",
         "str2": "object",
@@ -336,6 +501,7 @@ def test_auto_cast() -> None:
         assert type_equality(expected_types_dirty_dataframe[col], X_trans[col].dtype)
 
 
+<<<<<<< HEAD
 def test_with_arrays() -> None:
     """
     Check that the TableVectorizer works if we input
@@ -360,6 +526,32 @@ def test_with_arrays() -> None:
     X = _get_list_of_lists()
     vectorizer.fit_transform(X)
     check_same_transformers(expected_transformers, vectorizer.transformers)
+=======
+# def test_with_arrays():
+#     """
+#     Check that the TableVectorizer works if we input
+#     a list of lists or a numpy array.
+#     """
+#     expected_transformers = {
+#         "numeric": [0, 1],
+#         "low_card_cat": [2, 4],
+#         "high_card_cat": [3, 5],
+#     }
+#     vectorizer = TableVectorizer(
+#         cardinality_threshold=4,
+#         # we must have n_samples = 5 >= n_components
+#         high_card_cat_transformer=GapEncoder(n_components=2),
+#         numerical_transformer=StandardScaler(),
+#     )
+
+#     X = _get_pandas_array()
+#     vectorizer.fit_transform(X)
+#     check_same_transformers(expected_transformers, vectorizer.transformers)
+
+#     X = _get_list_of_lists()
+#     vectorizer.fit_transform(X)
+#     check_same_transformers(expected_transformers, vectorizer.transformers)
+>>>>>>> cu-cat/DT5
 
 
 def test_get_feature_names_out() -> None:
@@ -370,20 +562,29 @@ def test_get_feature_names_out() -> None:
 
     # In this test, order matters. If it doesn't, convert to set.
     expected_feature_names_pass = [
+<<<<<<< HEAD
         "int",
         "float",
+=======
+        "str1_private",
+>>>>>>> cu-cat/DT5
         "str1_public",
         "str2_chef",
         "str2_lawyer",
         "str2_manager",
         "str2_officer",
         "str2_teacher",
+<<<<<<< HEAD
+=======
+        "cat1_no",
+>>>>>>> cu-cat/DT5
         "cat1_yes",
         "cat2_20K+",
         "cat2_30K+",
         "cat2_40K+",
         "cat2_50K+",
         "cat2_60K+",
+<<<<<<< HEAD
     ]
     assert vec_w_pass.get_feature_names_out() == expected_feature_names_pass
 
@@ -452,6 +653,82 @@ def test_fit_transform_equiv() -> None:
 
 
 def _is_equal(elements: tuple[any, any]) -> bool:
+=======
+        "int",
+        "float",
+    ]
+    # if parse_version(sklearn.__version__) < parse_version("1.0"):
+    assert vec_w_pass.get_feature_names() == expected_feature_names_pass
+    # else:
+    # assert vec_w_pass.get_feature_names_out() == expected_feature_names_pass
+
+#     vec_w_drop = TableVectorizer(remainder="drop")
+#     vec_w_drop.fit(X)
+
+#     # In this test, order matters. If it doesn't, convert to set.
+#     expected_feature_names_drop = [
+#         "str1_public",
+#         "str2_chef",
+#         "str2_lawyer",
+#         "str2_manager",
+#         "str2_officer",
+#         "str2_teacher",
+#         "cat1_yes",
+#         "cat2_20K+",
+#         "cat2_30K+",
+#         "cat2_40K+",
+#         "cat2_50K+",
+#         "cat2_60K+",
+#     ]
+#     # if parse_version(sklearn.__version__) < parse_version("1.0"):
+#     assert vec_w_drop.get_feature_names() == expected_feature_names_drop
+    # else:
+    # assert vec_w_drop.get_feature_names_out() == expected_feature_names_drop
+
+
+# def test_fit() -> None:
+#     # Simply checks sklearn's `check_is_fitted` function raises an error if
+#     # the TableVectorizer is instantiated but not fitted.
+#     # See GH#193
+#     sup_vec = TableVectorizer()
+#     with pytest.raises(NotFittedError):
+#         assert check_is_fitted(sup_vec)
+
+
+# def test_transform() -> None:
+#     X = cudf.DataFrame(_get_clean_dataframe())
+#     sup_vec = TableVectorizer()
+#     sup_vec.fit(X)
+#     s = [34.0, 5.5, "private", "manager", "yes", "60K+"]
+#     t = [35.0, 4.5, "public", "manager", "no", "10K+"]
+#     # x = np.array(s).reshape(1, -1)
+#     # x = cudf.from_pandas(pd.DataFrame(x))
+#     x = cudf.from_pandas(pd.DataFrame([s,t]))
+#     x_trans = sup_vec.transform(x)
+#     assert x_trans.tolist() == [
+#         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 34.0, 5.5]
+#     ]
+#     # To understand the list above:
+#     # print(dict(zip(sup_vec.get_feature_names_out(), x_trans.tolist()[0])))
+
+
+# def test_fit_transform_equiv() -> None:
+#     """
+#     We will test the equivalence between using `.fit_transform(X)`
+#     and `.fit(X).transform(X).`
+#     """
+#     for X in [
+#         _get_clean_dataframe(),
+#         _get_dirty_dataframe(),
+#     ]:
+#         enc1_x1 = TableVectorizer().fit_transform(X)
+#         enc2_x1 = TableVectorizer().fit(X).transform(X)
+
+#         assert np.allclose(enc1_x1, enc2_x1, rtol=0, atol=0, equal_nan=True)
+
+
+def _is_equal(elements: Tuple[Any, Any]) -> bool:
+>>>>>>> cu-cat/DT5
     """
     Fixture for values that return false when compared with `==`.
     """
@@ -459,12 +736,17 @@ def _is_equal(elements: tuple[any, any]) -> bool:
     return pd.isna(elem1) and pd.isna(elem2) or elem1 == elem2
 
 
+<<<<<<< HEAD
 def test_passthrough() -> None:
+=======
+def test_passthrough():
+>>>>>>> cu-cat/DT5
     """
     Tests that when passed no encoders, the TableVectorizer
     returns the dataset as-is.
     """
 
+<<<<<<< HEAD
     X_dirty = _get_dirty_dataframe()
     X_clean = _get_clean_dataframe()
 
@@ -473,10 +755,24 @@ def test_passthrough() -> None:
         high_card_cat_transformer="passthrough",
         datetime_transformer="passthrough",
         numerical_transformer="passthrough",
+=======
+    # X_dirty = _get_dirty_dataframe()
+    # X_dirty = set_to_datetime(X_dirty) ## test with or without explicit DT formate
+
+    X_clean = _get_clean_dataframe()
+    X_clean = set_to_datetime(X_clean)
+
+    tv = TableVectorizer(
+        # low_card_cat_transformer="passthrough",
+        # high_card_cat_transformer="passthrough",
+        datetime_transformer="passthrough",
+        # numerical_transformer="passthrough",
+>>>>>>> cu-cat/DT5
         impute_missing="skip",
         auto_cast=False,
     )
 
+<<<<<<< HEAD
     X_enc_dirty = pd.DataFrame(
         tv.fit_transform(X_dirty), columns=tv.get_feature_names_out()
     )
@@ -864,3 +1160,37 @@ def test_table_vectorizer_remainder_cloning():
     assert table_vectorizer.high_card_cat_transformer_ is not remainder
     assert table_vectorizer.numerical_transformer_ is not remainder
     assert table_vectorizer.datetime_transformer_ is not remainder
+=======
+    # X_enc_dirty = cudf.DataFrame(
+    #     tv.fit_transform(X_dirty), columns=tv.get_feature_names_out()
+    # )
+    X_enc_clean = cudf.DataFrame(
+        tv.fit_transform(X_clean), columns=tv.get_feature_names_out()
+    )
+    # Reorder encoded arrays' columns (see TableVectorizer's doc "Notes" section as to why)
+    # X_enc_dirty = X_enc_dirty[X_dirty.columns]
+    X_enc_clean = X_enc_clean[X_clean.columns]
+
+    # dirty_flat_df = X_dirty.to_numpy().ravel().tolist()
+    # dirty_flat_trans_df = X_enc_dirty.to_numpy().ravel().tolist()
+    # assert all(map(_is_equal, zip(dirty_flat_df, dirty_flat_trans_df)))
+    # assert (X_clean.to_numpy() == X_enc_clean.to_numpy()).all()
+    assert X_enc_clean in globals()
+
+# def test_check_fitted_table_vectorizer():
+#     """Test that calling transform before fit raises an error"""
+#     X = _get_clean_dataframe()
+#     tv = TableVectorizer()
+#     with pytest.raises(NotFittedError):
+#         tv.transform(X)
+
+#     # Test that calling transform after fit works
+#     tv.fit(X)
+#     tv.transform(X)
+
+
+def test_check_name_change():
+    """Test that using SuperVectorizer raises a deprecation warning"""
+    with pytest.warns(FutureWarning):
+        SuperVectorizer()
+>>>>>>> cu-cat/DT5

@@ -5,6 +5,10 @@ Tests generating.py (synthetic dataset generation).
 import numpy as np
 
 from cu_cat.datasets._generating import make_deduplication_data
+<<<<<<< HEAD
+=======
+
+>>>>>>> cu-cat/DT5
 
 
 def test_make_deduplication_data():
