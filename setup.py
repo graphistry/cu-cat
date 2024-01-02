@@ -1,3 +1,4 @@
+##github
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
@@ -12,9 +13,9 @@ core_requires = [
   'setuptools',
   'logging',
   'typing',
-  'pyarrow >= 0.15.0',
+  'pyarrow>=0.15.0',
   'scikit-learn',
-  'flake8',
+  'flake8>=5.0',
   'mypy',
   'pytest',
   'psutil',
@@ -27,8 +28,8 @@ core_requires = [
 # if __name__ == "__main__":
 setup(
     name='cu-cat',
-    version='v0.07.09',  # versioneer.get_version(),
-    # cmdclass='0.7.7',  # versioneer.get_cmdclass(),
+    version='v0.07.14',  # versioneer.get_version(),
+    # cmdclass='0.7.14',  # versioneer.get_cmdclass(),
     packages = find_packages(),
     platforms='any',
     description = 'An end-to-end gpu Python library that encodes categorical variables into machine-learnable numerics',

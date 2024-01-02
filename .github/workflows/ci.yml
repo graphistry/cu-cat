@@ -93,6 +93,7 @@ jobs:
         python -m venv cu_cat
         source cu_cat/bin/activate
         python -m pip install --upgrade pip
+        python -m pip install -e .[test]
         # python -m pip install --extra-index-url=https://pypi.nvidia.com cuml-cu12==23.12.00 cudf-cu12==23.12.00 #cugraph-cu11 pylibraft_cu11 raft_dask_cu11 dask_cudf_cu11 pylibcugraph_cu11 pylibraft_cu11
 
     - name: Lint
@@ -108,12 +109,7 @@ jobs:
     - name: Core tests
       run: |
         source cu_cat/bin/activate
-        ./bin/test.sh
-    
-    - name: Minimal tests
-      run: |
-        source cu_cat/bin/activate
-        ./bin/minimal-test.sh
+        ./bin/test-core.sh
 
   test-build:
 

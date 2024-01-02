@@ -66,96 +66,70 @@ MODULES = [pd]
 #     np.testing.assert_raises(AssertionError, np.testing.assert_array_equal, s1, s2)
 
 
-# @pytest.mark.parametrize(
-#     ["hashing", "init", "analyzer", "add_words", "verbose"],
-#     [
-#         (True, "random", "char", False, False),
-#     ],
-# )
-# def test_gap_encoder(
-#     hashing: bool,
-#     init: str,
-#     analyzer: str,
-#     add_words: bool,
-#     verbose: bool,
-#     n_samples: int = 70,
-# ):
-#     X = generate_data(n_samples, random_state=0)
-#     n_components = 10
-#     # Test output shape
-#     encoder = GapEncoder(
-#         n_components=n_components,
-#         hashing=hashing,
-#         init=init,
-#         analyzer=analyzer,
-#         add_words=add_words,
-#         verbose=verbose,
-#         random_state=42,
-#         rescale_W=True,
-#     )
-#     encoder.fit(X)
-#     y = encoder.transform(X)
-#     assert y.shape == (n_samples, n_components * X.shape[1]), str(y.shape)
+@pytest.mark.parametrize(
+    ["hashing", "init", "analyzer", "add_words", "verbose"],
+    [
+        (True, "random", "char", False, False),
+    ],
+)
+def test_gap_encoder(
+    hashing: bool,
+    init: str,
+    analyzer: str,
+    add_words: bool,
+    verbose: bool,
+    n_samples: int = 70,
+):
+    X = generate_data(n_samples, random_state=0)
+    n_components = 10
+    # Test output shape
+    encoder = GapEncoder(
+        n_components=n_components,
+        hashing=hashing,
+        init=init,
+        analyzer=analyzer,
+        add_words=add_words,
+        random_state=42,
+        rescale_W=True,
+    )
+    encoder.fit(X)
+    y = encoder.transform(X)
+    assert y.shape == (n_samples, n_components * X.shape[1]), str(y.shape)
 
-#     # Test L1-norm of topics W.
-#     for col_enc in encoder.fitted_models_:
-#         l1_norm_W = np.abs(col_enc.W_).sum(axis=1)
-#         np.testing.assert_array_almost_equal(l1_norm_W, np.ones(n_components))
+    # Test L1-norm of topics W.
+    for col_enc in encoder.fitted_models_:
+        l1_norm_W = np.abs(col_enc.W_).sum(axis=1)
+        np.testing.assert_array_almost_equal(l1_norm_W, np.ones(n_components))
 
-#     # Test same seed return the same output
-#     encoder = GapEncoder(
-#         n_components=n_components,
-#         hashing=hashing,
-#         init=init,
-#         analyzer=analyzer,
-#         add_words=add_words,
-#         random_state=42,
-#     )
-#     encoder.fit(X)
-#     y2 = encoder.transform(X)
-#     np.testing.assert_array_equal(y, y2)
-
-
-# @pytest.mark.parametrize("px", MODULES)
-# def test_input_type(px):
-#     # Numpy array with one column
-#     X = np.array([["alice"], ["bob"]])
-#     enc = GapEncoder(n_components=2, random_state=42)
-#     X_enc_array = enc.fit_transform(X)
-#     # List
-#     X2 = [["alice"], ["bob"]]
-#     enc = GapEncoder(n_components=2, random_state=42)
-#     X_enc_list = enc.fit_transform(X2)
-#     # Check if the encoded vectors are the same
-#     np.testing.assert_array_equal(X_enc_array, X_enc_list)
-
-#     # Numpy array with two columns
-#     X = np.array([["alice", "charlie"], ["bob", "delta"]])
-#     enc = GapEncoder(n_components=2, random_state=42)
-#     X_enc_array = enc.fit_transform(X)
-#     # Dataframe with two columns
-#     df = px.DataFrame(X)
-#     enc = GapEncoder(n_components=2, random_state=42)
-#     X_enc_df = enc.fit_transform(df)
-#     # Check if the encoded vectors are the same
-#     np.testing.assert_array_equal(X_enc_array, X_enc_df)
+    # Test same seed return the same output
+    encoder = GapEncoder(
+        n_components=n_components,
+        hashing=hashing,
+        init=init,
+        analyzer=analyzer,
+        add_words=add_words,
+        random_state=42,
+    )
+    encoder.fit(X)
+    y2 = encoder.transform(X)
+    np.testing.assert_array_equal(y, y2)
 
 
-# def test_get_feature_names_out(n_samples=70):
-#     X = generate_data(n_samples, random_state=0)
-#     enc = GapEncoder(random_state=42)
-#     enc.fit(X)
-#     feature_names_1 = enc.get_feature_names_out()
-#     feature_names_2 = enc.get_feature_names_out()
-#     for topic_labels in [feature_names_1, feature_names_2]:
-#         # Check number of labels
-#         assert len(topic_labels) == enc.n_components * X.shape[1]
-#         # Test different parameters for col_names
-#         topic_labels_2 = enc.get_feature_names_out(col_names="auto")
-#         assert topic_labels_2[0] == "col0: " + topic_labels[0]
-#         topic_labels_3 = enc.get_feature_names_out(col_names=["abc", "def"])
-#         assert topic_labels_3[0] == "abc: " + topic_labels[0]
-#     return
+def test_get_feature_names_out(n_samples=70):
+    X = generate_data(n_samples, random_state=0)
+    enc = GapEncoder(random_state=42)
+    enc.fit(X)
+    feature_names_1 = enc.get_feature_names_out()
+    feature_names_2 = enc.get_feature_names_out()
+    for topic_labels in [feature_names_1, feature_names_2]:
+        # Check number of labels
+        assert len(topic_labels) == enc.n_components * X.shape[1]
+        # # Test different parameters for col_names
+        # topic_labels_2 = enc.get_feature_names_out(col_names="auto")
+        # assert topic_labels_2[0] == "col0: " + topic_labels[0]
+        # topic_labels_3 = enc.get_feature_names_out(col_names=["abc", "def"])
+        # assert topic_labels_3[0] == "abc: " + topic_labels[0]
+    return
 
 
 # def test_get_feature_names_out_no_words():
@@ -172,17 +146,17 @@ MODULES = [pd]
 #     return
 
 
-# def test_get_feature_names_out_redundent():
-#     # With the following dataframe, the GapEncoder can produce feature names
-#     # that have the same name, which leads duplicated features names,
-#     # which themselves lead to errors in the TableVectorizer
-#     # get_feature_names_out() method.
-#     df = pd.DataFrame(
-#         40 * [["aaa bbb cccc ddd",],],)
+def test_get_feature_names_out_redundent():
+    # With the following dataframe, the GapEncoder can produce feature names
+    # that have the same name, which leads duplicated features names,
+    # which themselves lead to errors in the TableVectorizer
+    # get_feature_names_out() method.
+    df = pd.DataFrame(
+        40 * [["aaa bbb cccc ddd",],],)
 
-#     tv = TableVectorizer(cardinality_threshold=1)
-#     tv.fit(df)
-#     tv.get_feature_names_out()
+    tv = TableVectorizer(cardinality_threshold=1)
+    tv.fit(df)
+    tv.get_feature_names_out()
 
 
 # def test_overflow_error():
@@ -210,7 +184,7 @@ MODULES = [pd]
 #     "missing",
 #     ["zero_impute", "error", "aaa"],
 # )
-# def test_missing_values(px, missing: str):
+# def test_missing_values(missing: str):
 #     """Test what happens when missing values are in the data"""
 #     observations = [
 #         ["alice", "bob"],
@@ -248,13 +222,27 @@ MODULES = [pd]
 #     enc.transform(X)
 
 
-# def test_small_sample():
-#     """Test that having n_samples < n_components raises an error"""
-#     X = np.array([["alice"], ["bob"]])
-#     enc = GapEncoder(n_components=3, random_state=42)
-#     with pytest.raises(ValueError, match="should be >= n_components"):
-#         enc.fit_transform(X)
+def test_small_sample():
+    """Test that having n_samples < n_components raises an error"""
+    X = np.array([["alice"], ["bob"]])
+    enc = GapEncoder(n_components=3, random_state=42)
+    with pytest.raises(ValueError, match="should be >= n_components"):
+        enc.fit_transform(X)
 
+
+def test_transform_shape():
+    """Non-regression test for #188"""
+    dataset = fetch_midwest_survey()
+    X_train, X_test = train_test_split(
+        dataset.X[["What_would_you_call_the_part_of_the_country_you_live_in_now"]],
+        random_state=0,
+    )
+    enc = GapEncoder(n_components=2, random_state=2)
+    enc.fit_transform(X_train)
+    topics1 = enc.get_feature_names_out()
+    enc.transform(X_test)
+    topics2 = enc.get_feature_names_out()
+    assert len(topics1) == len(topics2)
 
 # def test_transform_deterministic():
 #     """Non-regression test for #188"""
@@ -294,7 +282,6 @@ MODULES = [pd]
 #         hashing=hashing,
 #         engine='cuml',
 #         add_words=add_words,
-#         verbose=verbose,
 #         random_state=42,
 #         rescale_W=True,
 #     )
@@ -306,7 +293,7 @@ MODULES = [pd]
 #         hashing=hashing,
 #         engine='sklearn',
 #         add_words=add_words,
-#         verbose=verbose,
+
 #         random_state=42,
 #         rescale_W=True,
 #     )

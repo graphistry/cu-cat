@@ -435,25 +435,25 @@ class TableVectorizer(ColumnTransformer):
         down the line in `ColumnTransformer.fit_transform`.
         """
         if isinstance(self.low_card_cat_transformer, sklearn.base.TransformerMixin):
-            self.low_card_cat_transformer_ = clone(self.low_card_cat_transformer)
+            self.low_cardinality_transformer_ = clone(self.low_card_cat_transformer)
         elif self.low_card_cat_transformer is None:
             if deps.cuml:
-                self.low_card_cat_transformer_ = OneHotEncoder(output_type= self.output_type, handle_unknown='ignore')
+                self.low_cardinality_transformer_ = OneHotEncoder(output_type= self.output_type, handle_unknown='ignore')
             else:
-                self.low_card_cat_transformer_ = OneHotEncoder( handle_unknown='ignore')
+                self.low_cardinality_transformer_ = OneHotEncoder( handle_unknown='ignore')
         elif self.low_card_cat_transformer == "remainder":
-            self.low_card_cat_transformer_ = self.remainder
+            self.low_cardinality_transformer_ = self.remainder
         else:
-            self.low_card_cat_transformer_ = self.low_card_cat_transformer
+            self.low_cardinality_transformer_ = self.low_card_cat_transformer
 
         if isinstance(self.high_card_cat_transformer, sklearn.base.TransformerMixin):
-            self.high_card_cat_transformer_ = clone(self.high_card_cat_transformer)
+            self.high_cardinality_transformer_ = clone(self.high_card_cat_transformer)
         elif self.high_card_cat_transformer is None:
-            self.high_card_cat_transformer_ = GapEncoder(n_components=30)
+            self.high_cardinality_transformer_ = GapEncoder(n_components=30)
         elif self.high_card_cat_transformer == "remainder":
-            self.high_card_cat_transformer_ = self.remainder
+            self.high_cardinality_transformer_ = self.remainder
         else:
-            self.high_card_cat_transformer_ = self.high_card_cat_transformer
+            self.high_cardinality_transformer_ = self.high_card_cat_transformer
 
         if isinstance(self.numerical_transformer, sklearn.base.TransformerMixin):
             self.numerical_transformer_ = clone(self.numerical_transformer)
@@ -654,15 +654,15 @@ class TableVectorizer(ColumnTransformer):
             all_transformers: List[Tuple[str, OptionalTransformer, List[str]]] = [  # type: ignore
                 ("numeric", self.numerical_transformer, numeric_columns),
                 ("datetime", self.datetime_transformer_, datetime_columns),
-                ("low_cardinarlity", self.low_card_cat_transformer_, low_cardinality_columns),
-                ("high_cardinarlity", self.high_card_cat_transformer_, high_cardinality_columns),
+                ("low_cardinality", self.low_cardinality_transformer_, low_cardinality_columns),
+                ("high_cardinality", self.high_cardinality_transformer_, high_cardinality_columns),
             ]
         else:
             all_transformers: List[Tuple[str, OptionalTransformer, List[str]]] = [  # type: ignore
             ("numeric", self.numerical_transformer, numeric_columns),
             # ("datetime", self.datetime_transformer_, datetime_columns), ## commented out if in dt format so pyg can handle
-            ("low_cardinarlity", self.low_card_cat_transformer_, low_cardinality_columns),
-            ("high_cardinarlity", self.high_card_cat_transformer_, high_cardinality_columns),
+            ("low_cardinality", self.low_cardinality_transformer_, low_cardinality_columns),
+            ("high_cardinality", self.high_cardinality_transformer_, high_cardinality_columns),
         ]
         # We will now filter this list, by keeping only the ones with:
         # - at least one column
@@ -768,6 +768,7 @@ class TableVectorizer(ColumnTransformer):
                 f"array seen during fit. Got {X.shape[1]} "
                 f"columns, expected {len(self.columns_)}"
             )
+        self.Xt_= df_type(X)
         X, y = make_safe_gpu_dataframes(X, None, self.engine_)
         if not isinstance(X, pd.DataFrame) and not 'cudf' in self.Xt_:
             X = pd.DataFrame(X)
@@ -800,24 +801,18 @@ class TableVectorizer(ColumnTransformer):
         typing.List[str]
             Feature names.
         """
-        if 'cudf' not in self.Xt_ and not deps.cudf:
-            if parse_version(sklearn_version) > parse_version("1.0"):
-                ct_feature_names = super().get_feature_names()
-            else:
-                ct_feature_names = super().get_feature_names_out()
-        else:
-            if parse_version(sklearn_version) < parse_version("1.0"):
-                ct_feature_names = super().get_feature_names_out()
-            else:
-                ct_feature_names = super().get_feature_names()
-        # try:
-        #     ct_feature_names = super().get_feature_names_out()
-        # except:
-        #     pass
-        # try:
-        #     ct_feature_names = super().get_feature_names()
-        # except:
-        #     pass
+        # if not deps.cudf:
+        # if parse_version(sklearn_version) > parse_version("1.0"):
+        try:
+            ct_feature_names = super().get_feature_names_out()
+        except:
+            ct_feature_names = super().get_feature_names()
+        # else:
+        #     if parse_version(sklearn_version) < parse_version("1.0"):
+        #         ct_feature_names = super().get_feature_names_out()
+        #     else:
+        #         ct_feature_names = super().get_feature_names()
+
         all_trans_feature_names = []
 
         for name, trans, cols, _ in self._iter(fitted=True):
@@ -828,17 +823,18 @@ class TableVectorizer(ColumnTransformer):
                     cols = self.columns_.to_list()
                     all_trans_feature_names.extend(cols)
                 continue
-            if 'cudf' not in self.Xt_ and not deps.cudf:
-                if parse_version(sklearn_version) > parse_version("1.0"):
-                    trans_feature_names = super().get_feature_names()
-                else:
-                    trans_feature_names = super().get_feature_names_out()
-            else:
-                if parse_version(sklearn_version) < parse_version("1.0"):
-                    trans_feature_names = super().get_feature_names_out()
-                else:
-                    trans_feature_names = super().get_feature_names()
-            all_trans_feature_names.extend(trans_feature_names)
+            # if 'cudf' not in self.Xt_ and not deps.cudf:
+            # if parse_version(sklearn_version) > parse_version("1.0"):
+            try:
+                trans_feature_names = super().get_feature_names_out()
+            except:
+                trans_feature_names = super().get_feature_names()
+            # else:
+            #     if parse_version(sklearn_version) < parse_version("1.0"):
+            #         trans_feature_names = super().get_feature_names_out()
+            #     else:
+            #         trans_feature_names = super().get_feature_names()
+            # all_trans_feature_names.extend(trans_feature_names)
 
         if len(ct_feature_names) != len(all_trans_feature_names):
             warnings.warn("Could not extract clean feature names; returning defaults. ")
