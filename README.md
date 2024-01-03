@@ -17,7 +17,7 @@ Hinted by its name, cu_cat is our GPU-accelerated open source fork of the popula
 
 # What can **cu-cat** NOT do?
 
-Since **cu_cat** is limited to CUDF/CUML dataframes, it is not a drop-in replacement for dirty_cat.  It is also not a drop-in replacement for the CPU-based dirty_cat, and we are not planning to make it one.  We developed this library to accelerate our own **grpahistry** end-to-end pipelines.
+Since **cu_cat** is limited to CUDF/CUML dataframes, it is not a drop-in replacement for dirty_cat.  It is also not a drop-in replacement for the CPU-based dirty_cat, and we are not planning to make it one.  We developed this library to accelerate our own **graphistry** end-to-end pipelines.
 
 Similarly, it requires pandas or cudf input, as well as a GPU; numpy array will not suffice as they can featurize but cannot be UMAP-ed since they lack index.
 
