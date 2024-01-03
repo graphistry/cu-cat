@@ -499,11 +499,7 @@ class TableVectorizer(ColumnTransformer):
         for i in obj_col:
             X[i]=X[i].replace('nan',np.nan).fillna('0o0o0')
             X[i]=X[i].str.rjust(4,'0')
-            X[i]=X[i].str.replace('.', 'dot', regex=False) #for IP addresses
-        num_col=X.select_dtypes(include=['int64','float64']).columns
-        for i in num_col:
-            X[i]=X[i].fillna(0)
-
+            X[i]=X[i].str.replace('.', 'dot', regex=False)
         for col in X.columns:            
             # Convert pandas' NaN value (pd.NA) to numpy NaN value (np.nan)
             # because the former tends to raise all kind of issues when dealing
