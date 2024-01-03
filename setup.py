@@ -2,27 +2,27 @@
 
 from setuptools import setup, find_packages
 # # import versioneer
-##github
-# def unique_flatten_dict(d):
-#   return list(set(sum( d.values(), [] )))
+#github
+def unique_flatten_dict(d):
+  return list(set(sum( d.values(), [] )))
 
-# core_requires = [
-#   'numpy',
-#   'pandas',
-#   'setuptools',
-#   'logging',
-#   'typing',
-#   'pyarrow>=0.15.0',
-#   'scikit-learn',
-#   'flake8>=5.0',
-#   'mypy',
-#   'pytest',
-#   'psutil',
-#   'build',
-# #   'cuml', ## cannot test on github actions
-# #   'cudf',
-# #   'cupy'
-# ]
+core_requires = [
+  'numpy',
+  'pandas',
+  'setuptools',
+  'logging',
+  'typing',
+  'pyarrow>=0.15.0',
+  'scikit-learn',
+  'flake8>=5.0',
+  'mypy',
+  'pytest',
+  'psutil',
+  'build',
+#   'cuml', ## cannot test on github actions
+#   'cudf',
+#   'cupy'
+]
 
 
 # if __name__ == "__main__":
@@ -40,7 +40,7 @@ setup(
     python_requires='>3.7',
     author='The Graphistry Team',
     author_email='pygraphistry@graphistry.com',
-    # install_requires=core_requires,
+    install_requires=core_requires,
     license='BSD',
     # dependency_links=['https://pypi.nvidia.com'],
     keywords=['cudf', 'cuml', 'GPU', 'Rapids']
