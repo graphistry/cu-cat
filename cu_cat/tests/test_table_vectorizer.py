@@ -26,18 +26,18 @@ def check_same_transformers(
     assert actual_transformers_dict == expected_transformers
 
 
-# def type_equality(expected_type, actual_type) -> bool:
-#     """
-#     Checks that the expected type is equal to the actual type,
-#     assuming object and str types are equivalent
-#     (considered as categorical by the TableVectorizer).
-#     """
-#     if (isinstance(expected_type, object) or isinstance(expected_type, str)) and (
-#         isinstance(actual_type, object) or isinstance(actual_type, str)
-#     ):
-#         return True
-#     else:
-#         return expected_type == actual_type
+def type_equality(expected_type, actual_type) -> bool:
+    """
+    Checks that the expected type is equal to the actual type,
+    assuming object and str types are equivalent
+    (considered as categorical by the TableVectorizer).
+    """
+    if (isinstance(expected_type, object) or isinstance(expected_type, str)) and (
+        isinstance(actual_type, object) or isinstance(actual_type, str)
+    ):
+        return True
+    else:
+        return expected_type == actual_type
 
 
 def _get_clean_dataframe() -> pd.DataFrame:
@@ -102,87 +102,19 @@ def _get_mixed_types_dataframe() -> pd.DataFrame:
     )
 
 
-# def _get_mixed_types_array() -> np.ndarray:
-#     return np.array(
-#         [
-#             ["1", "2", 3, "3", 5],
-#             ["1.0", np.nan, 3.0, "3.0", 5.0],
-#             [1, 2, 3.0, 3, 5.0],
-#             ["True", False, True, "False", "True"],
-#         ]
-#     ).T
+def _get_mixed_types_array() -> np.ndarray:
+    return np.array(
+        [
+            ["1", "2", 3, "3", 5],
+            ["1.0", np.nan, 3.0, "3.0", 5.0],
+            [1, 2, 3.0, 3, 5.0],
+            ["True", False, True, "False", "True"],
+        ]
+    ).T
 
+def _get_list_of_lists() -> list:
+    return _get_numpy_array().tolist()
 
-# def _get_numpy_array() -> np.ndarray:
-#     return np.array(
-#         [
-#             ["15", "56", pd.NA, "12", ""],
-#             ["?", "2.4", "6.2", "10.45", np.nan],
-#             ["public", np.nan, "private", "private", pd.NA],
-#             ["officer", "manager", None, "chef", "teacher"],
-#             [np.nan, "yes", "no", "yes", "no"],
-#             ["20K+", "40K+", "60K+", "30K+", np.nan],
-#         ]
-#     ).T
-
-
-# def _get_list_of_lists() -> list:
-#     return _get_numpy_array().tolist()
-
-
-# def _get_datetimes_dataframe() -> pd.DataFrame:
-#     """
-#     Creates a DataFrame with various date formats,
-#     already converted or to be converted.
-#     """
-#     return pd.DataFrame(
-#         {
-#             "pd_datetime": [
-#                 pd.Timestamp("2019-01-01"),
-#                 pd.Timestamp("2019-01-02"),
-#                 pd.Timestamp("2019-01-03"),
-#                 pd.Timestamp("2019-01-04"),
-#                 pd.Timestamp("2019-01-05"),
-#             ],
-#             "np_datetime": [
-#                 np.datetime64("2018-01-01"),
-#                 np.datetime64("2018-01-02"),
-#                 np.datetime64("2018-01-03"),
-#                 np.datetime64("2018-01-04"),
-#                 np.datetime64("2018-01-05"),
-#             ],
-#             "dmy-": [
-#                 "11-12-2029",
-#                 "02-12-2012",
-#                 "11-09-2012",
-#                 "13-02-2000",
-#                 "10-11-2001",
-#             ],
-#             # "mdy-": ['11-13-2013',
-#             #          '02-12-2012',
-#             #          '11-31-2012',
-#             #          '05-02-2000',
-#             #          '10-11-2001'],
-#             "ymd/": [
-#                 "2014/12/31",
-#                 "2001/11/23",
-#                 "2005/02/12",
-#                 "1997/11/01",
-#                 "2011/05/05",
-#             ],
-#             "ymd/_hms:": [
-#                 "2014/12/31 00:31:01",
-#                 "2014/12/30 00:31:12",
-#                 "2014/12/31 23:31:23",
-#                 "2015/12/31 01:31:34",
-#                 "2014/01/31 00:32:45",
-#             ],
-#             # this date format is not found by pandas guess_datetime_format
-#             # so shoulnd't be found by our _infer_datetime_format
-#             # but pandas.to_datetime can still parse it
-#             "mm/dd/yy": ["12/1/22", "2/3/05", "2/1/20", "10/7/99", "1/23/04"],
-#         }
-#     )
 
 
 # def _test_possibilities(X) -> None:
@@ -201,15 +133,15 @@ def _get_mixed_types_dataframe() -> pd.DataFrame:
 #     # Warning: order-dependant
 #     expected_transformers_df = {
 #         "numeric": ["int", "float"],
-#         "low_card_cat": ["str1", "cat1"],
-#         "high_card_cat": ["str2", "cat2"],
+#         "low_cardinality": ["str1", "cat1"],
+#         "high_cardinality": ["str2", "cat2"],
 #     }
 #     vectorizer_base.fit_transform(X)
 #     check_same_transformers(expected_transformers_df, vectorizer_base.transformers_)
 
 #     # Test with higher cardinality threshold and no numeric transformer
 #     expected_transformers_2 = {
-#         "low_card_cat": ["str1", "str2", "cat1", "cat2"],
+#         "low_cardinality": ["str1", "str2", "cat1", "cat2"],
 #         "numeric": ["int", "float"],
 #     }
 #     vectorizer_default = TableVectorizer()  # Using default values
@@ -218,7 +150,7 @@ def _get_mixed_types_dataframe() -> pd.DataFrame:
 
 #     # Test with single column dataframe
 #     expected_transformers_series = {
-#         "low_card_cat": ["cat1"],
+#         "low_cardinality": ["cat1"],
 #     }
 #     vectorizer_base.fit_transform(X[["cat1"]])
 #     check_same_transformers(expected_transformers_series, vectorizer_base.transformers_)
@@ -233,8 +165,8 @@ def _get_mixed_types_dataframe() -> pd.DataFrame:
 #     X_str = X.astype("object")
 #     # With pandas
 #     expected_transformers_plain = {
-#         "high_card_cat": ["str2", "cat2"],
-#         "low_card_cat": ["str1", "cat1"],
+#         "high_cardinality": ["str2", "cat2"],
+#         "low_cardinality": ["str1", "cat1"],
 #         "numeric": ["int", "float"],
 #     }
 #     vectorizer_cast.fit_transform(X_str)
@@ -242,28 +174,13 @@ def _get_mixed_types_dataframe() -> pd.DataFrame:
 #     # With numpy
 #     expected_transformers_np_cast = {
 #         "numeric": [0, 1],
-#         "low_card_cat": [2, 4],
-#         "high_card_cat": [3, 5],
+#         "low_cardinality": [2, 4],
+#         "high_cardinality": [3, 5],
 #     }
 #     vectorizer_cast.fit_transform(X_str.to_numpy())
 #     check_same_transformers(
 #         expected_transformers_np_cast, vectorizer_cast.transformers_
 #     )
-
-
-# def test_duplicate_column_names() -> None:
-#     """
-#     Test to check if the tablevectorizer raises an error with
-#     duplicate column names
-#     """
-#     tablevectorizer = TableVectorizer()
-#     # Creates a simple dataframe with duplicate column names
-#     data = [(3, "a"), (2, "b"), (1, "c"), (0, "d")]
-#     X_dup_col_names = pd.DataFrame.from_records(data, columns=["col_1", "col_1"])
-
-#     with pytest.raises(AssertionError, match=r"Duplicate column names"):
-#         tablevectorizer.fit_transform(X_dup_col_names)
-
 
 # def test_with_clean_data() -> None:
 #     """
@@ -399,30 +316,22 @@ def test_check_fitted_table_vectorizer() -> None:
 #         X_enc_prev = X_enc
 
 
-# def test_mixed_types() -> None:
-#     # TODO: datetime/str mixed types
-#     # don't work
-#     df = _get_mixed_types_dataframe()
-#     table_vec = TableVectorizer()
-#     table_vec.fit_transform(df)
-#     # check that the types are correctly inferred
-#     table_vec.fit_transform(df)
-#     expected_transformers_df = {
-#         "numeric": ["int_str", "float_str", "int_float"],
-#         "low_card_cat": ["bool_str"],
-#     }
-#     check_same_transformers(expected_transformers_df, table_vec.transformers_)
-
-#     X = _get_mixed_types_array()
-#     table_vec = TableVectorizer()
-#     table_vec.fit_transform(X)
-#     # check that the types are correctly inferred
-#     table_vec.fit_transform(X)
-#     expected_transformers_array = {
-#         "numeric": [0, 1, 2],
-#         "low_card_cat": [3],
-#     }
-#     check_same_transformers(expected_transformers_array, table_vec.transformers_)
+def test_mixed_types() -> None:
+    # TODO: datetime/str mixed types
+    # don't work
+    askHN = pd.read_csv('https://storage.googleapis.com/cohere-assets/blog/text-clustering/data/askhn3k_df.csv', index_col=0)
+    df = askHN.sample(1000,replace=False)
+    # df = _get_mixed_types_dataframe()
+    # df = _get_dirty_dataframe()
+    table_vec = TableVectorizer()
+    table_vec.fit_transform(df)
+    # check that the types are correctly inferred
+    expected_transformers_df = {
+        'low_cardinality':['url', 'dead', 'type'],
+        'high_cardinality': ['title', 'text', 'by', 'timestamp'],
+        'remainder':['score', 'time', 'id', 'parent', 'descendants', 'ranking', 'deleted']
+    }
+    check_same_transformers(expected_transformers_df, table_vec.transformers_)
 
 
 # @pytest.mark.parametrize(
@@ -474,37 +383,37 @@ def test_check_fitted_table_vectorizer() -> None:
 # )
     
 
-# def test_changing_types_int_float() -> None:
-#     # The TableVectorizer shouldn't cast floats to ints
-#     # even if only ints were seen during fit
-#     X_fit, X_transform = (
-#         pd.DataFrame(pd.Series([1, 2, 3])),
-#         pd.DataFrame(pd.Series([1, 2, 3.3])),
+def test_changing_types_int_float() -> None:
+    # The TableVectorizer shouldn't cast floats to ints
+    # even if only ints were seen during fit
+    X_fit, X_transform = (
+        pd.DataFrame(pd.Series([1, 2, 3])),
+        pd.DataFrame(pd.Series([1, 2, 3.3])),
+    )
+    table_vec = TableVectorizer()
+    table_vec.fit_transform(X_fit)
+    res = table_vec.transform(X_transform)
+    assert np.allclose(res, np.array([[1.0], [2.0], [3.3]]))
+
+
+# def test_pandas_sparse_array():
+#     df = pd.DataFrame(
+#         dict(
+#             a=[1, 2, 3, 4, 5],
+#             b=[1, 0, 0, 0, 2],
+#         )
 #     )
-#     table_vec = TableVectorizer()
-#     table_vec.fit_transform(X_fit)
-#     res = table_vec.transform(X_transform)
-#     assert np.allclose(res, np.array([[1.0], [2.0], [3.3]]))
+#     df["b"] = pd.arrays.SparseArray(df["b"])
 
+#     match = r"(?=.*sparse Pandas series)(?=.*'b')"
+#     with pytest.raises(TypeError, match=match):
+#         TableVectorizer().fit(df)
 
-# # def test_pandas_sparse_array():
-# #     df = pd.DataFrame(
-# #         dict(
-# #             a=[1, 2, 3, 4, 5],
-# #             b=[1, 0, 0, 0, 2],
-# #         )
-# #     )
-# #     df["b"] = pd.arrays.SparseArray(df["b"])
+#     df = df.astype(pd.SparseDtype())
 
-# #     match = r"(?=.*sparse Pandas series)(?=.*'b')"
-# #     with pytest.raises(TypeError, match=match):
-# #         TableVectorizer().fit(df)
-
-# #     df = df.astype(pd.SparseDtype())
-
-# #     match = r"(?=.*sparse Pandas series)(?=.*'a', 'b')"
-# #     with pytest.raises(TypeError, match=match):
-# #         TableVectorizer().fit(df)
+#     match = r"(?=.*sparse Pandas series)(?=.*'a', 'b')"
+#     with pytest.raises(TypeError, match=match):
+#         TableVectorizer().fit(df)
 
 
 # def test_winlogs():
@@ -527,7 +436,7 @@ def test_HN():
     table_vec = TableVectorizer()
     aa = table_vec.fit_transform((askHN))
     if deps.dirty_cat:
-        bb = dirty_cat.TableVectorizer.fit_transform(askHN)
+        bb = dirty_cat.TableVectorizer().fit_transform(askHN)
         assert aa.shape[0] == bb.shape[0]
     else:
         assert aa.shape[0] == askHN.shape[0]
@@ -543,7 +452,7 @@ def test_red_team():
     table_vec = TableVectorizer()
     aa = table_vec.fit_transform((tdf))
     if deps.dirty_cat:
-        bb = dirty_cat.TableVectorizer.fit_transform(tdf)
+        bb = dirty_cat.TableVectorizer().fit_transform(tdf)
         assert aa.shape[0] == bb.shape[0]
     else:
         assert aa.shape[0] == tdf.shape[0]
@@ -563,7 +472,7 @@ def test_malware():
     table_vec = TableVectorizer()
     aa = table_vec.fit_transform((edf))
     if deps.dirty_cat:
-        bb = dirty_cat.TableVectorizer.fit_transform(edf)
+        bb = dirty_cat.TableVectorizer().fit_transform(edf)
         assert aa.shape[0] == bb.shape[0]
     else:
         assert aa.shape[0] == edf.shape[0]
@@ -584,7 +493,7 @@ def test_20newsgroups():
     table_vec = TableVectorizer()
     aa = table_vec.fit_transform((news))
     if deps.dirty_cat:
-        bb = dirty_cat.TableVectorizer.fit_transform(news)
+        bb = dirty_cat.TableVectorizer().fit_transform(news)
         assert aa.shape[0] == bb.shape[0]
     else:
         assert aa.shape[0] == news.shape[0]

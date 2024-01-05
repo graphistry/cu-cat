@@ -394,9 +394,7 @@ class TableVectorizer(ColumnTransformer):
         output_type: Literal["cupy", "cudf", "pandas", "numpy"] = "cudf",
         impute_missing: Literal["auto", "force", "skip"] = "auto",
         # The next parameters are inherited from ColumnTransformer
-        remainder: Union[
-            Literal["drop", "passthrough"], TransformerMixin
-        ] = "passthrough",
+        remainder: Union[Literal["drop", "passthrough"], TransformerMixin] = "passthrough",
         sparse_threshold: float = 0.3,
         n_jobs: int = 1, ## this fills up parallelization; prev None = 1 process, 1 also = 1 process
         transformer_weights=None,
@@ -495,14 +493,16 @@ class TableVectorizer(ColumnTransformer):
         X = _replace_false_missing(X)
 
         # Handle missing values
-        obj_col=X.select_dtypes(include=['object']).columns
+        obj_col = X.select_dtypes(include=['object']).columns
         for i in obj_col:
-            X[i]=X[i].replace('nan',np.nan).fillna('0o0o0')
-            X[i]=X[i].str.rjust(4,'0')
-            X[i]=X[i].str.replace('.', 'dot', regex=False) #for IP addresses
-        num_col=X.select_dtypes(include=['int64','float64']).columns
+            X[i] = X[i].replace('nan',np.nan).fillna('0o0o0')
+            X[i] = X[i].str.rjust(4,'0')
+            X[i] = X[i].str.replace('.', 'dot', regex=False) #for IP addresses
+
+        num_col = X.select_dtypes(include=['int64','float64']).columns
         for i in num_col:
-            X[i]=X[i].fillna(0)
+            X[i] = X[i].fillna(0)
+            X[i] = pd.to_numeric(X[i],downcast='float',errors='ignore')
 
         for col in X.columns:            
             # Convert pandas' NaN value (pd.NA) to numpy NaN value (np.nan)
@@ -719,7 +719,10 @@ class TableVectorizer(ColumnTransformer):
         if 'cudf' not in str(getmodule(X)) and deps.cudf:
         # if deps.cudf and 'cudf' not in str(getmodule(X)):
             X = cudf.from_pandas(X)#,nan_as_null=True) ### see how flag acts
-        X.fillna(0.0,inplace=True)    
+        try:
+            X.fillna(0.0,inplace=True)
+        except:
+            pass
         X, y = make_safe_gpu_dataframes(X, None, self.engine_)
         
         if (self.datetime_transformer_ == "passthrough") and (datetime_columns !=[]):
