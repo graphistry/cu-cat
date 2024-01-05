@@ -719,7 +719,7 @@ class TableVectorizer(ColumnTransformer):
         if 'cudf' not in str(getmodule(X)) and deps.cudf:
         # if deps.cudf and 'cudf' not in str(getmodule(X)):
             X = cudf.from_pandas(X)#,nan_as_null=True) ### see how flag acts
-        # X.fillna(0.0,inplace=True)    
+        X.fillna(0.0,inplace=True)    
         X, y = make_safe_gpu_dataframes(X, None, self.engine_)
         
         if (self.datetime_transformer_ == "passthrough") and (datetime_columns !=[]):

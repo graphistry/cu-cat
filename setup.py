@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
-# # import versioneer
-#github
+# # # import versioneer
+# #github
 def unique_flatten_dict(d):
   return list(set(sum( d.values(), [] )))
 
@@ -28,8 +28,8 @@ core_requires = [
 # if __name__ == "__main__":
 setup(
     name='cu-cat',
-    version='0.08.01',  # versioneer.get_version(),
-    # cmdclass='0.7.14',  # versioneer.get_cmdclass(),
+    version='0.08.03',  # versioneer.get_version(),
+    # cmdclass='0.8.03',  # versioneer.get_cmdclass(),
     packages = find_packages(),
     platforms='any',
     description = 'An end-to-end gpu Python library that encodes categorical variables into machine-learnable numerics',
@@ -40,7 +40,7 @@ setup(
     python_requires='>3.7',
     author='The Graphistry Team',
     author_email='pygraphistry@graphistry.com',
-    install_requires=core_requires,
+    # install_requires=core_requires,
     license='BSD',
     # dependency_links=['https://pypi.nvidia.com'],
     keywords=['cudf', 'cuml', 'GPU', 'Rapids']
