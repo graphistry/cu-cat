@@ -40,7 +40,7 @@ setup(
     python_requires='>3.7',
     author='The Graphistry Team',
     author_email='pygraphistry@graphistry.com',
-    # install_requires=core_requires,
+    install_requires=core_requires,
     license='BSD',
     # dependency_links=['https://pypi.nvidia.com'],
     keywords=['cudf', 'cuml', 'GPU', 'Rapids']
