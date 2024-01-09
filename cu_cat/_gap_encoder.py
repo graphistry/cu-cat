@@ -573,7 +573,10 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         # if deps.cudf and parse_version(cuml.__version__) > parse_version("23.04"):
         #     X.replace('nan',np.nan).fillna('0o0o0')
         #     X = X.apply(lambda x: str((x)).zfill(4)) ## need at least >3 chars for gap encoder
-        unq_X = X.unique()
+        if 'cudf' not in str(getmodule(X)) and 'cuml' not in self.engine:
+            unq_X = np.unique(X.astype(str))#
+        elif 'cudf' in str(getmodule(X)) and 'cuml' in self.engine:
+            unq_X = X.unique()
         # Build the n-grams counts matrix V for the string data to encode
         unq_V = self.ngrams_count_.transform(unq_X)#.astype(str))
         if self.add_words:  # Add words counts
@@ -934,9 +937,7 @@ class GapEncoder(BaseEstimator, TransformerMixin):
             self.column_names_ = list(X.columns)
         # Check input data shape
         self.Xt_ = df_type(X)
-        # if 'cudf' not in self.Xt_ or 'cuml' != self.engine:
-        if not deps.cudf or 'cuml' != self.engine:
-        # if deps.cuml or 'cuml' != self.engine:
+        if 'cudf' not in self.Xt_ or 'cuml' != self.engine or not deps.cudf:
             X = check_input(X)
             try:
                 X = X.to_pandas()
@@ -947,7 +948,10 @@ class GapEncoder(BaseEstimator, TransformerMixin):
 
             for k in range(X.shape[1]):
                 col_enc = self._create_column_gap_encoder()
-                self.fitted_models_.append(col_enc.fit(X.iloc[:, k]))
+                try:
+                    self.fitted_models_.append(col_enc.fit(X[k]))
+                except KeyError:
+                    self.fitted_models_.append(col_enc.fit(X.iloc[k]))
         else :
             X = check_input(X)
             X = self._handle_missing(X)
@@ -984,8 +988,15 @@ class GapEncoder(BaseEstimator, TransformerMixin):
         X = check_input(X)
         X = self._handle_missing(X)
         X_enc = []
+        # if 'cudf' not in self.Xt_ or 'cuml' != self.engine or not deps.cudf:
+        #     for k in range(X.shape[1]):
+        #         try:
+        #             X_enc.append(self.fitted_models_[k].transform(X[k]))
+        #         except KeyError:
+        #             X_enc.append(self.fitted_models_[k].transform(X.iloc[k]))
+
+        # else:
         for k in range(X.shape[1]):
-        # for k in X.columns:
             X_enc.append(self.fitted_models_[k].transform(X.iloc[:,k]))#[k]))
         X_enc = np.hstack(X_enc)
         return X_enc

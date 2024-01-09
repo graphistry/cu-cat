@@ -29,9 +29,11 @@ if cuml and cuml.__version__ < "24.02.00" and cuml.__version__ > "23.06.00":
 if cuml:
     from cuml.compose import ColumnTransformer
     from cuml.preprocessing import OneHotEncoder
+    from cuml.preprocessing import StandardScaler
 else:
     from sklearn.compose import ColumnTransformer
     from sklearn.preprocessing import OneHotEncoder
+    from sklearn.preprocessing import StandardScaler
 # import cuml,cudf
 # from cuml.compose import ColumnTransformer
 # from cuml.preprocessing import OneHotEncoder
@@ -388,7 +390,7 @@ class TableVectorizer(ColumnTransformer):
         cardinality_threshold: int = 40,
         low_card_cat_transformer: OptionalTransformer = None,
         high_card_cat_transformer: OptionalTransformer = None,
-        numerical_transformer: OptionalTransformer = None,
+        numerical_transformer: OptionalTransformer = StandardScaler(),
         datetime_transformer: OptionalTransformer = "passthrough",
         auto_cast: bool = True,
         output_type: Literal["cupy", "cudf", "pandas", "numpy"] = "cudf",
@@ -808,17 +810,10 @@ class TableVectorizer(ColumnTransformer):
         typing.List[str]
             Feature names.
         """
-        # if not deps.cudf:
-        # if parse_version(sklearn_version) > parse_version("1.0"):
-        try:
-            ct_feature_names = super().get_feature_names_out()
-        except:
-            ct_feature_names = super().get_feature_names()
-        # else:
-        #     if parse_version(sklearn_version) < parse_version("1.0"):
-        #         ct_feature_names = super().get_feature_names_out()
-        #     else:
-        #         ct_feature_names = super().get_feature_names()
+        # try:
+        #     ct_feature_names = super().get_feature_names_out()
+        # except:
+        #     ct_feature_names = super().get_feature_names()
 
         all_trans_feature_names = []
 
@@ -826,26 +821,35 @@ class TableVectorizer(ColumnTransformer):
             if isinstance(trans, str):
                 if trans == "drop":
                     continue
-                elif trans == "passthrough":
-                    cols = self.columns_.to_list()
+                if trans == "passthrough":
+                    if all(isinstance(col, int) for col in cols):
+                        cols = [self.columns_[i] for i in cols]
+                    cols = [str(r) for r in cols]
                     all_trans_feature_names.extend(cols)
-                continue
-            # if 'cudf' not in self.Xt_ and not deps.cudf:
-            # if parse_version(sklearn_version) > parse_version("1.0"):
-            try:
-                trans_feature_names = super().get_feature_names_out()
-            except:
-                trans_feature_names = super().get_feature_names()
-            # else:
-            #     if parse_version(sklearn_version) < parse_version("1.0"):
-            #         trans_feature_names = super().get_feature_names_out()
-            #     else:
-            #         trans_feature_names = super().get_feature_names()
-            # all_trans_feature_names.extend(trans_feature_names)
 
-        if len(ct_feature_names) != len(all_trans_feature_names):
-            warnings.warn("Could not extract clean feature names; returning defaults. ")
-            return list(ct_feature_names)
+            if not hasattr(trans, 'get_feature_names') and not hasattr(trans, 'get_feature_names_out'):
+                cols = [str(r) for r in cols]
+                all_trans_feature_names.extend(cols)
+
+            # elif not hasattr(trans, 'get_feature_names'):
+            else:
+                try:
+                    cols = [str(r) for r in cols]
+                    trans_feature_names = trans.get_feature_names_out(cols)
+                    all_trans_feature_names.extend(trans_feature_names)                
+                except:
+                # elif not hasattr(trans, 'get_feature_names_out'):
+                    cols = [str(r) for r in cols]
+                    trans_feature_names = trans.get_feature_names(cols) ## 20news TypeError: unsupported operand type(s) for +: 'int' and 'str'
+                    all_trans_feature_names.extend(trans_feature_names)
+
+                #     trans_feature_names = super().get_feature_names_out()
+                # except:
+                #     trans_feature_names = super().get_feature_names()
+
+        # if len(ct_feature_names) != len(all_trans_feature_names):
+        #     warnings.warn("Could not extract clean feature names; returning defaults. ")
+        #     return list(ct_feature_names)
 
         return all_trans_feature_names
 
@@ -872,7 +876,10 @@ class TableVectorizer(ColumnTransformer):
                 DeprecationWarning,
                 stacklevel=2,
             )
+            
         return self.get_feature_names_out(input_features)
+    
+    #### AttributeError: Transformer numeric (type StandardScaler) does not provide get_feature_names.
 
 @deprecated("use TableVectorizer instead.")
 class SuperVectorizer(TableVectorizer):

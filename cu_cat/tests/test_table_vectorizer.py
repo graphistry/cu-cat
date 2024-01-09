@@ -117,86 +117,86 @@ def _get_list_of_lists() -> list:
 
 
 
-# def _test_possibilities(X) -> None:
-#     """
-#     Do a bunch of tests with the TableVectorizer.
-#     We take some expected transformers results as argument. They're usually
-#     lists or dictionaries.
-#     """
-#     # Test with low cardinality and a StandardScaler for the numeric columns
-#     vectorizer_base = TableVectorizer(
-#         cardinality_threshold=4,
-#         # we must have n_samples = 5 >= n_components
-#         high_card_cat_transformer=GapEncoder(n_components=2),
-#         numerical_transformer=StandardScaler(),
-#     )
-#     # Warning: order-dependant
-#     expected_transformers_df = {
-#         "numeric": ["int", "float"],
-#         "low_cardinality": ["str1", "cat1"],
-#         "high_cardinality": ["str2", "cat2"],
-#     }
-#     vectorizer_base.fit_transform(X)
-#     check_same_transformers(expected_transformers_df, vectorizer_base.transformers_)
+def _test_possibilities(X) -> None:
+    """
+    Do a bunch of tests with the TableVectorizer.
+    We take some expected transformers results as argument. They're usually
+    lists or dictionaries.
+    """
+    # Test with low cardinality and a StandardScaler for the numeric columns
+    vectorizer_base = TableVectorizer(
+        cardinality_threshold=4,
+        # we must have n_samples = 5 >= n_components
+        high_card_cat_transformer=GapEncoder(n_components=2),
+        numerical_transformer=StandardScaler(),
+    )
+    # Warning: order-dependant
+    expected_transformers_df = {
+        "numeric": ["int", "float"],
+        "low_cardinality": ["str1", "cat1"],
+        "high_cardinality": ["str2", "cat2"],
+    }
+    vectorizer_base.fit_transform(X)
+    check_same_transformers(expected_transformers_df, vectorizer_base.transformers_)
 
-#     # Test with higher cardinality threshold and no numeric transformer
-#     expected_transformers_2 = {
-#         "low_cardinality": ["str1", "str2", "cat1", "cat2"],
-#         "numeric": ["int", "float"],
-#     }
-#     vectorizer_default = TableVectorizer()  # Using default values
-#     vectorizer_default.fit_transform(X)
-#     check_same_transformers(expected_transformers_2, vectorizer_default.transformers_)
+    # Test with higher cardinality threshold and no numeric transformer
+    expected_transformers_2 = {
+        "low_cardinality": ["str1", "str2", "cat1", "cat2"],
+        "numeric": ["int", "float"],
+    }
+    vectorizer_default = TableVectorizer()  # Using default values
+    vectorizer_default.fit_transform(X)
+    check_same_transformers(expected_transformers_2, vectorizer_default.transformers_)
 
-#     # Test with single column dataframe
-#     expected_transformers_series = {
-#         "low_cardinality": ["cat1"],
-#     }
-#     vectorizer_base.fit_transform(X[["cat1"]])
-#     check_same_transformers(expected_transformers_series, vectorizer_base.transformers_)
+    # Test with single column dataframe
+    expected_transformers_series = {
+        "low_cardinality": ["cat1"],
+    }
+    vectorizer_base.fit_transform(X[["cat1"]])
+    check_same_transformers(expected_transformers_series, vectorizer_base.transformers_)
 
-#     # Test casting values
-#     vectorizer_cast = TableVectorizer(
-#         cardinality_threshold=4,
-#         # we must have n_samples = 5 >= n_components
-#         high_card_cat_transformer=GapEncoder(n_components=2),
-#         numerical_transformer=StandardScaler(),
-#     )
-#     X_str = X.astype("object")
-#     # With pandas
-#     expected_transformers_plain = {
-#         "high_cardinality": ["str2", "cat2"],
-#         "low_cardinality": ["str1", "cat1"],
-#         "numeric": ["int", "float"],
-#     }
-#     vectorizer_cast.fit_transform(X_str)
-#     check_same_transformers(expected_transformers_plain, vectorizer_cast.transformers_)
-#     # With numpy
-#     expected_transformers_np_cast = {
-#         "numeric": [0, 1],
-#         "low_cardinality": [2, 4],
-#         "high_cardinality": [3, 5],
-#     }
-#     vectorizer_cast.fit_transform(X_str.to_numpy())
-#     check_same_transformers(
-#         expected_transformers_np_cast, vectorizer_cast.transformers_
-#     )
+    # Test casting values
+    vectorizer_cast = TableVectorizer(
+        cardinality_threshold=4,
+        # we must have n_samples = 5 >= n_components
+        high_card_cat_transformer=GapEncoder(n_components=2),
+        numerical_transformer=StandardScaler(),
+    )
+    X_str = X.astype("object")
+    # With pandas
+    expected_transformers_plain = {
+        "high_cardinality": ["str2", "cat2"],
+        "low_cardinality": ["str1", "cat1"],
+        "numeric": ["int", "float"],
+    }
+    vectorizer_cast.fit_transform(X_str)
+    check_same_transformers(expected_transformers_plain, vectorizer_cast.transformers_)
+    # With numpy
+    expected_transformers_np_cast = {
+        "numeric": [0, 1],
+        "low_cardinality": [2, 4],
+        "high_cardinality": [3, 5],
+    }
+    vectorizer_cast.fit_transform(X_str.to_numpy())
+    check_same_transformers(
+        expected_transformers_np_cast, vectorizer_cast.transformers_
+    )
 
-# def test_with_clean_data() -> None:
-#     """
-#     Defines the expected returns of the vectorizer in different settings,
-#     and runs the tests with a clean dataset.
-#     """
-#     _test_possibilities(_get_clean_dataframe())
+def test_with_clean_data() -> None:
+    """
+    Defines the expected returns of the vectorizer in different settings,
+    and runs the tests with a clean dataset.
+    """
+    _test_possibilities(_get_clean_dataframe())
 
 
-# def test_with_dirty_data() -> None:
-#     """
-#     Defines the expected returns of the vectorizer in different settings,
-#     and runs the tests with a dataset containing missing values.
-#     """
-#     _test_possibilities(_get_dirty_dataframe(categorical_dtype="object"))
-#     _test_possibilities(_get_dirty_dataframe(categorical_dtype="category"))
+def test_with_dirty_data() -> None:
+    """
+    Defines the expected returns of the vectorizer in different settings,
+    and runs the tests with a dataset containing missing values.
+    """
+    _test_possibilities(_get_dirty_dataframe(categorical_dtype="object"))
+    _test_possibilities(_get_dirty_dataframe(categorical_dtype="category"))
 
 
 def test_get_feature_names_out() -> None:
@@ -289,20 +289,6 @@ def test_check_fitted_table_vectorizer() -> None:
     tv.transform(X)
 
 
-# @pytest.mark.parametrize(
-#     "pipeline",
-#     [
-#         TableVectorizer(),
-#         TableVectorizer(
-#             transformers=[
-#                 (GapEncoder(), ["cat1", "cat2"]),
-#             ],
-#         ),
-#         TableVectorizer(
-#             high_card_cat_transformer=GapEncoder(),
-#         ),
-#     ],
-# )
 # def test_deterministic(pipeline) -> None:
 #     """
 #     Tests that running the same TableVectorizer multiple times with the same
@@ -319,69 +305,18 @@ def test_check_fitted_table_vectorizer() -> None:
 def test_mixed_types() -> None:
     # TODO: datetime/str mixed types
     # don't work
-    askHN = pd.read_csv('https://storage.googleapis.com/cohere-assets/blog/text-clustering/data/askhn3k_df.csv', index_col=0)
-    df = askHN.sample(1000,replace=False)
-    # df = _get_mixed_types_dataframe()
-    # df = _get_dirty_dataframe()
+    df = _get_mixed_types_dataframe()
     table_vec = TableVectorizer()
     table_vec.fit_transform(df)
     # check that the types are correctly inferred
+    table_vec.fit_transform(df)
     expected_transformers_df = {
-        'low_cardinality':['url', 'dead', 'type'],
-        'high_cardinality': ['title', 'text', 'by', 'timestamp'],
-        'remainder':['score', 'time', 'id', 'parent', 'descendants', 'ranking', 'deleted']
+        "numeric": ["int_str", "float_str", "int_float"],
+        "low_card_cat": ["bool_str"],
     }
     check_same_transformers(expected_transformers_df, table_vec.transformers_)
 
 
-# @pytest.mark.parametrize(
-#     "X_fit, X_transform_original, X_transform_with_missing_original",
-#     [
-#         # All nans during fit, 1 category during transform
-#         (
-#             pd.DataFrame({"col1": [np.nan, np.nan, np.nan]}),
-#             pd.DataFrame({"col1": [np.nan, np.nan, "placeholder"]}),
-#             pd.DataFrame({"col1": [np.nan, np.nan, np.nan]}),
-#         ),
-#         # All floats during fit, 1 category during transform
-#         (
-#             pd.DataFrame({"col1": [1.0, 2.0, 3.0]}),
-#             pd.DataFrame({"col1": [1.0, 2.0, "placeholder"]}),
-#             pd.DataFrame({"col1": [1.0, 2.0, np.nan]}),
-#         ),
-#         # All datetimes during fit, 1 category during transform
-#         pytest.param(
-#             pd.DataFrame(
-#                 {
-#                     "col1": [
-#                         pd.Timestamp("2019-01-01"),
-#                         pd.Timestamp("2019-01-02"),
-#                         pd.Timestamp("2019-01-03"),
-#                     ]
-#                 }
-#             ),
-#             pd.DataFrame(
-#                 {
-#                     "col1": [
-#                         pd.Timestamp("2019-01-01"),
-#                         pd.Timestamp("2019-01-02"),
-#                         "placeholder",
-#                     ]
-#                 }
-#             ),
-#             pd.DataFrame(
-#                 {
-#                     "col1": [
-#                         pd.Timestamp("2019-01-01"),
-#                         pd.Timestamp("2019-01-02"),
-#                         np.nan,
-#                     ]
-#                 }
-#             ),
-#         ),
-#     ],
-# )
-    
 
 def test_changing_types_int_float() -> None:
     # The TableVectorizer shouldn't cast floats to ints
@@ -396,42 +331,10 @@ def test_changing_types_int_float() -> None:
     assert np.allclose(res, np.array([[1.0], [2.0], [3.3]]))
 
 
-# def test_pandas_sparse_array():
-#     df = pd.DataFrame(
-#         dict(
-#             a=[1, 2, 3, 4, 5],
-#             b=[1, 0, 0, 0, 2],
-#         )
-#     )
-#     df["b"] = pd.arrays.SparseArray(df["b"])
-
-#     match = r"(?=.*sparse Pandas series)(?=.*'b')"
-#     with pytest.raises(TypeError, match=match):
-#         TableVectorizer().fit(df)
-
-#     df = df.astype(pd.SparseDtype())
-
-#     match = r"(?=.*sparse Pandas series)(?=.*'a', 'b')"
-#     with pytest.raises(TypeError, match=match):
-#         TableVectorizer().fit(df)
-
-
-# def test_winlogs():
-#     subprocess.run(["wget -nc https://www.dropbox.com/s/31dx1g6g59exoc3/part.88.parquet"])
-#     winlogsA = pd.read_parquet('part.88.parquet')
-#     winlogs = winlogsA[['LogonID','UserName','LogHost','Time','DomainName','LogonType','SubjectLogonID','Status','Destination','ServiceName']]  # .convert_dtypes() #.replace('nan',np.nan).fillna('0o0o0')
-#     winlogs = winlogs.sample(10000,replace=False)
-
-#     table_vec = TableVectorizer()
-#     aa = table_vec.fit_transform((winlogs))
-#     if deps.dirty_cat:
-#         bb = dirty_cat.TableVectorizer.fit_transform(winlogs)
-#         assert aa.shape[0] == bb.shape[0]
-#     else:
-#         assert aa.shape[0] == winlogs.shape[0]
-
 
 def test_HN():
+    # from cu_cat import TableVectorizer
+    # import pandas as pd
     askHN = pd.read_csv('https://storage.googleapis.com/cohere-assets/blog/text-clustering/data/askhn3k_df.csv', index_col=0)
     table_vec = TableVectorizer()
     aa = table_vec.fit_transform((askHN))
