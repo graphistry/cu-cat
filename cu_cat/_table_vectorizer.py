@@ -839,12 +839,12 @@ class TableVectorizer(ColumnTransformer):
                     cols = [str(r) for r in cols]
                     trans_feature_names = trans.get_feature_names_out(cols)  # TODO: limit huge string corpus to first sentence
                     all_trans_feature_names.extend(trans_feature_names)                
-                except AttributeError:
+                except:
                     cols = [str(r) for r in cols]
                     trans_feature_names = trans.get_feature_names(cols) 
                     all_trans_feature_names.extend(trans_feature_names)
-                except MemoryError:
-                    logger.debug(f"fit & transformed but GPU too small to return features as strings; soln: get larger GPU or split into many sentences into many columns")
+                # except MemoryError:
+                    # logger.debug(f"fit & transformed but GPU too small to return features as strings; soln: get larger GPU or split into many sentences into many columns")
 
         # if len(ct_feature_names) != len(all_trans_feature_names):
         #     warnings.warn("Could not extract clean feature names; returning defaults. ")
