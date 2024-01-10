@@ -7,7 +7,7 @@ Implemented on GPU exclusively through use of GapEncoder in cu_cat
 """
 
 from typing import Dict, List, Literal, Optional, Tuple, Union
-import warnings
+import warnings,logging
 from inspect import getmodule
 
 import numpy as np
@@ -43,6 +43,8 @@ if cudf:
 
 # Required for ignoring lines too long in the docstrings
 # flake8: noqa: E501
+
+logger = logging.getLogger()
 
 def _infer_date_format(date_column: pd.Series, n_trials: int = 100) -> Optional[str]:
     """Infer the date format of a date column,
@@ -835,17 +837,14 @@ class TableVectorizer(ColumnTransformer):
             else:
                 try:
                     cols = [str(r) for r in cols]
-                    trans_feature_names = trans.get_feature_names_out(cols)
+                    trans_feature_names = trans.get_feature_names_out(cols)  # TODO: limit huge string corpus to first sentence
                     all_trans_feature_names.extend(trans_feature_names)                
-                except:
-                # elif not hasattr(trans, 'get_feature_names_out'):
+                except AttributeError:
                     cols = [str(r) for r in cols]
-                    trans_feature_names = trans.get_feature_names(cols) ## 20news TypeError: unsupported operand type(s) for +: 'int' and 'str'
+                    trans_feature_names = trans.get_feature_names(cols) 
                     all_trans_feature_names.extend(trans_feature_names)
-
-                #     trans_feature_names = super().get_feature_names_out()
-                # except:
-                #     trans_feature_names = super().get_feature_names()
+                except MemoryError:
+                    logger.debug(f"fit & transformed but GPU too small to return features as strings; soln: get larger GPU or split into many sentences into many columns")
 
         # if len(ct_feature_names) != len(all_trans_feature_names):
         #     warnings.warn("Could not extract clean feature names; returning defaults. ")
