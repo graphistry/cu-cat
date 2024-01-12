@@ -312,11 +312,6 @@ class TableVectorizer(ColumnTransformer):
         When the transformed output consists of all dense data, the stacked
         result will be dense, and this keyword will be ignored.
 
-    n_jobs : int, optional
-        Number of jobs to run in parallel.
-        ``None`` (the default) means 1 unless in a
-        :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors.
 
     transformer_weights : dict, optional
         Multiplicative weights for features per transformer. The output of the
@@ -400,7 +395,6 @@ class TableVectorizer(ColumnTransformer):
         # The next parameters are inherited from ColumnTransformer
         remainder: Union[Literal["drop", "passthrough"], TransformerMixin] = "passthrough",
         sparse_threshold: float = 0.3,
-        n_jobs: int = 1, ## this fills up parallelization; prev None = 1 process, 1 also = 1 process
         transformer_weights=None,
         verbose: bool = False,
     ):
@@ -416,7 +410,6 @@ class TableVectorizer(ColumnTransformer):
         self.output_type = output_type
         self.remainder = remainder
         self.sparse_threshold = sparse_threshold
-        self.n_jobs = n_jobs
         self.transformer_weights = transformer_weights
         self.verbose = verbose
 

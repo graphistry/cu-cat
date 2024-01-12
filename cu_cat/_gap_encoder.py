@@ -54,9 +54,10 @@ if cupyx_ and cuml:
     from cupyx.scipy import sparse
     from cupyx.scipy.sparse import csr_matrix as csr
     cuml.set_global_output_type('cupy')
+    cp.get_default_memory_pool().set_limit(size=get_gpu_memory()[0]**3)
 if not cupyx_ or not cuml:
-    cp = deps.numpy
-    cudf = deps.pandas
+    numpy = deps.numpy
+    pandas = deps.pandas
     sklearn = deps.sklearn
 # import cupy as cp, cudf, pyarrow, cuml
     from scipy.sparse import csr_matrix as csr
@@ -108,8 +109,8 @@ def resolve_engine(
         sklearn = deps.sklearn
         from scipy import sparse
         from scipy.sparse import csr_matrix as csr
-        cp = deps.numpy
-        cudf = deps.pandas
+        np = deps.numpy
+        pandas = deps.pandas
         return 'sklearn',sklearn,cp,csr,sparse,cudf
 
 
@@ -147,7 +148,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         rescale_W: bool = True,
         max_iter_e_step: int = 20,
         engine: Engine = "auto",
-        byte_lim: int = 32,
+        byte_lim: int = 50,
     ):
         
         engine_resolved = resolve_engine(engine)
@@ -355,11 +356,13 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         unq_H = cp.array(unq_H) # redundant
         sh = len(unq_H)
         sw = len(self.W_)
+        print([unq_H.nbytes,self.W_.nbytes])
+        
         if deps.cuml:
             self.gmem = get_gpu_memory()[0]
             logger.info(f"req gpu mem for fit=  `{(self.byte_lim*sh*sw)/1e3}`, free sys gmem= `{self.gmem}`")
         for n_iter_ in range(self.max_iter):
-            if ((self.byte_lim*sh*sw)/1e3)<self.gmem: # and self.engine =='cuml':
+            if ((self.byte_lim*sh*sw)/1e3)<self.gmem and self.W_.nbytes/1e6 < 100:
                 logger.debug(f"fitting smallfast-wise")
                 W_type = df_type(self.W_)
                 if 'cudf' not in W_type and 'cupy' not in W_type and self.engine =='cuml':
@@ -373,7 +376,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                     self.W_ = self.W_.to_cupy()
                     self.B_ = self.B_.to_cupy()
                     self.A_ = self.A_.to_cupy()
-                if not deps.cupy and ((self.byte_lim*sh*sw)/1e3)<self.smem and self.engine !='cuml':
+                if not deps.cupy or ((self.byte_lim*sh*sw)/1e3)>self.smem or self.engine !='cuml' or self.W_.nbytes/1e6 > 100: ## cant compute on GPU
                     self.W_ = self.W_.get()
                     self.B_ = self.B_.get()
                     self.A_ = self.A_.get()
@@ -400,7 +403,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                 )
             else:
                 W_type = df_type(self.W_)
-                if self.engine =='cuml' and ((self.byte_lim*sh*sw)/1e3)>self.gmem and ((self.byte_lim*sh)/1e3)<self.gmem and ((self.byte_lim*sw)/1e3)<self.gmem:
+                if self.engine =='cuml' and ((self.byte_lim*sh*sw)/1e3)<self.gmem and self.W_.nbytes/1e6 < 100:
                     # if 'cudf' not in W_type and 'cupy' not in W_type:
                     # if not deps.cudf and not deps.cupy:
                         
@@ -414,11 +417,11 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                         self.B_ = cp.array(self.B_)
                         self.A_ = cp.array(self.A_)
                         logger.debug(f"moving to cupy")
-                    # Loop over batches
-                else:
-                    if hasattr(unq_H, 'device') or 'cupy' in W_type and (((self.byte_lim*sh)/1e3)>self.gmem or ((self.byte_lim*sw)/1e3)>self.gmem):
+                # Loop over batches
+                elif hasattr(unq_H, 'device') or 'cupy' in W_type and self.W_.nbytes/1e6 > 100:
                         unq_V = unq_V.get()
                         unq_H = unq_H.get()
+                        self.W_ = self.W_.get()
                         logger.debug(f"force numpy fit")
                 for i, (unq_idx, idx) in enumerate(batch_lookup(lookup, n=self.batch_size)):
                     if i == n_batch - 1:
@@ -591,10 +594,10 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         unq_H = self._get_H(unq_X)
         sh = len(unq_H)
         sw = len(self.W_)
-        
+        print([unq_H.nbytes,self.W_.nbytes])
         # Loop over batches
         logger.info(f"req gpu mem for transform =  `{(self.byte_lim*sh*sw)/1e3}`, free sys gmem = `{self.gmem}`")
-        if self.engine == 'cuml' and ((self.byte_lim*sh*sw)/1e3)<self.gmem:
+        if self.engine == 'cuml' and ((self.byte_lim*sh*sw)/1e3)<self.gmem and self.W_.nbytes/1e6 < 10:
             logger.debug(f"smallfast transform")
             unq_H = _multiplicative_update_h_smallfast(
                     unq_V,
@@ -608,19 +611,22 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                 )
         else:
             W_type = df_type(self.W_)
-            if self.engine =='cuml' and ((self.byte_lim*sh*sw)/1e3)>self.gmem and ((self.byte_lim*sh)/1e3)<self.gmem and ((self.byte_lim*sw)/1e3)<self.gmem:
+            ## comment first if out to force faster numpy transform if not enough gpu memory for small_fast & scale not large enough to benefit from loop of GPU
+            if self.engine =='cuml' and ((self.byte_lim*sh*sw)/1e3)<self.gmem and unq_H.nbytes/1e6 < 100 and unq_H.nbytes/1e6 < 100:
                 logger.debug(f"cupy transform")
-                if 'cudf' not in W_type and 'cupy' not in W_type:
+                # if 'cudf' not in W_type and 'cupy' not in W_type:
+                try:
                     self.W_ = cp.array(self.W_)
                     unq_V = csr(unq_V)
                     unq_H = cp.array(unq_H)
                     logger.debug(f"moving to cupy")
-                if 'cudf' in W_type:
+                # if 'cudf' in W_type:
+                except:
                     self.W_ = self.W_.to_cupy()
                     unq_V = unq_V.to_cupy()
                     unq_H = unq_H.to_cupy()
                     logger.debug(f"kept on gpu via cupy")
-            elif hasattr(unq_H, 'device') or 'cupy' in W_type and (((self.byte_lim*sh)/1e3)>self.gmem or ((self.byte_lim*sw)/1e3)>self.gmem):
+            elif hasattr(unq_H, 'device') or 'cupy' in W_type and ((self.byte_lim*sh*sw)/1e3)>self.gmem or unq_H.nbytes/1e6 > 100:
                 try:
                     self.W_ = self.W_.get()
                 except:
@@ -807,15 +813,13 @@ class GapEncoder(BaseEstimator, TransformerMixin):
         max_iter_e_step: int = 20,
         handle_missing: Literal["error", "empty_impute"] = "zero_impute",
         engine: Engine = "auto",
-        byte_lim: int = 32,
+        byte_lim: int = 50,
 
     ):
         engine_resolved = resolve_engine(engine)
         # FIXME remove as set_new_kwargs will always replace?
         if 'sklearn' in engine_resolved:
             engine = deps.sklearn
-            # math = deps.numpy
-            cp = deps.numpy
             gmem = None
             # _, _, engine = lazy_sklearn_import_has_dependancy()
             from sklearn.feature_extraction.text import CountVectorizer,HashingVectorizer
@@ -823,7 +827,6 @@ class GapEncoder(BaseEstimator, TransformerMixin):
             # _, _, engine, gmem = lazy_cuml_import_has_dependancy()
             engine = deps.cuml
             gmem = get_gpu_memory()
-            # math = deps.cupy
             from cuml.feature_extraction.text import CountVectorizer,HashingVectorizer
 
             
@@ -1086,8 +1089,6 @@ def _multiplicative_update_w(
     Multiplicative update step for the topics W.
     """
     if 'cudf' in df_type(W) or 'cupy' in df_type(W):
-        cp = deps.cupy
-        
         A *= rho
         A += cp.multiply(W, safe_sparse_dot(Ht.T, Vt.multiply(1 / (cp.dot(Ht, W) + 1e-10))))
         B *= rho
@@ -1096,9 +1097,8 @@ def _multiplicative_update_w(
         if rescale_W:
             _rescale_W(W, A)
         gc.collect()
-        
+        W=cp.array(W); A=cp.array(A); B=cp.array(B)
     else:
-        cp = deps.numpy
         try:
             Ht = Ht.get()
             Vt = Vt.get()
@@ -1111,7 +1111,8 @@ def _multiplicative_update_w(
         W = np.multiply(A, np.reciprocal(B))#, out=W)
         if rescale_W:
             _rescale_W(W, A)
-    return cp.array(W), cp.array(A), cp.array(B)
+        W=np.array(W); A=np.array(A); B=np.array(B)
+    return W,A,B
 
 @typing.no_type_check
 def _multiplicative_update_w_smallfast(
@@ -1127,22 +1128,34 @@ def _multiplicative_update_w_smallfast(
     Multiplicative update step for the topics W.
     """
     if 'cudf' in df_type(W) or 'cupy' in df_type(W):
-        cp = deps.cupy
+
+        A *= rho
+        # print([Ht.nbytes,W.nbytes])
+        C = cp.matmul(Ht, W)
+        R = Vt.multiply(cp.reciprocal(C) + 1e-10)
+        T = R.T.dot(Ht).T 
+        A += cp.multiply(W, T)
+        B *= rho
+        B += Ht.sum(axis=0).reshape(-1, 1)
+        cp.multiply(A, 1/B, out=W)
+        if rescale_W:
+            _rescale_W(W, A)
+        del C,R,T,Ht,Vt
+        gc.collect()
+        cp._default_memory_pool.free_all_blocks()
+
     else:
-        cp = deps.numpy
-    A *= rho
-    C = cp.matmul(Ht, W)
-    R = Vt.multiply(cp.reciprocal(C) + 1e-10)
-    T = R.T.dot(Ht).T 
-    A += cp.multiply(W, T)
-    B *= rho
-    B += Ht.sum(axis=0).reshape(-1, 1)
-    cp.multiply(A, 1/B, out=W)
-    if rescale_W:
-        _rescale_W(W, A)
-    del C,R,T,Ht,Vt
-    gc.collect()
-    cp._default_memory_pool.free_all_blocks()
+        A *= rho
+        C = bp.matmul(Ht, W)
+        R = Vt.multiply(np.reciprocal(C) + 1e-10)
+        T = R.T.dot(Ht).T 
+        A += np.multiply(W, T)
+        B *= rho
+        B += Ht.sum(axis=0).reshape(-1, 1)
+        np.multiply(A, 1/B, out=W)
+        if rescale_W:
+            _rescale_W(W, A)
+        del C,R,T,Ht,Vt
 
     return W,A,B
 
@@ -1195,6 +1208,7 @@ def _multiplicative_update_h(
             W_WT1_ = W_WT1[:, idx]
             W_ = W[:, idx]
             squared_norm = 1
+            # print([ht.nbytes,W_.nbytes])
             for n_iter_ in range(max_iter):
                 if squared_norm <= squared_epsilon:
                     break
@@ -1268,19 +1282,27 @@ def _multiplicative_update_h_smallfast(
         Ht = cp.array(Ht)
         W = cp.array(W)
         W_WT1 = cp.array(W_WT1.T)
-        #Vt = cp.array(Vt)
-    else: 
-        cp = deps.numpy
-    for n_iter_ in range(max_iter):
-        if squared_norm <= squared_epsilon:
-            break
-        C = Vt.multiply( cp.reciprocal(cp.matmul(Ht, W) + 1e-10)) ##sparse now
-        aux = C.dot(W_WT1)
-        ht_out = cp.multiply(Ht,aux) + const
-        squared_norm = cp.sum((ht_out - Ht)**2 / (Ht**2))
-        Ht = ht_out
-        cp._default_memory_pool.free_all_blocks()
+        # print([Ht.nbytes,W.nbytes])
+        for n_iter_ in range(max_iter):
+            if squared_norm <= squared_epsilon:
+                break
+            C = Vt.multiply( cp.reciprocal(cp.matmul(Ht, W) + 1e-10)) ##sparse now
+            aux = C.dot(W_WT1)
+            ht_out = cp.multiply(Ht,aux) + const
+            squared_norm = cp.sum((ht_out - Ht)**2 / (Ht**2))
+            Ht = ht_out
+            cp._default_memory_pool.free_all_blocks()
 
+    else: 
+        for n_iter_ in range(max_iter):
+            if squared_norm <= squared_epsilon:
+                break
+            C = Vt.multiply( np.reciprocal(np.matmul(Ht, W) + 1e-10)) ##sparse now
+            aux = C.dot(W_WT1)
+            ht_out = np.multiply(Ht,aux) + const
+            squared_norm = np.sum((ht_out - Ht)**2 / (Ht**2))
+            Ht = ht_out
+            
 
     return Ht
 
