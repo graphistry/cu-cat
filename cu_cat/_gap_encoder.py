@@ -147,7 +147,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         rescale_W: bool = True,
         max_iter_e_step: int = 20,
         engine: Engine = "auto",
-        byte_lim: int = 8,
+        byte_lim: int = 32,
     ):
         
         engine_resolved = resolve_engine(engine)
@@ -807,7 +807,7 @@ class GapEncoder(BaseEstimator, TransformerMixin):
         max_iter_e_step: int = 20,
         handle_missing: Literal["error", "empty_impute"] = "zero_impute",
         engine: Engine = "auto",
-        byte_lim: int = 8,
+        byte_lim: int = 32,
 
     ):
         engine_resolved = resolve_engine(engine)
@@ -1203,7 +1203,7 @@ def _multiplicative_update_h(
                 # with cp.errstate(divide='ignore'):  # not yet nor ever likely implemented for GPU :(
 
                 with warnings.catch_warnings():
-                    warnings.filterwarnings("ignore", category=RuntimeError)
+                    warnings.filterwarnings("ignore", category=RuntimeWarning)
                     squared_norm = cp.multiply(cp.dot(ht_out - ht, ht_out - ht), cp.reciprocal(cp.dot(ht, ht)))
                 ht[:] = ht_out
         del Vt,W_,W_WT1,ht,ht_out,vt,vt_
