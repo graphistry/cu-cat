@@ -829,11 +829,10 @@ class TableVectorizer(ColumnTransformer):
                     cols = [str(r) for r in cols]
                     all_trans_feature_names.extend(cols)
 
-            if not hasattr(trans, 'get_feature_names') and not hasattr(trans, 'get_feature_names_out'):
+            elif not hasattr(trans, 'get_feature_names') and not hasattr(trans, 'get_feature_names_out'):
                 cols = [str(r) for r in cols]
                 all_trans_feature_names.extend(cols)
 
-            # elif not hasattr(trans, 'get_feature_names'):
             else:
                 try:
                     cols = [str(r) for r in cols]
