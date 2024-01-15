@@ -356,7 +356,6 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         unq_H = cp.array(unq_H) # redundant
         sh = len(unq_H)
         sw = len(self.W_)
-        print([unq_H.nbytes,self.W_.nbytes])
         
         if deps.cuml:
             self.gmem = get_gpu_memory()[0]
@@ -594,7 +593,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         unq_H = self._get_H(unq_X)
         sh = len(unq_H)
         sw = len(self.W_)
-        print([unq_H.nbytes,self.W_.nbytes])
+        
         # Loop over batches
         logger.info(f"req gpu mem for transform =  `{(self.byte_lim*sh*sw)/1e3}`, free sys gmem = `{self.gmem}`")
         if self.engine == 'cuml' and ((self.byte_lim*sh*sw)/1e3)<self.gmem and self.W_.nbytes/1e6 < 10:
@@ -1100,6 +1099,8 @@ def _multiplicative_update_w(
         W=cp.array(W); A=cp.array(A); B=cp.array(B)
     else:
         try:
+            A = A.get()
+            B = B.get()
             Ht = Ht.get()
             Vt = Vt.get()
         except:
@@ -1112,7 +1113,7 @@ def _multiplicative_update_w(
         if rescale_W:
             _rescale_W(W, A)
         W=np.array(W); A=np.array(A); B=np.array(B)
-    return W,A,B
+    return cp.array(W),cp.array(A),cp.array(B)
 
 @typing.no_type_check
 def _multiplicative_update_w_smallfast(
@@ -1130,7 +1131,6 @@ def _multiplicative_update_w_smallfast(
     if 'cudf' in df_type(W) or 'cupy' in df_type(W):
 
         A *= rho
-        # print([Ht.nbytes,W.nbytes])
         C = cp.matmul(Ht, W)
         R = Vt.multiply(cp.reciprocal(C) + 1e-10)
         T = R.T.dot(Ht).T 
@@ -1157,7 +1157,7 @@ def _multiplicative_update_w_smallfast(
             _rescale_W(W, A)
         del C,R,T,Ht,Vt
 
-    return W,A,B
+    return cp.array(W),cp.array(A),cp.array(B)
 
 @typing.no_type_check
 def _rescale_h(self, V: np.array, H: np.array) -> np.array:
@@ -1208,7 +1208,6 @@ def _multiplicative_update_h(
             W_WT1_ = W_WT1[:, idx]
             W_ = W[:, idx]
             squared_norm = 1
-            # print([ht.nbytes,W_.nbytes])
             for n_iter_ in range(max_iter):
                 if squared_norm <= squared_epsilon:
                     break
@@ -1282,7 +1281,6 @@ def _multiplicative_update_h_smallfast(
         Ht = cp.array(Ht)
         W = cp.array(W)
         W_WT1 = cp.array(W_WT1.T)
-        # print([Ht.nbytes,W.nbytes])
         for n_iter_ in range(max_iter):
             if squared_norm <= squared_epsilon:
                 break
