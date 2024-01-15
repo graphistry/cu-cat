@@ -111,7 +111,7 @@ def resolve_engine(
         from scipy.sparse import csr_matrix as csr
         np = deps.numpy
         pandas = deps.pandas
-        return 'sklearn',sklearn,cp,csr,sparse,cudf
+        return 'sklearn',sklearn,np,csr,sparse,pandas
 
 
     raise ValueError(  # noqa
