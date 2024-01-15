@@ -1173,7 +1173,7 @@ def _rescale_h(self, V: np.array, H: np.array) -> np.array:
         H *= np.maximum(epsilon, V.sum(axis=1).A)
     H /= H.sum(axis=1, keepdims=True)
 
-    return cudf.DataFrame(H)
+    return (H)
 
 @typing.no_type_check
 def _multiplicative_update_h(
