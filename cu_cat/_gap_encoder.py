@@ -314,9 +314,9 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         
         # else:
             # raise ValueError(f"Initialization method {self.init!r} does not exist. ")
-        W = cp.array(W)
+        W = np.array(W)
         W /= W.sum(axis=1, keepdims=True)
-        A = cp.ones((self.n_components, self.n_vocab)) * 1e-10
+        A = np.ones((self.n_components, self.n_vocab)) * 1e-10
         B = A.copy()
         return W, A, B
 
