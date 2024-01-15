@@ -148,7 +148,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         rescale_W: bool = True,
         max_iter_e_step: int = 20,
         engine: Engine = "auto",
-        byte_lim: int = 50,
+        byte_lim: int = 8,
     ):
         
         engine_resolved = resolve_engine(engine)
@@ -353,7 +353,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         del X
         unq_H = self._get_H(unq_X)
         unq_V = csr(unq_V)
-        unq_H = cp.array(unq_H) # redundant
+        # unq_H = cp.array(unq_H) # redundant
         sh = len(unq_H)
         sw = len(self.W_)
         
@@ -418,9 +418,12 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                         logger.debug(f"moving to cupy")
                 # Loop over batches
                 elif hasattr(unq_H, 'device') or 'cupy' in W_type and self.W_.nbytes/1e6 > 100:
-                        unq_V = unq_V.get()
-                        unq_H = unq_H.get()
-                        self.W_ = self.W_.get()
+                        try:
+                            unq_V = unq_V.get()
+                            unq_H = unq_H.get()
+                            self.W_ = self.W_.get()
+                        except:
+                            pass
                         logger.debug(f"force numpy fit")
                 for i, (unq_idx, idx) in enumerate(batch_lookup(lookup, n=self.batch_size)):
                     if i == n_batch - 1:
@@ -450,8 +453,10 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                     )
 
             # Compute the norm of the update of W in the last batch
-            W_change = cp.multiply(cp.linalg.norm(self.W_ - W_last), cp.reciprocal(cp.linalg.norm(W_last)))
-
+            if cp:
+                W_change = cp.multiply(cp.linalg.norm(self.W_ - W_last), cp.reciprocal(cp.linalg.norm(W_last)))
+            else:
+                W_change = np.multiply(np.linalg.norm(self.W_ - W_last), np.reciprocal(np.linalg.norm(W_last)))
             if (W_change < self.tol) and (n_iter_ >= self.min_iter - 1):
                 break  # Stop if the change in W is smaller than the tolerance
         if 'cudf' in df_type(unq_X) :
@@ -812,7 +817,7 @@ class GapEncoder(BaseEstimator, TransformerMixin):
         max_iter_e_step: int = 20,
         handle_missing: Literal["error", "empty_impute"] = "zero_impute",
         engine: Engine = "auto",
-        byte_lim: int = 50,
+        byte_lim: int = 8,
 
     ):
         engine_resolved = resolve_engine(engine)
@@ -1096,7 +1101,7 @@ def _multiplicative_update_w(
         if rescale_W:
             _rescale_W(W, A)
         gc.collect()
-        W=cp.array(W); A=cp.array(A); B=cp.array(B)
+
     else:
         try:
             A = A.get()
@@ -1112,8 +1117,9 @@ def _multiplicative_update_w(
         W = np.multiply(A, np.reciprocal(B))#, out=W)
         if rescale_W:
             _rescale_W(W, A)
-        W=np.array(W); A=np.array(A); B=np.array(B)
-    return cp.array(W),cp.array(A),cp.array(B)
+    if deps.cupy:
+        W = cp.array(W); A = cp.array(A); B = cp.array(B) ## can use numpy for mem reasons but still try cupy next loop
+    return W,A,B
 
 @typing.no_type_check
 def _multiplicative_update_w_smallfast(
@@ -1156,8 +1162,9 @@ def _multiplicative_update_w_smallfast(
         if rescale_W:
             _rescale_W(W, A)
         del C,R,T,Ht,Vt
-
-    return cp.array(W),cp.array(A),cp.array(B)
+    if deps.cupy:
+        W = cp.array(W); A = cp.array(A); B = cp.array(B) ## can use numpy for mem reasons but still try cupy next loop
+    return W,A,B
 
 @typing.no_type_check
 def _rescale_h(self, V: np.array, H: np.array) -> np.array:
@@ -1169,11 +1176,14 @@ def _rescale_h(self, V: np.array, H: np.array) -> np.array:
     if deps.cupy:
         H = cp.array(H)
         H *= cp.maximum(epsilon, V.sum(axis=1))
+        H /= H.sum(axis=1, keepdims=True)
+        H = cudf.DataFrame(H)
+
     else:
         H *= np.maximum(epsilon, V.sum(axis=1).A)
-    H /= H.sum(axis=1, keepdims=True)
-
-    return cudf.DataFrame(H)
+        H /= H.sum(axis=1, keepdims=True)
+        H = pd.DataFrame(H)
+    return H
 
 @typing.no_type_check
 def _multiplicative_update_h(
@@ -1300,8 +1310,7 @@ def _multiplicative_update_h_smallfast(
             ht_out = np.multiply(Ht,aux) + const
             squared_norm = np.sum((ht_out - Ht)**2 / (Ht**2))
             Ht = ht_out
-            
-
+        
     return Ht
 
 def batch_lookup(

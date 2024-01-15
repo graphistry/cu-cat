@@ -1,5 +1,6 @@
 from __future__ import annotations
 import joblib, subprocess
+from time import time
 import numpy as np
 import pandas as pd
 import pytest
@@ -337,10 +338,15 @@ def test_HN():
     # import pandas as pd
     askHN = pd.read_csv('https://storage.googleapis.com/cohere-assets/blog/text-clustering/data/askhn3k_df.csv', index_col=0)
     table_vec = TableVectorizer()
+    t = time()
     aa = table_vec.fit_transform((askHN))
+    ct = time() - t
     if deps.dirty_cat:
+        t = time()
         bb = dirty_cat.TableVectorizer().fit_transform(askHN)
+        dt = time() - t
         assert aa.shape[0] == bb.shape[0]
+        assert ct < dt
     else:
         assert aa.shape[0] == askHN.shape[0]
 
@@ -353,10 +359,15 @@ def test_red_team():
     tdf = pd.concat([red_team.reset_index(), ndf.reset_index()])
     tdf['node'] = range(len(tdf))
     table_vec = TableVectorizer()
+    t = time()
     aa = table_vec.fit_transform((tdf))
+    ct = time() - t
     if deps.dirty_cat:
+        t = time()
         bb = dirty_cat.TableVectorizer().fit_transform(tdf)
+        dt = time() - t
         assert aa.shape[0] == bb.shape[0]
+        assert ct < dt
     else:
         assert aa.shape[0] == tdf.shape[0]
 
@@ -373,10 +384,15 @@ def test_malware():
     edf = pd.concat([bot, negs])  # top part of arrays are bot traffic, then all non-bot traffic
     edf = edf.drop_duplicates()
     table_vec = TableVectorizer()
+    t = time()
     aa = table_vec.fit_transform((edf))
+    ct = time() - t
     if deps.dirty_cat:
+        t = time()
         bb = dirty_cat.TableVectorizer().fit_transform(edf)
+        dt = time() - t
         assert aa.shape[0] == bb.shape[0]
+        assert ct <= dt
     else:
         assert aa.shape[0] == edf.shape[0]
 
@@ -394,9 +410,42 @@ def test_20newsgroups():
     news = news[:n_samples]
     news=pd.DataFrame(news)
     table_vec = TableVectorizer()
+    t = time()
     aa = table_vec.fit_transform((news))
+    ct = time() - t
     if deps.dirty_cat:
+        t = time()
         bb = dirty_cat.TableVectorizer().fit_transform(news)
+        dt = time() - t
         assert aa.shape[0] == bb.shape[0]
+        assert ct <= dt
     else:
         assert aa.shape[0] == news.shape[0]
+
+def test_large_news():
+    from sklearn.datasets import fetch_20newsgroups
+    n_samples = 2000
+
+    news, _ = fetch_20newsgroups(
+        shuffle=True,
+        random_state=1,
+        remove=("headers", "footers", "quotes"),
+        return_X_y=True,
+    )
+
+    news = news[:n_samples]
+    news=pd.DataFrame(news)
+    table_vec = TableVectorizer()
+    t = time()
+    aa = table_vec.fit_transform((news))
+    ct = time() - t
+    if deps.dirty_cat:
+        t = time()
+        bb = dirty_cat.TableVectorizer().fit_transform(news)
+        dt = time() - t
+        assert aa.shape[0] == bb.shape[0]
+        assert ct <= dt
+    else:
+        assert aa.shape[0] == news.shape[0]
+
+    
