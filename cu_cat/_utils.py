@@ -122,3 +122,39 @@ def get_sys_memory():
     stats = psutil.virtual_memory()  # returns a named tuple
     available = getattr(stats, 'available')
     return available
+
+
+def make_math_df(self, engine):
+    if ((self.byte_lim*sh*sw)/1e3)<self.gmem:
+        if 'cudf' not in W_type and 'cupy' not in W_type and self.engine =='cuml':
+            try:
+                logger.debug(f"moving to gpu")
+                self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_)
+            except:
+                logger.debug(f"keeping on gpu via cupy")
+                self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy()
+        run_type = 'small'
+    elif not deps.cupy or self.engine !='cuml' and ((self.byte_lim*sh*sw)/1e3)<self.smem:
+        try:
+            self.W_ = self.W_.get(); self.B_ = self.B_.get(); self.A_ = self.A_.get()
+            logger.debug(f"performing mat_mul speed trick on cpu")
+        except:
+            pass
+        run_type = 'small'
+    elif ((self.byte_lim*sh*sw)/1e3)>self.gmem and ((self.byte_lim*sh*sw)/1e3)>self.smem:
+        if self.engine =='cuml' and ((self.byte_lim*sh)/1e3)<self.gmem and ((self.byte_lim*sw)/1e3)<self.gmem:  # standard loop but still gpu
+            try:
+                self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy()
+                logger.debug(f"keeping on gpu via cupy")
+            except:
+                self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_)
+                logger.debug(f"moving to cupy")
+        # Loop over batches
+        else:  # hasattr(unq_H, 'device') or 'cupy' in W_type:  # or fall back iff gpu cannot even load W to memory, let alone multiply
+                try:
+                    unq_V = unq_V.get();unq_H = unq_H.get(); self.W_ = self.W_.get()
+                except:
+                    pass
+                logger.debug(f"force numpy fit")
+        run_type = 'large'
+        return self, run_type
