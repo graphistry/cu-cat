@@ -40,7 +40,7 @@ from sklearn.utils.fixes import _object_dtype_isnan
 from sklearn.utils.validation import check_is_fitted
 from sklearn.decomposition._nmf import _beta_divergence
 
-from ._utils import check_input, parse_version, get_gpu_memory, get_sys_memory, df_type, make_math_df
+from ._utils import check_input, parse_version, get_gpu_memory, get_sys_memory, df_type#, make_math_df
 
 
 from ._dep_manager import deps
@@ -305,7 +305,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         If self.init='random', topics are initialized with a Gamma
         distribution.
         """
-        # if self.init == "random":
+        # if self.init == "random":'
         W = self.random_state.gamma(
             shape=self.gamma_shape_prior,
             scale=self.gamma_scale_prior,
@@ -314,10 +314,16 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         
         # else:
             # raise ValueError(f"Initialization method {self.init!r} does not exist. ")
-        W = np.array(W)
-        W /= W.sum(axis=1, keepdims=True)
-        A = np.ones((self.n_components, self.n_vocab)) * 1e-10
-        B = A.copy()
+        if self.engine=='cuml':
+            W = cp.array(W)
+            W /= W.sum(axis=1, keepdims=True)
+            A = cp.ones((self.n_components, self.n_vocab)) * 1e-10
+            B = A.copy()
+        else:
+            W = np.array(W)
+            W /= W.sum(axis=1, keepdims=True)
+            A = np.ones((self.n_components, self.n_vocab)) * 1e-10
+            B = A.copy()
         return W, A, B
 
     def fit(self, X, y=None) -> "GapEncoderColumn":
@@ -355,25 +361,22 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         unq_V = csr(unq_V)
         sh = len(unq_H)
         sw = max(self.W_.shape)
-        
         if deps.cuml:
             self.gmem = get_gpu_memory()[0]
-            logger.info(f"req gpu mem for fit=  `{(self.byte_lim*sh*sw)/1e3}`, free sys gmem= `{self.gmem}`")
+            logger.info(f"req gpu mem for fit=  `{(self.byte_lim*sh*sw)/1e6}`, free sys gmem= `{self.gmem}`")
         for n_iter_ in range(self.max_iter):
-            if ((self.byte_lim*sh*sw)/1e3)<self.gmem:  # small fast fit
+            if self.engine =='cuml'  and ((self.byte_lim*sh*sw)/1e6)<self.gmem:  # small fast fit
                 logger.debug(f"fitting smallfast-wise")
                 W_type = df_type(self.W_)
-                if 'cudf' not in W_type and 'cupy' not in W_type and self.engine =='cuml':
-                    try:
-                        logger.debug(f"moving to gpu")
-                        self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_)
-                    # if 'cudf' in W_type and self.engine =='cuml':
-                    except:
-                        logger.debug(f"keeping on gpu via cupy")
-                        self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy()
-            elif not deps.cupy or self.engine !='cuml' and ((self.byte_lim*sh*sw)/1e3)<self.smem:  # small fast on cpu increases speed too
+                if 'cudf' in W_type:
+                    self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy(); unq_H=unq_H.to_cupy();unq_V=unq_V.to_cupy();
+                    logger.debug(f"keeping on gpu via cupy for mat_mul fit")
+                elif 'cudf' not in W_type and 'cupy' not in W_type:
+                    self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_);unq_H=cp.array(unq_H);unq_V=cp.array(unq_V);
+                    logger.debug(f"moving to gpu for mat_mul fit")
+            elif self.engine !='cuml' and ((self.byte_lim*sh*sw)/1e6)<self.smem:  # small fast on cpu increases speed too
                 try:
-                    self.W_ = self.W_.get(); self.B_ = self.B_.get(); self.A_ = self.A_.get()
+                    self.W_ = self.W_.get(); self.B_ = self.B_.get(); self.A_ = self.A_.get(); unq_H=unq_H.get();unq_V=unq_V.get();
                     logger.debug(f"performing mat_mul speed trick on cpu")
                 except:
                     pass
@@ -397,22 +400,22 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                 self.rescale_W,
                 self.rho_,
             )
-            if ((self.byte_lim*sh*sw)/1e3)>self.gmem and ((self.byte_lim*sh*sw)/1e3)>self.smem:
+            if (((self.byte_lim*sh*sw)/1e6)>self.gmem and self.engine =='cuml') or ( self.engine !='cuml' and ((self.byte_lim*sh*sw)/1e6)>self.smem):
                 W_type = df_type(self.W_)
-                if self.engine =='cuml' and ((self.byte_lim*sh)/1e3)<self.gmem and ((self.byte_lim*sw)/1e3)<self.gmem:  # standard loop but still gpu
-                    try:
-                        self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy()
-                        logger.debug(f"keeping on gpu via cupy")
-                    except:
-                        self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_)
-                        logger.debug(f"moving to cupy")
+                if self.engine =='cuml' and ((self.byte_lim*sh)/1e6)<self.gmem and ((self.byte_lim*sw)/1e6)<self.gmem:  # standard loop but still gpu
+                    if 'cudf' in W_type:
+                        self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy();unq_H=unq_H.to_cupy();unq_V=unq_V.to_cupy();
+                        logger.debug(f"keeping on gpu via cupy for iterative fit")
+                    elif 'cudf' not in W_type and 'cupy' not in W_type:
+                        self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_);unq_H=cp.array(unq_H);unq_V=cp.array(unq_V);
+                        logger.debug(f"moving to cupy for iterative fit")
                 # Loop over batches
-                else:  # hasattr(unq_H, 'device') or 'cupy' in W_type:  # or fall back iff gpu cannot even load W to memory, let alone multiply
-                        try:
-                            unq_V = unq_V.get();unq_H = unq_H.get(); self.W_ = self.W_.get()
-                        except:
-                            pass
-                        logger.debug(f"force numpy fit")
+                elif self.engine !='cuml':  # or fall back iff gpu cannot even load W to memory, let alone multiply
+                    try:
+                        self.W_ = self.W_.get();self.B_ = self.B_.get();self.A_ = self.A_.get();unq_H=unq_H.get();unq_V=unq_V.get();
+                        logger.debug(f"force numpy iterative fit")
+                    except:
+                        pass
                 for i, (unq_idx, idx) in enumerate(batch_lookup(lookup, n=self.batch_size)):
                     if i == n_batch - 1:
                         W_last = self.W_.copy()
@@ -511,8 +514,9 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
             vocabulary = (vectorizer.get_feature_names_out())
             encoding = self.transform(pd.Series(vocabulary.reshape(-1)))
             encoding = abs(encoding)
-
-        encoding = encoding / np.sum(encoding, axis=1, keepdims=True)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=RuntimeWarning)
+            encoding = encoding / np.sum(encoding, axis=1, keepdims=True)
         n_components = encoding.shape[1]
         topic_labels = []
         for i in range(n_components):
@@ -588,22 +592,20 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         sw = max(self.W_.shape)
         
         # Loop over batches
-        logger.info(f"req gpu mem for transform =  `{(self.byte_lim*sh*sw)/1e3}`, free sys gmem = `{self.gmem}`")
-        if ((self.byte_lim*sh*sw)/1e3)<self.gmem:  # or ((self.byte_lim*sh*sw)/1e3)<self.smem:  # small fast transform gpu or cpu depending on input var types
+        logger.info(f"req gpu mem for transform =  `{(self.byte_lim*sh*sw)/1e6}`, free sys gmem = `{self.gmem}`")
+        if ((self.byte_lim*sh*sw)/1e6)<self.gmem:  # or ((self.byte_lim*sh*sw)/1e6)<self.smem:  # small fast transform gpu or cpu depending on input var types
             logger.debug(f"transforming smallfast-wise")
             W_type = df_type(self.W_)
-            if 'cudf' not in W_type and 'cupy' not in W_type and self.engine =='cuml':
-                try:
-                    logger.debug(f"moving to gpu")
-                    self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_)
-                # if 'cudf' in W_type and self.engine =='cuml':
-                except:
-                    logger.debug(f"keeping on gpu via cupy")
-                    self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy()
-            elif not deps.cupy or self.engine !='cuml' and ((self.byte_lim*sh*sw)/1e3)<self.smem:  # small fast on cpu increases speed too
+            if 'cudf' in W_type and self.engine =='cuml':
+                self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy()
+                logger.debug(f"keeping on gpu via cupy for mat_mul transform")
+            elif 'cudf' not in W_type and 'cupy' not in W_type and self.engine =='cuml':
+                self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_)
+                logger.debug(f"moving to gpu for mat_mul transform")
+            elif self.engine !='cuml' and ((self.byte_lim*sh*sw)/1e6)<self.smem:  # small fast on cpu increases speed too
                 try:
                     self.W_ = self.W_.get(); self.B_ = self.B_.get(); self.A_ = self.A_.get()
-                    logger.debug(f"performing mat_mul speed trick on cpu")
+                    logger.debug(f"performing mat_mul speed trick on cpu for transform")
                 except:
                     pass
             unq_H = _multiplicative_update_h_smallfast(
@@ -616,24 +618,24 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
                     gamma_shape_prior=self.gamma_shape_prior,
                     gamma_scale_prior=self.gamma_scale_prior,
                 )
-        if ((self.byte_lim*sh*sw)/1e3)>self.gmem and ((self.byte_lim*sh*sw)/1e3)>self.smem:
+        if ((self.byte_lim*sh*sw)/1e6)>self.gmem and ((self.byte_lim*sh*sw)/1e6)>self.smem:
             W_type = df_type(self.W_)
-            if self.engine =='cuml' and ((self.byte_lim*sh)/1e3)<self.gmem and ((self.byte_lim*sw)/1e3)<self.gmem:  # standard loop but still gpu
+            if self.engine =='cuml' and ((self.byte_lim*sh)/1e6)<self.gmem and ((self.byte_lim*sw)/1e6)<self.gmem:  # standard loop but still gpu
                 try:
                     self.W_ = self.W_.to_cupy();unq_V = unq_V.to_cupy();unq_H = unq_H.to_cupy()
-                    logger.debug(f"keeping on gpu via cupy for transform")
+                    logger.debug(f"keeping on gpu via cupy for iterative transform")
                 except:
                     self.W_ = cp.array(self.W_);unq_V = csr(unq_V); unq_H = cp.array(unq_H)
-                    logger.debug(f"moving to cupy for transform")
+                    logger.debug(f"moving to cupy for iterative transform")
             # Loop over batches
-            else:  # hasattr(unq_H, 'device') or 'cupy' in W_type:  # or fall back iff gpu cannot even load W to memory, let alone multiply
+            elif self.engine!='cuml':  # hasattr(unq_H, 'device') or 'cupy' in W_type:  # or fall back iff gpu cannot even load W to memory, let alone multiply
                     try:
                         unq_V = unq_V.get();unq_H = unq_H.get(); self.W_ = self.W_.get()
                     except:
                         pass
-                    logger.debug(f"force numpy transform")
+                    logger.debug(f"force numpy iterative transform")
             ## comment first if out to force faster numpy transform if not enough gpu memory for small_fast & scale not large enough to benefit from loop of GPU
-            # if self.engine =='cuml' and deps.cuml and ((self.byte_lim*sh)/1e3)<self.gmem and ((self.byte_lim*sw)/1e3)<self.gmem:  # else normal transform on gpu
+            # if self.engine =='cuml' and deps.cuml and ((self.byte_lim*sh)/1e6)<self.gmem and ((self.byte_lim*sw)/1e6)<self.gmem:  # else normal transform on gpu
             #     logger.debug(f"cupy transform")
             #     try:
             #         self.W_ = cp.array(self.W_)
@@ -1332,7 +1334,9 @@ def _multiplicative_update_h_smallfast(
             C = Vt.multiply( np.reciprocal(np.matmul(Ht, W) + 1e-10)) ##sparse now
             aux = C.dot(W_WT1)
             ht_out = np.multiply(Ht,aux) + const
-            squared_norm = np.sum((ht_out - Ht)**2 / (Ht**2))
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=RuntimeWarning)
+                squared_norm = np.sum((ht_out - Ht)**2 / (Ht**2))
             Ht = ht_out
         
     return Ht

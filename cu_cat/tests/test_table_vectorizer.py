@@ -417,8 +417,8 @@ def test_20newsgroups():
     t = time()
     bb = dirty_cat.TableVectorizer().fit_transform(news)
     dt = time() - t
-    # assert aa.shape[0] == bb.shape[0]
-    assert ct < dt
+    assert aa.shape[0] == bb.shape[0]
+    # assert ct < dt ## only GPU is faster
     # else:
         # assert aa.shape[0] == news.shape[0]
 
@@ -443,8 +443,8 @@ def test_large_news():
     t = time()
     bb = dirty_cat.TableVectorizer().fit_transform(news)
     dt = time() - t
-    # assert aa.shape[0] == bb.shape[0]
-    assert ct < dt
+    assert aa.shape[0] == bb.shape[0]
+    # assert ct < dt ## only GPU is fatser
     # else:
     #     assert aa.shape[0] == news.shape[0]
 
