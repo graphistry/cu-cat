@@ -13,7 +13,7 @@ core_requires = [
   'logging',
   'typing',
   'pyarrow>=0.15.0',
-  'scikit-learn',
+  'scikit-learn==1.3.2',
   'flake8>=5.0',
   'mypy',
   'pytest',
@@ -28,8 +28,8 @@ core_requires = [
 # if __name__ == "__main__":
 setup(
     name='cu-cat',
-    version='0.09.04',  # versioneer.get_version(),
-    # cmdclass='0.9.04',  # versioneer.get_cmdclass(),
+    version='0.09.08',  # versioneer.get_version(),
+    # cmdclass='0.9.08',  # versioneer.get_cmdclass(),
     packages = find_packages(),
     platforms='any',
     description = 'An end-to-end gpu Python library that encodes categorical variables into machine-learnable numerics',
