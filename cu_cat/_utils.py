@@ -158,3 +158,15 @@ def make_math_df(self, engine):
                 logger.debug(f"force numpy fit")
         run_type = 'large'
         return self, run_type
+    
+def _transform_one(transformer, X, y, weight, **fit_params):
+    try:
+        res = transformer.transform(X).to_output('cupy')
+    except AttributeError:
+        res = transformer.transform(X)
+    except TypeError:
+        res = transformer.transform(X.to_numpy())
+    # if we have a weight for this transformer, multiply output
+    if weight is None:
+        return res
+    return res * weight

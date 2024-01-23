@@ -21,11 +21,12 @@ from sklearn.utils.validation import check_is_fitted
 
 from ._gap_encoder import GapEncoder, make_safe_gpu_dataframes  # type: ignore
 from ._dep_manager import deps
-from ._utils import parse_version, df_type  # type: ignore
+from ._utils import parse_version, df_type, _transform_one  # type: ignore
 
 cuml = deps.cuml
 if cuml and cuml.__version__ < "24.02.00" and cuml.__version__ > "23.06.00": 
     cuml.internals.base_return_types._process_generic = cuml.internals.base_helpers._process_generic
+cuml._thirdparty.sklearn.preprocessing._column_transformer._transform_one = _transform_one
 if cuml:
     from cuml.compose import ColumnTransformer
     from cuml.preprocessing import OneHotEncoder
@@ -394,7 +395,7 @@ class TableVectorizer(ColumnTransformer):
         impute_missing: Literal["auto", "force", "skip"] = "auto",
         # The next parameters are inherited from ColumnTransformer
         remainder: Union[Literal["drop", "passthrough"], TransformerMixin] = "passthrough",
-        sparse_threshold: float = 0.3,
+        sparse_threshold: float = 0.0,
         transformer_weights=None,
         verbose: bool = False,
     ):
@@ -494,7 +495,7 @@ class TableVectorizer(ColumnTransformer):
         for i in obj_col:
             X[i] = X[i].replace('nan',np.nan).fillna('0o0o0')
             X[i] = X[i].str.rjust(4,'0')
-            X[i] = X[i].str.replace('.', 'dot', regex=False) #for IP addresses
+            # X[i] = X[i].str.replace('.', 'dot', regex=False) #for IP addresses
 
         num_col = X.select_dtypes(include=['int64','float64']).columns
         for i in num_col:
@@ -774,11 +775,11 @@ class TableVectorizer(ColumnTransformer):
             )
         self.Xt_= df_type(X)
         X, y = make_safe_gpu_dataframes(X, None, self.engine_)
-        if not isinstance(X, pd.DataFrame) and not 'cudf' in self.Xt_:
-            X = pd.DataFrame(X)
-        else:
+        # if not isinstance(X, pd.DataFrame) and not 'cudf' in self.Xt_:
+            # X = pd.DataFrame(X)
+        # else:
             # Create a copy to avoid altering the original data.
-            X = X.copy()
+        X = X.copy()
 
         if (X.columns != self.columns_).all():
             X.columns = self.columns_
@@ -792,6 +793,8 @@ class TableVectorizer(ColumnTransformer):
         if isinstance(X, pd.DataFrame) and 'cudf' in self.Xt_:
             cudf = deps.cudf
             X = cudf.from_pandas(X)
+        # if 'coo_matrix' in str(getmodule(X)):
+        #     X= X.todense()
         return super().transform(X)
 
     def get_feature_names_out(self, input_features=None) -> List[str]:
