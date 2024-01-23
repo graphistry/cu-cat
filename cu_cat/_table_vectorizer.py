@@ -26,9 +26,9 @@ from ._utils import parse_version, df_type, _transform_one  # type: ignore
 cuml = deps.cuml
 if cuml and cuml.__version__ < "24.02.00" and cuml.__version__ > "23.06.00": 
     cuml.internals.base_return_types._process_generic = cuml.internals.base_helpers._process_generic
-cuml._thirdparty.sklearn.preprocessing._column_transformer._transform_one = _transform_one
 if cuml:
     from cuml.compose import ColumnTransformer
+    cuml._thirdparty.sklearn.preprocessing._column_transformer._transform_one = _transform_one
     from cuml.preprocessing import OneHotEncoder
     from cuml.preprocessing import StandardScaler
 else:
