@@ -17,7 +17,7 @@ except ModuleNotFoundError:
 from ._deduplicate import compute_ngram_distance, deduplicate
 from ._datetime_encoder import DatetimeEncoder
 from ._dep_manager import DepManager
-from ._gap_encoder import GapEncoder
+from ._gap_encoder import GapEncoder  # type: ignore
 from ._table_vectorizer import SuperVectorizer, TableVectorizer
 
 with open(_Path(__file__).parent / "VERSION.txt") as _fh:
@@ -29,6 +29,7 @@ __all__ = [
     "GapEncoder",
     "SuperVectorizer",
     "TableVectorizer",
+    "DepManager",
     "deduplicate",
     "compute_ngram_distance"
 ]

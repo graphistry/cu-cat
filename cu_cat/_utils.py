@@ -1,14 +1,17 @@
+# type: ignore
+
 import collections
 from typing import Any, Hashable
 from inspect import getmodule
 import numpy as np
 from sklearn.utils import check_array
 from ._dep_manager import deps
+import subprocess as sp
 
 cp = deps.cupy
 cudf = deps.cudf
 psutil = deps.psutil
-import subprocess as sp
+
 # import cupy as cp
 
 try:
@@ -66,7 +69,7 @@ def check_input(X) -> np.ndarray:
         if X_.dtype.kind in {"U", "S"}:  # contains strings
             if np.any(X_ == "nan"):  # missing value converted to string
                 return check_array(
-                    np.array(X, dtype=object),  ## had been using cp here, but not necessary
+                    np.array(X, dtype=object),  # had been using cp here, but not necessary
                     dtype=None,
                     ensure_2d=True,
                     force_all_finite=False,
@@ -74,7 +77,7 @@ def check_input(X) -> np.ndarray:
     if 'numpy' not in str(getmodule(X)):
         for k in range(X.shape[1]):
             try:
-                X.iloc[:,k]=cudf.to_numeric(X.iloc[:,k], downcast='float').to_cupy()
+                X.iloc[:,k] = cudf.to_numeric(X.iloc[:,k], downcast='float').to_cupy()
             except:
                 pass
         X_ = X
@@ -86,9 +89,9 @@ def df_type(df):
     Returns df type
     """
 
-    try: # if not cp:
+    try:  # if not cp:
         X = str(getmodule(df))
-    except: # if cp:
+    except:  # if cp:
         X = str(cp.get_array_module(df))
     return X
 
@@ -119,3 +122,51 @@ def get_sys_memory():
     stats = psutil.virtual_memory()  # returns a named tuple
     available = getattr(stats, 'available')
     return available
+
+
+def make_math_df(self, engine):
+    if ((self.byte_lim*sh*sw)/1e3)<self.gmem:
+        if 'cudf' not in W_type and 'cupy' not in W_type and self.engine =='cuml':
+            try:
+                logger.debug(f"moving to gpu")
+                self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_)
+            except:
+                logger.debug(f"keeping on gpu via cupy")
+                self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy()
+        run_type = 'small'
+    elif not deps.cupy or self.engine !='cuml' and ((self.byte_lim*sh*sw)/1e3)<self.smem:
+        try:
+            self.W_ = self.W_.get(); self.B_ = self.B_.get(); self.A_ = self.A_.get()
+            logger.debug(f"performing mat_mul speed trick on cpu")
+        except:
+            pass
+        run_type = 'small'
+    elif ((self.byte_lim*sh*sw)/1e3)>self.gmem and ((self.byte_lim*sh*sw)/1e3)>self.smem:
+        if self.engine =='cuml' and ((self.byte_lim*sh)/1e3)<self.gmem and ((self.byte_lim*sw)/1e3)<self.gmem:  # standard loop but still gpu
+            try:
+                self.W_ = self.W_.to_cupy(); self.B_ = self.B_.to_cupy(); self.A_ = self.A_.to_cupy()
+                logger.debug(f"keeping on gpu via cupy")
+            except:
+                self.W_ = cp.array(self.W_); self.B_ = cp.array(self.B_); self.A_ = cp.array(self.A_)
+                logger.debug(f"moving to cupy")
+        # Loop over batches
+        else:  # hasattr(unq_H, 'device') or 'cupy' in W_type:  # or fall back iff gpu cannot even load W to memory, let alone multiply
+                try:
+                    unq_V = unq_V.get();unq_H = unq_H.get(); self.W_ = self.W_.get()
+                except:
+                    pass
+                logger.debug(f"force numpy fit")
+        run_type = 'large'
+        return self, run_type
+    
+def _transform_one(transformer, X, y, weight, **fit_params):
+    try:
+        res = transformer.transform(X).to_output('cupy')
+    except AttributeError:
+        res = transformer.transform(X)
+    except TypeError:
+        res = transformer.transform(X.to_numpy())
+    # if we have a weight for this transformer, multiply output
+    if weight is None:
+        return res
+    return res * weight

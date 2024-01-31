@@ -1,0 +1,141 @@
+name: CI Tests
+
+on:
+
+  #NOTE: All jobs gated by auth job
+
+  #Regular dev
+  push:
+  pull_request:
+
+  #Enable UI-driven branch testing
+  workflow_dispatch:
+
+  #Test main bidaily @ 1a
+  schedule:
+    - cron: '0 1 1-31/2 * *'
+
+jobs:
+
+
+  test-minimal-python:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, '3.10', 3.11]
+
+    steps:
+
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        lfs: true
+
+    - name: Checkout LFS objects
+      run: git lfs pull
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install test dependencies
+      run: |
+        python -m venv cu_cat
+        source cu_cat/bin/activate
+        python -m pip install --upgrade pip
+        python -m pip install -e .[test]
+
+    - name: Lint
+      run: |
+        source cu_cat/bin/activate
+        ./bin/lint.sh
+
+    - name: Type check
+      run: |
+        source cu_cat/bin/activate
+        ./bin/typecheck.sh
+
+    - name: Minimal tests
+      run: |
+        source cu_cat/bin/activate
+        ./bin/test-minimal.sh
+
+
+  test-core-python:
+
+    needs: [ test-minimal-python ]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, '3.10', 3.11]
+
+    steps:
+
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        lfs: true
+
+    - name: Checkout LFS objects
+      run: git lfs pull
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install test dependencies
+      run: |
+        python -m venv cu_cat
+        source cu_cat/bin/activate
+        python -m pip install --upgrade pip
+        python -m pip install -e .[test]
+        # python -m pip install --extra-index-url=https://pypi.nvidia.com cuml-cu12==23.12.00 cudf-cu12==23.12.00 #cugraph-cu11 pylibraft_cu11 raft_dask_cu11 dask_cudf_cu11 pylibcugraph_cu11 pylibraft_cu11
+
+    - name: Lint
+      run: |
+        source cu_cat/bin/activate
+        ./bin/lint.sh
+
+    - name: Type check
+      run: |
+        source cu_cat/bin/activate
+        ./bin/typecheck.sh
+
+    - name: Core tests
+      run: |
+        source cu_cat/bin/activate
+        ./bin/test-core.sh
+
+  test-build:
+
+    needs: [ test-minimal-python ]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        lfs: true
+
+    - name: Checkout LFS objects
+      run: git lfs pull
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -e .[build]
+
+    - name: Test building
+      run: |
+        ./bin/build.sh
+
+  

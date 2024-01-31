@@ -1,15 +1,15 @@
+from __future__ import annotations
 import random
-
 import numpy as np
 from numpy.typing import NDArray
-
+import pandas as pd
 
 def generate_data(
-    n_samples: int,
-    as_list: bool = False,
-    random_state: int | float | str | bytes | bytearray | None = None,
+    n_samples,
+    as_list=False,
+    random_state: Optional[Union[int, float, str, bytes, bytearray]] = None,
     sample_length: int = 100,
-) -> NDArray:
+) -> np.ndarray:
     if random_state is not None:
         random.seed(random_state)
     MAX_LIMIT = 255  # extended ASCII Character set
@@ -26,7 +26,7 @@ def generate_data(
         X = str_list
     else:
         X = np.array(str_list).reshape(n_samples, 1)
-    return X
+    return pd.DataFrame(X)
 
 
 def is_valid_attribute(attribute):
@@ -58,7 +58,7 @@ def is_valid_attribute(attribute):
 
 def transformers_equal(transformer1, transformer2, ignore_params=None):
     # Check if the transformers are of the same type
-    if type(transformer1) != type(transformer2):
+    if not isinstance(type(transformer1),type(transformer2)):
         return False
 
     # if string transformers, check if they are the same

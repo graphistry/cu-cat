@@ -1,3 +1,4 @@
+# type: ignore
 """
 Fetching functions to retrieve example datasets, using fetch_openml.
 

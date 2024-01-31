@@ -1,5 +1,10 @@
 
 # **cu-cat** 
+```
+ /\_/\
+( o.o )
+ > ^ <
+```
 
 ****cu-cat**** is an end-to-end gpu Python library that encodes
 categorical variables into machine-learnable numerics. It is a cuda
@@ -14,6 +19,29 @@ The latest PyGraphistry[AI] release GPU accelerates to its automatic feature enc
 The Graphistry team has been growing the library out of need. The straw that broke the camel’s back was in December 2022 when we were hacking on our winning entry to the US Cyber Command AI competition for automatically correlating & triaging  gigabytes of alerts, and we realized that what was slowing down our team's iteration cycles was CPU-based feature engineering, basically pouring sand into our otherwise humming end-to-end GPU AI pipeline. Two months later, cu_cat was born. Fast forward to now, and we are getting ready to make it default-on for all our work.
 
 Hinted by its name, cu_cat is our GPU-accelerated open source fork of the popular CPU Python  library dirty_cat.   Like dirty_cat, cu_cat makes it easy to convert messy dataframes filled with numbers, strings, and timestamps into numeric feature columns optimized for AI models. It adds interoperability for GPU dataframes and replaces key kernels and algorithms with faster and more scalable GPU variants. Even on low-end GPUs, we are now able to tackle much larger datasets in the same amount of time – or for the first time! – with end-to-end pipelines. We typically save time with **3-5X speedups and will even see 10X+**, to the point that the more data you encode, the more time you save!
+
+# What can **cu-cat** NOT do?
+
+Since **cu_cat** is limited to CUDF/CUML dataframes, it is not a drop-in replacement for dirty_cat.  While it can also fallback to CPU, it is also not a drop-in replacement for the CPU-based dirty_cat, and we are not planning to make it one.  We developed this library to accelerate our own **graphistry** end-to-end pipelines, and as such it is only `TableVectorizer` and `GapEncoder` which have been optimized to take advantage of a GPU speed boost.
+
+Similarly, **cu_cat** requires pandas or cudf input numpy array can be featurized but cannot be UMAP-ed since they lack index, and are thus not supported.
+
+# What degree of speed boost can I expect with **cu-cat**, compared to dirty-cat or similar CPU feature encoders?
+
+We have routinely experienced boosts of 2x on smaller datasets to 10x and more as one scales data into millions of features (features roughly equates to unique elements in rows x columns). One can observe this in the video above, demonstrated in the following plots:
+
+There is an inflection point when overhead of transing data to GPU is offset by speed boost, as we can see here. The axis represent unique features being inferred.
+
+![image](examples/cucat_V_dirty.png)
+
+As we can see, with scale the divergence in speed is obvious.
+
+![image](examples/big_cucat_V_dirty.png)
+
+However, this graph does not mean to imply the trend goes on forever, as currently **cu-cat** is single GPU and cannot batch (as the transfer cost is too much for our current needs), and thus each dataset, and indeed GPU + GPU memory, is unique, and thus these plots are meant merely for demonstrative purposes.
+GPU = colab T4 + 15gb mem and colab CPU + 12gb memory
+
+
 
 ## Startup Code:
 

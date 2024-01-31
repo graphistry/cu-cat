@@ -1,18 +1,20 @@
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional,no_type_check
 from warnings import warn
 
 from ._dep_manager import deps
+
 cudf = deps.cudf
 if cudf is None:
     cudf = deps.pandas
     np = deps.numpy
 else:
     np = deps.cupy
+
 from sklearn import __version__ as sklearn_version
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import check_is_fitted
 
-from cu_cat._utils import check_input, parse_version
+from ._utils import check_input, parse_version  # type: ignore
 
 # Required for ignoring lines too long in the docstrings
 # flake8: noqa: E501
@@ -133,39 +135,40 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
             )
 
     @staticmethod
+    @no_type_check
     def _extract_from_date(date_series: cudf.Series, feature: str):
         if feature == "year":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).year.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).year.to_numpy())#.to_cupy()
         elif feature == "month":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).month.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).month.to_numpy())#.to_cupy()
         elif feature == "day":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).day.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).day.to_numpy())#.to_cupy()
         elif feature == "hour":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).hour.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).hour.to_numpy())#.to_cupy()
         elif feature == "minute":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).minute.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).minute.to_numpy())#.to_cupy()
         elif feature == "second":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).second.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).second.to_numpy())#.to_cupy()
         elif feature == "millisecond":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).millisecond.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).millisecond.to_numpy())#.to_cupy()
         elif feature == "microsecond":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).microsecond.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).microsecond.to_numpy())#.to_cupy()
         elif feature == "nanosecond":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).nanosecond.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).nanosecond.to_numpy())#.to_cupy()
         elif feature == "dayofweek":
-            return cudf.Series(pd.DatetimeIndex(date_series.to_pandas()).dayofweek.to_numpy())#.to_cupy()
+            return cudf.Series(cudf.DatetimeIndex(date_series.to_pandas()).dayofweek.to_numpy())#.to_cupy()
         elif feature == "total_time":
-            tz = pd.DatetimeIndex(date_series.to_pandas()).tz
+            tz = cudf.DatetimeIndex(date_series.to_pandas()).tz
             # Compute the time in seconds from the epoch time UTC
             if tz is None:
                 return cudf.Series(
-                    cudf.Series(pd.to_datetime(date_series.to_pandas()) - cudf.Timestamp("1970-01-01")
-                ) // pd.Timedelta("1s"))#.to_cupy()
+                    cudf.Series(cudf.to_datetime(date_series.to_pandas()) - cudf.Timestamp("1970-01-01")
+                ) // cudf.Timedelta("1s"))#.to_cupy()
             else:
                 return cudf.Series(
-                    (pd.DatetimeIndex(date_series.to_pandas()).tz_convert("utc")
-                    - pd.Timestamp("1970-01-01", tz="utc")
-                ) // pd.Timedelta("1s"))#.to_cupy()
+                    (cudf.DatetimeIndex(date_series.to_pandas()).tz_convert("utc")
+                    - cudf.Timestamp("1970-01-01", tz="utc")
+                ) // cudf.Timedelta("1s"))#.to_cupy()
 
     def fit(self, X, y=None) -> "DatetimeEncoder":
         """Fit the instance to X.
@@ -221,7 +224,8 @@ class DatetimeEncoder(BaseEstimator, TransformerMixin):
         )
 
         return self
-
+    
+    @no_type_check
     def transform(self, X, y=None) -> np.ndarray:
         """Transform X by replacing each datetime column with corresponding numerical features.
 

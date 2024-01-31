@@ -7,7 +7,7 @@ Implemented on GPU exclusively through use of GapEncoder in cu_cat
 """
 
 from typing import Dict, List, Literal, Optional, Tuple, Union
-from warnings import warn
+import warnings,logging
 from inspect import getmodule
 
 import numpy as np
@@ -19,20 +19,22 @@ from sklearn.base import TransformerMixin, clone
 from sklearn.utils.deprecation import deprecated
 from sklearn.utils.validation import check_is_fitted
 
-from cu_cat import GapEncoder
-from cu_cat._gap_encoder import make_safe_gpu_dataframes
+from ._gap_encoder import GapEncoder, make_safe_gpu_dataframes  # type: ignore
 from ._dep_manager import deps
-from cu_cat._utils import parse_version, df_type
+from ._utils import parse_version, df_type, _transform_one  # type: ignore
 
 cuml = deps.cuml
 if cuml and cuml.__version__ < "24.02.00" and cuml.__version__ > "23.06.00": 
     cuml.internals.base_return_types._process_generic = cuml.internals.base_helpers._process_generic
 if cuml:
     from cuml.compose import ColumnTransformer
+    cuml._thirdparty.sklearn.preprocessing._column_transformer._transform_one = _transform_one
     from cuml.preprocessing import OneHotEncoder
+    from cuml.preprocessing import StandardScaler
 else:
     from sklearn.compose import ColumnTransformer
     from sklearn.preprocessing import OneHotEncoder
+    from sklearn.preprocessing import StandardScaler
 # import cuml,cudf
 # from cuml.compose import ColumnTransformer
 # from cuml.preprocessing import OneHotEncoder
@@ -42,6 +44,8 @@ if cudf:
 
 # Required for ignoring lines too long in the docstrings
 # flake8: noqa: E501
+
+logger = logging.getLogger()
 
 def _infer_date_format(date_column: pd.Series, n_trials: int = 100) -> Optional[str]:
     """Infer the date format of a date column,
@@ -61,7 +65,7 @@ def _infer_date_format(date_column: pd.Series, n_trials: int = 100) -> Optional[
         If no format could be inferred, returns None.
     """
     if len(date_column) == 0:
-        return
+        return None
     date_column_sample = date_column.dropna().sample(
         frac=min(n_trials / len(date_column), 1), random_state=42
     )
@@ -70,15 +74,19 @@ def _infer_date_format(date_column: pd.Series, n_trials: int = 100) -> Optional[
     with warnings.catch_warnings():
         # pandas warns when dayfirst is not strictly applied
         warnings.simplefilter("ignore")
+        # if pd.__version >= 2.2.0 or pd.__version <= 0.24.0:
+            # pandas 2.2.0 and above, and 0.24.0 and below
+            # have a bug where dayfirst is not strictly applied
+            # so we need to check both dayfirst and monthfirst
         date_format_monthfirst = date_column_sample.apply(
-            lambda x: guess_datetime_format(x)
+            lambda x: pd.guess_datetime_format(x)
         )
         date_format_dayfirst = date_column_sample.apply(
-            lambda x: guess_datetime_format(x, dayfirst=True),
+            lambda x: pd.guess_datetime_format(x, dayfirst=True),
         )
     # if one row could not be parsed, return None
     if date_format_monthfirst.isnull().any() or date_format_dayfirst.isnull().any():
-        return
+        return None
     # even with dayfirst=True, monthfirst format can be inferred
     # so we need to check if the format is the same for all the rows
     elif date_format_monthfirst.nunique() == 1:
@@ -104,14 +112,14 @@ def _infer_date_format(date_column: pd.Series, n_trials: int = 100) -> Optional[
     else:
         # more than two different formats were found
         # TODO: maybe we could deal with this case
-        return
+        return None
 
 def _has_missing_values(self, df: Union[pd.DataFrame, pd.Series]) -> bool:
     """
     Returns True if `array` contains missing values, False otherwise.
     """
     if 'cudf' in self.Xt_:
-        df=df.to_pandas()
+        df = df.to_pandas()
     return any(df.isnull())
 
 def _replace_false_missing(
@@ -145,7 +153,7 @@ def _replace_false_missing(
         "#N/A",
         "NaN",
     ]  # taken from pandas.io.parsers (version 1.1.4)
-    Xt_= df_type(df)
+    Xt_ = df_type(df)
     if 'cudf' not in Xt_:
         df = df.replace(STR_NA_VALUES + [None, "?", "..."], np.nan)
         df = df.replace(r"^\s+$", np.nan, regex=True)  # Replace whitespaces
@@ -156,9 +164,9 @@ def _replace_false_missing(
                 df[i] = df[i].astype('str')
                 df[i] = df[i].replace(STR_NA_VALUES + [None, "?", "..."], 'None')
             try:
-                df[i]=df[i].str.normalize_spaces()
+                df[i] = df[i].str.normalize_spaces()
             except:
-                df[i]=df[i]
+                df[i] = df[i]
             try:
                 df[i] = df[i].replace({pd.NA: np.nan})
             except:
@@ -168,7 +176,7 @@ def _replace_false_missing(
             except:
                 pass
             try:
-                df[i]=cudf.from_pandas(df[i],nan_as_null=False)
+                df[i] = cudf.from_pandas(df[i],nan_as_null=False)
             except:
                 pass
     return df
@@ -305,11 +313,6 @@ class TableVectorizer(ColumnTransformer):
         When the transformed output consists of all dense data, the stacked
         result will be dense, and this keyword will be ignored.
 
-    n_jobs : int, optional
-        Number of jobs to run in parallel.
-        ``None`` (the default) means 1 unless in a
-        :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors.
 
     transformer_weights : dict, optional
         Multiplicative weights for features per transformer. The output of the
@@ -377,7 +380,7 @@ class TableVectorizer(ColumnTransformer):
     imputed_columns_: List[str]
 
     # Override required parameters
-    _required_parameters = []
+    _required_parameters = [] # type: ignore
 
     def __init__(
         self,
@@ -385,17 +388,14 @@ class TableVectorizer(ColumnTransformer):
         cardinality_threshold: int = 40,
         low_card_cat_transformer: OptionalTransformer = None,
         high_card_cat_transformer: OptionalTransformer = None,
-        numerical_transformer: OptionalTransformer = None,
+        numerical_transformer: OptionalTransformer = StandardScaler(),
         datetime_transformer: OptionalTransformer = "passthrough",
         auto_cast: bool = True,
         output_type: Literal["cupy", "cudf", "pandas", "numpy"] = "cudf",
         impute_missing: Literal["auto", "force", "skip"] = "auto",
         # The next parameters are inherited from ColumnTransformer
-        remainder: Union[
-            Literal["drop", "passthrough"], TransformerMixin
-        ] = "passthrough",
-        sparse_threshold: float = 0.3,
-        n_jobs: int = None, ## this fills up parallelization; prev None = 1 process
+        remainder: Union[Literal["drop", "passthrough"], TransformerMixin] = "passthrough",
+        sparse_threshold: float = 0.0,
         transformer_weights=None,
         verbose: bool = False,
     ):
@@ -411,7 +411,6 @@ class TableVectorizer(ColumnTransformer):
         self.output_type = output_type
         self.remainder = remainder
         self.sparse_threshold = sparse_threshold
-        self.n_jobs = n_jobs
         self.transformer_weights = transformer_weights
         self.verbose = verbose
 
@@ -432,25 +431,25 @@ class TableVectorizer(ColumnTransformer):
         down the line in `ColumnTransformer.fit_transform`.
         """
         if isinstance(self.low_card_cat_transformer, sklearn.base.TransformerMixin):
-            self.low_card_cat_transformer_ = clone(self.low_card_cat_transformer)
+            self.low_cardinality_transformer_ = clone(self.low_card_cat_transformer)
         elif self.low_card_cat_transformer is None:
             if deps.cuml:
-                self.low_card_cat_transformer_ = OneHotEncoder(output_type= self.output_type, handle_unknown='ignore')
+                self.low_cardinality_transformer_ = OneHotEncoder(output_type= self.output_type, handle_unknown='ignore')
             else:
-                self.low_card_cat_transformer_ = OneHotEncoder( handle_unknown='ignore')
+                self.low_cardinality_transformer_ = OneHotEncoder( handle_unknown='ignore')
         elif self.low_card_cat_transformer == "remainder":
-            self.low_card_cat_transformer_ = self.remainder
+            self.low_cardinality_transformer_ = self.remainder
         else:
-            self.low_card_cat_transformer_ = self.low_card_cat_transformer
+            self.low_cardinality_transformer_ = self.low_card_cat_transformer
 
         if isinstance(self.high_card_cat_transformer, sklearn.base.TransformerMixin):
-            self.high_card_cat_transformer_ = clone(self.high_card_cat_transformer)
+            self.high_cardinality_transformer_ = clone(self.high_card_cat_transformer)
         elif self.high_card_cat_transformer is None:
-            self.high_card_cat_transformer_ = GapEncoder(n_components=30)
+            self.high_cardinality_transformer_ = GapEncoder(n_components=30)
         elif self.high_card_cat_transformer == "remainder":
-            self.high_card_cat_transformer_ = self.remainder
+            self.high_cardinality_transformer_ = self.remainder
         else:
-            self.high_card_cat_transformer_ = self.high_card_cat_transformer
+            self.high_cardinality_transformer_ = self.high_card_cat_transformer
 
         if isinstance(self.numerical_transformer, sklearn.base.TransformerMixin):
             self.numerical_transformer_ = clone(self.numerical_transformer)
@@ -492,7 +491,18 @@ class TableVectorizer(ColumnTransformer):
         X = _replace_false_missing(X)
 
         # Handle missing values
-        for col in X.columns:
+        obj_col = X.select_dtypes(include=['object']).columns
+        for i in obj_col:
+            X[i] = X[i].replace('nan',np.nan).fillna('0o0o0')
+            X[i] = X[i].str.rjust(4,'0')
+            # X[i] = X[i].str.replace('.', 'dot', regex=False) #for IP addresses
+
+        num_col = X.select_dtypes(include=['int64','float64']).columns
+        for i in num_col:
+            X[i] = X[i].fillna(0)
+            X[i] = pd.to_numeric(X[i],downcast='float',errors='ignore')
+
+        for col in X.columns:            
             # Convert pandas' NaN value (pd.NA) to numpy NaN value (np.nan)
             # because the former tends to raise all kind of issues when dealing
             # with scikit-learn (as of version 0.24).
@@ -542,7 +552,7 @@ class TableVectorizer(ColumnTransformer):
             # if categorical, add the new categories to prevent	
             # them to be encoded as nan	
             if pd.api.types.is_categorical_dtype(dtype):	
-                known_categories = dtype.categories	
+                known_categories = dtype.categories # type: ignore
                 new_categories = pd.unique(X[col])	
                 dtype = pd.CategoricalDtype(	
                     categories=known_categories.union(new_categories)	
@@ -627,12 +637,12 @@ class TableVectorizer(ColumnTransformer):
         _nunique_values = {  # Cache results
             col: X[col].nunique() for col in categorical_columns
         }
-        low_card_cat_columns = [
+        low_cardinality_columns = [
             col
             for col in categorical_columns
             if _nunique_values[col] < self.cardinality_threshold
         ]
-        high_card_cat_columns = [
+        high_cardinality_columns = [
             col
             for col in categorical_columns
             if _nunique_values[col] >= self.cardinality_threshold
@@ -643,18 +653,18 @@ class TableVectorizer(ColumnTransformer):
         # Next part: construct the transformers
         # Create the list of all the transformers.
         if self.datetime_transformer_ != "passthrough":
-            all_transformers: List[Tuple[str, OptionalTransformer, List[str]]] = [
+            all_transformers: List[Tuple[str, OptionalTransformer, List[str]]] = [  # type: ignore
                 ("numeric", self.numerical_transformer, numeric_columns),
                 ("datetime", self.datetime_transformer_, datetime_columns),
-                ("low_card_cat", self.low_card_cat_transformer_, low_card_cat_columns),
-                ("high_card_cat", self.high_card_cat_transformer_, high_card_cat_columns),
+                ("low_cardinality", self.low_cardinality_transformer_, low_cardinality_columns),
+                ("high_cardinality", self.high_cardinality_transformer_, high_cardinality_columns),
             ]
         else:
-            all_transformers: List[Tuple[str, OptionalTransformer, List[str]]] = [
+            all_transformers: List[Tuple[str, OptionalTransformer, List[str]]] = [  # type: ignore
             ("numeric", self.numerical_transformer, numeric_columns),
             # ("datetime", self.datetime_transformer_, datetime_columns), ## commented out if in dt format so pyg can handle
-            ("low_card_cat", self.low_card_cat_transformer_, low_card_cat_columns),
-            ("high_card_cat", self.high_card_cat_transformer_, high_card_cat_columns),
+            ("low_cardinality", self.low_cardinality_transformer_, low_cardinality_columns),
+            ("high_cardinality", self.high_cardinality_transformer_, high_cardinality_columns),
         ]
         # We will now filter this list, by keeping only the ones with:
         # - at least one column
@@ -683,7 +693,7 @@ class TableVectorizer(ColumnTransformer):
 
                 elif self.impute_missing == "auto":
                     for name, trans, cols in all_transformers:
-                        impute: bool = False
+                        impute: bool = False  # type: ignore
 
                         if isinstance(trans, OneHotEncoder) and parse_version(
                             sklearn_version
@@ -706,12 +716,15 @@ class TableVectorizer(ColumnTransformer):
             print(f"[TableVectorizer] Assigned transformers: {self.transformers}")
         if 'cudf' not in str(getmodule(X)) and deps.cudf:
         # if deps.cudf and 'cudf' not in str(getmodule(X)):
-            X=cudf.from_pandas(X)#,nan_as_null=True) ### see how flag acts
-        X.fillna(0.0,inplace=True)    
+            X = cudf.from_pandas(X)#,nan_as_null=True) ### see how flag acts
+        try:
+            X.fillna(0.0,inplace=True)
+        except:
+            pass
         X, y = make_safe_gpu_dataframes(X, None, self.engine_)
         
         if (self.datetime_transformer_ == "passthrough") and (datetime_columns !=[]):
-            Z=X.drop(columns=datetime_columns)
+            Z = X.drop(columns=datetime_columns)
             X_enc = super().fit_transform(Z, y)
         elif 'cudf' not in str(getmodule(X)):
             X_enc = super().fit_transform(X.astype(str), y)
@@ -727,7 +740,7 @@ class TableVectorizer(ColumnTransformer):
         for i, (name, enc, cols) in enumerate(self.transformers_):
             if name == "remainder" and len(cols) < 20:
                 # In this case, "cols" is a list of ints (the indices)
-                cols: List[int]
+                cols: List[int]  # type: ignore
                 self.transformers_[i] = (name, enc, [self.columns_[j] for j in cols])
 
         if (self.datetime_transformer_ == "passthrough") & (datetime_columns != []):
@@ -760,12 +773,13 @@ class TableVectorizer(ColumnTransformer):
                 f"array seen during fit. Got {X.shape[1]} "
                 f"columns, expected {len(self.columns_)}"
             )
+        self.Xt_= df_type(X)
         X, y = make_safe_gpu_dataframes(X, None, self.engine_)
-        if not isinstance(X, pd.DataFrame) and not 'cudf' in self.Xt_:
-            X = pd.DataFrame(X)
-        else:
+        # if not isinstance(X, pd.DataFrame) and not 'cudf' in self.Xt_:
+            # X = pd.DataFrame(X)
+        # else:
             # Create a copy to avoid altering the original data.
-            X = X.copy()
+        X = X.copy()
 
         if (X.columns != self.columns_).all():
             X.columns = self.columns_
@@ -779,6 +793,8 @@ class TableVectorizer(ColumnTransformer):
         if isinstance(X, pd.DataFrame) and 'cudf' in self.Xt_:
             cudf = deps.cudf
             X = cudf.from_pandas(X)
+        # if 'coo_matrix' in str(getmodule(X)):
+        #     X= X.todense()
         return super().transform(X)
 
     def get_feature_names_out(self, input_features=None) -> List[str]:
@@ -792,41 +808,42 @@ class TableVectorizer(ColumnTransformer):
         typing.List[str]
             Feature names.
         """
-        if 'cudf' not in self.Xt_ and not deps.cudf:
-            if parse_version(sklearn_version) < parse_version("1.0"):
-                ct_feature_names = super().get_feature_names()
-            else:
-                ct_feature_names = super().get_feature_names_out()
-        else:
-            if parse_version(sklearn_version) > parse_version("1.0"):
-                ct_feature_names = super().get_feature_names()
-            else:
-                ct_feature_names = super().get_feature_names_out()
+        # try:
+        #     ct_feature_names = super().get_feature_names_out()
+        # except:
+        #     ct_feature_names = super().get_feature_names()
+
         all_trans_feature_names = []
 
         for name, trans, cols, _ in self._iter(fitted=True):
             if isinstance(trans, str):
                 if trans == "drop":
                     continue
-                elif trans == "passthrough":
-                    cols = self.columns_.to_list()
+                if trans == "passthrough":
+                    if all(isinstance(col, int) for col in cols):
+                        cols = [self.columns_[i] for i in cols]
+                    cols = [str(r) for r in cols]
                     all_trans_feature_names.extend(cols)
-                continue
-            if 'cudf' not in self.Xt_ and not deps.cudf:
-                if parse_version(sklearn_version) < parse_version("1.0"):
-                    trans_feature_names = trans.get_feature_names(cols)
-                else:
-                    trans_feature_names = trans.get_feature_names_out(cols)
-            else:
-                if parse_version(sklearn_version) > parse_version("1.0"):
-                    trans_feature_names = trans.get_feature_names(cols)
-                else:
-                    trans_feature_names = trans.get_feature_names_out(cols)
-            all_trans_feature_names.extend(trans_feature_names)
 
-        if len(ct_feature_names) != len(all_trans_feature_names):
-            warn("Could not extract clean feature names; returning defaults. ")
-            return list(ct_feature_names)
+            elif not hasattr(trans, 'get_feature_names') and not hasattr(trans, 'get_feature_names_out'):
+                cols = [str(r) for r in cols]
+                all_trans_feature_names.extend(cols)
+
+            else:
+                try:
+                    cols = [str(r) for r in cols]
+                    trans_feature_names = trans.get_feature_names_out(cols)  # TODO: limit huge string corpus to first sentence
+                    all_trans_feature_names.extend(trans_feature_names)                
+                except:
+                    cols = [str(r) for r in cols]
+                    trans_feature_names = trans.get_feature_names(cols) 
+                    all_trans_feature_names.extend(trans_feature_names)
+                # except MemoryError:
+                    # logger.debug(f"fit & transformed but GPU too small to return features as strings; soln: get larger GPU or split into many sentences into many columns")
+
+        # if len(ct_feature_names) != len(all_trans_feature_names):
+        #     warnings.warn("Could not extract clean feature names; returning defaults. ")
+        #     return list(ct_feature_names)
 
         return all_trans_feature_names
 
@@ -846,14 +863,17 @@ class TableVectorizer(ColumnTransformer):
             Feature names.
         """
         if parse_version(sklearn_version) >= parse_version("1.0"):
-            warn(
+            warnings.warn(
                 "Following the changes in scikit-learn 1.0, "
                 "get_feature_names is deprecated. "
                 "Use get_feature_names_out instead. ",
                 DeprecationWarning,
                 stacklevel=2,
             )
+            
         return self.get_feature_names_out(input_features)
+    
+    #### AttributeError: Transformer numeric (type StandardScaler) does not provide get_feature_names.
 
 @deprecated("use TableVectorizer instead.")
 class SuperVectorizer(TableVectorizer):
