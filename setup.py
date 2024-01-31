@@ -17,7 +17,6 @@ core_requires = [
   'psutil',
   'build',
   'dirty-cat',
-  'sphinx_autodoc_typehints==1.11.1',
 #   'cuml', ## cannot test on github actions
 #   'cudf',
 #   'cupy'
