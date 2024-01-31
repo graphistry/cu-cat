@@ -25,11 +25,28 @@ core_requires = [
 #   'cupy'
 ]
 
-# if __name__ == "__main__":
+stubs = [
+  'pandas-stubs', 'types-requests', 'ipython', 'tqdm-stubs'
+]
+
+dev_extras = {
+    'docs': ['sphinx==3.4.3', 'docutils==0.16', 'sphinx_autodoc_typehints==1.11.1', 'sphinx-rtd-theme==0.5.1', 'Jinja2<3.1'],
+    'test': ['flake8>=5.0', 'mock', 'mypy', 'pytest'] + stubs,
+    'testai': [
+      'numba>=0.57.1'  # https://github.com/numba/numba/issues/8615
+    ],
+    'build': ['build']
+}
+extras_require = {
+
+  **dev_extras,
+
+}
+
 setup(
     name='cu-cat',
-    version='0.09.09',  # versioneer.get_version(),
-    # cmdclass='0.9.09',  # versioneer.get_cmdclass(),
+    version='v0.09.09',
+    # cmdclass=versioneer.get_cmdclass(),
     packages = find_packages(),
     platforms='any',
     description = 'An end-to-end gpu Python library that encodes categorical variables into machine-learnable numerics',
@@ -37,11 +54,13 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/graphistry/cu-cat',
     download_url= 'https://github.com/graphistry/cu-cat',
-    python_requires='>3.7',
+    python_requires='>=3.7',
     author='The Graphistry Team',
     author_email='pygraphistry@graphistry.com',
-    install_requires=core_requires,  # for github actions
+    install_requires=core_requires,
+    extras_require=extras_require,
     license='BSD',
-    # dependency_links=['https://pypi.nvidia.com'],
+    
     keywords=['cudf', 'cuml', 'GPU', 'Rapids']
 )
+
