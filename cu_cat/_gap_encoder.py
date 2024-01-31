@@ -1110,6 +1110,7 @@ def _multiplicative_update_w(
     """
     Multiplicative update step for the topics W.
     """
+
     if 'cudf' in df_type(W) or 'cupy' in df_type(W):
         A *= rho
         A += cp.multiply(W, safe_sparse_dot(Ht.T, Vt.multiply(1 / (cp.dot(Ht, W) + 1e-10))))
@@ -1132,6 +1133,7 @@ def _multiplicative_update_w(
         A += np.multiply(W, safe_sparse_dot(Ht.T, Vt.multiply(1 / (np.dot(Ht, W) + 1e-10))))
         B *= rho
         B += Ht.sum(axis=0).reshape(-1, 1)
+
         W = np.multiply(A, np.reciprocal(B))#, out=W)
         if rescale_W:
             _rescale_W(W, A)
@@ -1230,7 +1232,6 @@ def _multiplicative_update_h(
 
     if 'cudf' in df_type(W) or 'cupy' in df_type(W):
         cp = deps.cupy
-
         for vt, ht in zip(Vt, Ht):
             vt_ = vt.data
             idx = vt.indices
@@ -1242,18 +1243,19 @@ def _multiplicative_update_h(
                     break
                 aux = cp.dot(W_WT1_, cp.multiply(vt_,cp.reciprocal(cp.dot(ht, W_) + 1e-10)))
                 ht_out = cp.multiply(ht, aux) + const
+
                 # with cp.errstate(divide='ignore'):  # not yet nor ever likely implemented for GPU :(
 
                 with warnings.catch_warnings():
                     warnings.filterwarnings("ignore", category=RuntimeWarning)
                     squared_norm = cp.multiply(cp.dot(ht_out - ht, ht_out - ht), cp.reciprocal(cp.dot(ht, ht)))
+
                 ht[:] = ht_out
         del Vt,W_,W_WT1,ht,ht_out,vt,vt_
         gc.collect()
     else:
 
         for vt, ht in zip(Vt, Ht):
-            
             try:
                 ht = ht.get()
                 vt = vt.get()
