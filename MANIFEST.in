@@ -1,0 +1,2 @@
+include versioneer.py
+include cu_cat/_version.py
