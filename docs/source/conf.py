@@ -51,7 +51,7 @@ nitpick_ignore = [
     ('py:class', "cu_cat._datetime_encoder"),
     ('py:class', "cu_cat.deduplicate"),
     ('py:class', "cu_cat.dep_manager"),
-    ('py:class', "cu_cat._gap_encoder),
+    ('py:class', "cu_cat._gap_encoder"),
     ('py:class', "cu_cat._table_vectorizer"),
     ('py:class', 'Plotter'),
     ('py:class', 'Plottable'),
