@@ -36,3 +36,10 @@ Articles
 * `Cu_Cat + Chemical Mapping <https://github.com/dcolinmorgan/grph/blob/main/accelerating_chemical_mappings.ipynb>`_
 * `Cu_Cat + Metagenomics <https://github.com/dcolinmorgan/grph/blob/main/accelerating_metagenomic_demo.ipynb>`_
 
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
