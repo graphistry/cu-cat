@@ -16,7 +16,8 @@ core_requires = [
   'flake8>=5.0',
   'psutil',
   'build',
-  'dirty-cat'
+  'dirty-cat',
+  'sphinx_autodoc_typehints==1.11.1',
 #   'cuml', ## cannot test on github actions
 #   'cudf',
 #   'cupy'
@@ -37,6 +38,9 @@ dev_extras = {
 extras_require = {
 
   **dev_extras,
+
+  #kitchen sink for contributors, skips ai
+  'dev': unique_flatten_dict(dev_extras),
 
 }
 
