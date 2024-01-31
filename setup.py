@@ -38,6 +38,9 @@ extras_require = {
 
   **dev_extras,
 
+  #kitchen sink for contributors, skips ai
+  'dev': unique_flatten_dict(dev_extras),
+
 }
 
 setup(
