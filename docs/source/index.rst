@@ -3,7 +3,7 @@ Cu_Cat: end-to-end GPU Feature Encoding
 .. only:: html
 
    .. image:: https://readthedocs.org/projects/cu_cat/badge/?version=latest
-      :target: https://cu_cat.readthedocs.io/en/latest/?badge=latest
+      :target: https://cu-cat.readthedocs.io/en/latest/?badge=latest
       :alt: Documentation Status
 
 
@@ -16,7 +16,7 @@ Cu_Cat: end-to-end GPU Feature Encoding
       :target: https://github.com/graphistry/cu-cat/actions?query=workflow%3ACodeQL
       :alt: CodeQL Status
 
-   .. image:: https://img.shields.io/pypi/v/graphistry.svg
+   .. image:: https://img.shields.io/pypi/v/cu_cat.svg
       :target: https://pypi.python.org/pypi/cu_cat
       :alt: PyPi Status
 
@@ -35,12 +35,4 @@ Articles
 * `Cu_Cat + Single Cell <https://github.com/dcolinmorgan/grph/blob/main/single_cell_after_gpu.ipynb>`_
 * `Cu_Cat + Chemical Mapping <https://github.com/dcolinmorgan/grph/blob/main/accelerating_chemical_mappings.ipynb>`_
 * `Cu_Cat + Metagenomics <https://github.com/dcolinmorgan/grph/blob/main/accelerating_metagenomic_demo.ipynb>`_
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
