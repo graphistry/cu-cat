@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 import versioneer
-# # #github
+
 def unique_flatten_dict(d):
   return list(set(sum( d.values(), [] )))
 
