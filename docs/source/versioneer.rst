@@ -3,4 +3,4 @@
 .. toctree:: 
    :maxdepth: 2
    
-   graphistry.plugins_types
+   cu_cat.plugins_types

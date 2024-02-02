@@ -43,8 +43,8 @@ def get_config():
     cfg.VCS = "git"
     cfg.style = "pep440"
     cfg.tag_prefix = ""
-    cfg.parentdir_prefix = "graphistry-"
-    cfg.versionfile_source = "graphistry/_version.py"
+    cfg.parentdir_prefix = "cu_cat-"
+    cfg.versionfile_source = "cu_cat/_version.py"
     cfg.verbose = False
     return cfg
 

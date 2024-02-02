@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 import versioneer
-# # #github
+
 def unique_flatten_dict(d):
   return list(set(sum( d.values(), [] )))
 
@@ -16,9 +16,8 @@ core_requires = [
   'flake8>=5.0',
   'psutil',
   'build',
-  'versioneer',
-  'dirty-cat',
-#   'cuml', ## cannot test on github actions
+  'dirty-cat',  # only for pytest speed comparison
+#   'cuml', # cannot test on github actions
 #   'cudf',
 #   'cupy'
 ]

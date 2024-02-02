@@ -42,8 +42,35 @@ However, this graph does not mean to imply the trend goes on forever, as current
 GPU = colab T4 + 15gb mem and colab CPU + 12gb memory
 
 
+## Startup Code demonstrating speedup:
 
-## Startup Code:
+    ! pip install cu-cat dirty-cat
+    from time import time
+    from cu_cat._table_vectorizer import TableVectorizer as cu_TableVectorizer
+    from dirty_cat._table_vectorizer import TableVectorizer as dirty_TableVectorizer
+    from sklearn.datasets import fetch_20newsgroups
+    n_samples = 2000  # speed boost improves as n_samples increases, to the limit of gpu mem
+
+    news, _ = fetch_20newsgroups(
+        shuffle=True,
+        random_state=1,
+        remove=("headers", "footers", "quotes"),
+        return_X_y=True,
+    )
+
+    news = news[:n_samples]
+    news=pd.DataFrame(news)
+    table_vec = cu_TableVectorizer()
+    t = time()
+    aa = table_vec.fit_transform((news))
+    ct = time() - t
+    # if deps.dirty_cat:
+    t = time()
+    bb = dirty_TableVectorizer().fit_transform(news)
+    dt = time() - t
+    print(f"cu_cat: {ct:.2f}s, dirty_cat: {dt:.2f}s, speedup: {dt/ct:.2f}x")
+    >>> cu_cat: 58.76s, dirty_cat: 84.54s, speedup: 1.44x
+## Enhanced Code using Graphistry:
 
     # !pip install graphistry[ai] ## future releases will have this by default
     !pip install git+https://github.com/graphistry/pygraphistry.git@dev/depman_gpufeat

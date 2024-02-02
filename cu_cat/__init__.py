@@ -20,9 +20,10 @@ from ._dep_manager import DepManager
 from ._gap_encoder import GapEncoder  # type: ignore
 from ._table_vectorizer import SuperVectorizer, TableVectorizer
 
-with open(_Path(__file__).parent / "VERSION.txt") as _fh:
-    __version__ = _fh.read().strip()
+from ._version import get_versions
 
+__version__ = get_versions()["version"]
+del get_versions
 
 __all__ = [
     "DatetimeEncoder",
