@@ -16,6 +16,7 @@ core_requires = [
   'flake8>=5.0',
   'psutil',
   'build',
+  'versioneer',
   'dirty-cat',
 #   'cuml', ## cannot test on github actions
 #   'cudf',
