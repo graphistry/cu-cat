@@ -16,8 +16,7 @@ core_requires = [
   'flake8>=5.0',
   'psutil',
   'build',
-  'versioneer',
-  'dirty-cat',
+  'dirty-cat',  # only for pytest speed comparison
 #   'cuml', ## cannot test on github actions
 #   'cudf',
 #   'cupy'

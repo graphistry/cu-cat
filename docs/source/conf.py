@@ -21,7 +21,7 @@ import cu_cat
 # -- Project information -----------------------------------------------------
 
 project = "CU_CAT"
-copyright = "2023, Graphistry, Inc."
+copyright = "2024, Graphistry, Inc."
 author = "Graphistry, Inc."
 
 # The full version, including alpha/beta/rc tags

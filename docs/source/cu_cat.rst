@@ -25,7 +25,7 @@ Table_Vectorizer
 Versioneer
 ==================
 
-.. automodule:: graphistry._version
+.. automodule:: cu_cat._version
     :members:
     :undoc-members:
     :show-inheritance:
