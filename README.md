@@ -1,10 +1,6 @@
 
 # **cu-cat** 
-```
- /\_/\
-( o.o )
- > ^ <
-```
+<img src="examples/cu_cat.png" alt="drawing" width="200"/>
 
 ****cu-cat**** is an end-to-end gpu Python library that encodes
 categorical variables into machine-learnable numerics. It is a cuda
