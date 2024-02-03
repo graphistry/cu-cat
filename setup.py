@@ -59,7 +59,6 @@ setup(
     author_email='pygraphistry@graphistry.com',
     install_requires=core_requires,
     extras_require=extras_require,
-    include_package_data=True,  # MANIFEST.in
     license='BSD',
     # dependency_links=['https://pypi.nvidia.com'],
     keywords=['cudf', 'cuml', 'GPU', 'Rapids']
