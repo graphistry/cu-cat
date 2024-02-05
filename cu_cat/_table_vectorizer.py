@@ -119,7 +119,7 @@ def _has_missing_values(self, df: Union[pd.DataFrame, pd.Series]) -> bool:
     Returns True if `array` contains missing values, False otherwise.
     """
     if 'cudf' in self.Xt_:
-        df = df.to_pandas()
+        df = df.to_pandas()  # type: ignore
     return any(df.isnull())
 
 def _replace_false_missing(
@@ -164,7 +164,7 @@ def _replace_false_missing(
                 df[i] = df[i].astype('str')
                 df[i] = df[i].replace(STR_NA_VALUES + [None, "?", "..."], 'None')
             try:
-                df[i] = df[i].str.normalize_spaces()
+                df[i] = df[i].str.normalize_spaces()  # type: ignore
             except:
                 df[i] = df[i]
             try:
@@ -187,8 +187,8 @@ def _replace_missing_in_cat_col(ser: pd.Series, value: str = "missing") -> pd.Se
     Takes a Series with string data,
     replaces the missing values, and returns it.
     """
-    ser = _replace_false_missing(ser)
-    if pd.api.types.is_categorical_dtype(ser) and (value not in ser.cat.categories):
+    ser = _replace_false_missing(ser)  # type: ignore
+    if pd.api.types.is_categorical_dtype(ser) and (value not in ser.cat.categories):  # type: ignore
         ser = ser.cat.add_categories([value])
     ser = ser.fillna(value=value)
     return ser
@@ -488,7 +488,7 @@ class TableVectorizer(ColumnTransformer):
             self.engine_ = 'cuml'
         else:
             self.engine_ = 'pandas'
-        X = _replace_false_missing(X)
+        X = _replace_false_missing(X)  # type: ignore
 
         # Handle missing values
         obj_col = X.select_dtypes(include=['object']).columns
@@ -529,7 +529,7 @@ class TableVectorizer(ColumnTransformer):
                     X[col] = X[col].astype(X[col].dtype.type, errors="ignore")
                 except (TypeError, ValueError):
                     pass
-            self.types_.update({col: X[col].dtype})
+            self.types_.update({col: X[col].dtype})  # type: ignore
         return X
 
     def _apply_cast(self, X: pd.DataFrame) -> pd.DataFrame:
@@ -540,7 +540,7 @@ class TableVectorizer(ColumnTransformer):
         Does the same thing as `_auto_cast`, but applies learnt info.
         """
         
-        X = _replace_false_missing(X)
+        X = _replace_false_missing(X)  # type: ignore
         for col in X.columns:
             if _has_missing_values(self,X[col]):
                 if pd.api.types.is_numeric_dtype(X[col]):
@@ -551,10 +551,10 @@ class TableVectorizer(ColumnTransformer):
         for col, dtype in self.types_.items():
             # if categorical, add the new categories to prevent	
             # them to be encoded as nan	
-            if pd.api.types.is_categorical_dtype(dtype):	
+            if pd.api.types.is_categorical_dtype(dtype):  # type: ignore
                 known_categories = dtype.categories # type: ignore
                 new_categories = pd.unique(X[col])	
-                dtype = pd.CategoricalDtype(	
+                dtype = pd.CategoricalDtype(  # type: ignore
                     categories=known_categories.union(new_categories)	
                 )	
                 self.types_[col] = dtype	
