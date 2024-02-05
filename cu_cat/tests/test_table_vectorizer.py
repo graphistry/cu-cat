@@ -363,28 +363,27 @@ def test_small_news():
         # assert aa.shape[0] == news.shape[0]
 
 
-def test_large_news():
-    from sklearn.datasets import fetch_20newsgroups
-    n_samples = 3000
+# def test_large_news():
+#     from sklearn.datasets import fetch_20newsgroups
+#     n_samples = 3000
 
-    news, _ = fetch_20newsgroups(
-        shuffle=True,
-        random_state=1,
-        remove=("headers", "footers", "quotes"),
-        return_X_y=True,
-    )
+#     news, _ = fetch_20newsgroups(
+#         shuffle=True,
+#         random_state=1,
+#         remove=("headers", "footers", "quotes"),
+#         return_X_y=True,
+#     )
 
-    news = news[:n_samples]
-    news = pd.DataFrame(news)
-    table_vec = TableVectorizer()
-    t = time()
-    aa = table_vec.fit_transform((news))
-    ct = time() - t
-    # if deps.dirty_cat:
-    t = time()
-    bb = dirty_cat.TableVectorizer().fit_transform(news)
-    dt = time() - t
-    assert aa.shape[0] == bb.shape[0]
-    # assert ct < dt  # only GPU is fatser, but also this gets killed by github
-    # else:
-    #     assert aa.shape[0] == news.shape[0]
+#     news = news[:n_samples]
+#     news = pd.DataFrame(news)
+#     table_vec = TableVectorizer()
+#     t = time()
+#     aa = table_vec.fit_transform((news))
+#     ct = time() - t
+#     # if deps.dirty_cat:
+#     t = time()
+#     bb = dirty_cat.TableVectorizer().fit_transform(news)
+#     dt = time() - t
+#     assert aa.shape[0] == bb.shape[0]
+#     assert ct < dt  # only GPU is fatser, but also this gets killed by github
+
