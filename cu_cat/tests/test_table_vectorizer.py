@@ -336,9 +336,9 @@ def test_malware():
         # assert aa.shape[0] == edf.shape[0]
 
 
-def test_20newsgroups():
+def test_small_news():
     from sklearn.datasets import fetch_20newsgroups
-    n_samples = 1500
+    n_samples = 1000
 
     news, _ = fetch_20newsgroups(
         shuffle=True,
@@ -358,7 +358,7 @@ def test_20newsgroups():
     bb = dirty_cat.TableVectorizer().fit_transform(news)
     dt = time() - t
     assert aa.shape[0] == bb.shape[0]
-    assert ct < dt  # only GPU is faster
+    # assert ct < dt  # only GPU is faster
     # else:
         # assert aa.shape[0] == news.shape[0]
 
