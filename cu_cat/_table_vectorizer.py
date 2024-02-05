@@ -79,10 +79,10 @@ def _infer_date_format(date_column: pd.Series, n_trials: int = 100) -> Optional[
             # have a bug where dayfirst is not strictly applied
             # so we need to check both dayfirst and monthfirst
         date_format_monthfirst = date_column_sample.apply(
-            lambda x: pd.guess_datetime_format(x)
+            lambda x: pd.guess_datetime_format(x)  # type: ignore
         )
         date_format_dayfirst = date_column_sample.apply(
-            lambda x: pd.guess_datetime_format(x, dayfirst=True),
+            lambda x: pd.guess_datetime_format(x, dayfirst=True),  # type: ignore
         )
     # if one row could not be parsed, return None
     if date_format_monthfirst.isnull().any() or date_format_dayfirst.isnull().any():
