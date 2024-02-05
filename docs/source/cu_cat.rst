@@ -1,10 +1,3 @@
-Dependency_Manager
-==================
-
-.. automodule:: cu_cat._dep_manager
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 Gap_Encoder
 ==================
@@ -22,10 +15,18 @@ Table_Vectorizer
     :undoc-members:
     :show-inheritance:
 
-Versioneer
+DeDuplicater
 ==================
 
-.. automodule:: cu_cat._version
+.. automodule:: cu_cat._deduplicater
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Dependency_Manager
+==================
+
+.. automodule:: cu_cat._dep_manager
     :members:
     :undoc-members:
     :show-inheritance:

@@ -372,6 +372,47 @@ class TableVectorizer(ColumnTransformer):
     columns might be shuffled, e.g., ['job', 'year', 'name'], but every call
     to :func:`TableVectorizer.transform` on this instance will return this
     order.
+    
+    Examples
+    --------
+    
+    First we can import the necessary modules and create a sample dataset:
+    
+    >>> from time import time
+    >>> from cu_cat._table_vectorizer import TableVectorizer as cu_TableVectorizer
+    >>> from sklearn.datasets import fetch_20newsgroups
+    
+    Let's subsample from the newsgroup, non-normalized data:
+    
+    >>> n_samples = 2000  # speed boost improves as n_samples increases, to the limit of gpu mem
+
+    >>> news, _ = fetch_20newsgroups(
+            shuffle=True,
+            random_state=1,
+            remove=("headers", "footers", "quotes"),
+            return_X_y=True,
+        )
+
+    For fun, lets time the :class:`~cu_cat.TableVectorizer.fit_transform`
+    
+    >>> news = news[:n_samples]
+    >>> news=pd.DataFrame(news)
+    >>> table_vec = cu_TableVectorizer()
+    >>> t = time()
+    >>> aa = table_vec.fit_transform((news))
+    >>> ct = time() - t
+
+    Now let's compare with the same operation on the CPU:
+
+    >>> from dirty_cat._table_vectorizer import TableVectorizer as dirty_TableVectorizer
+
+    >>> t = time()
+    >>> bb = dirty_TableVectorizer().fit_transform(news)
+    >>> dt = time() - t
+
+    >>> print(f"cu_cat: {ct:.2f}s, dirty_cat: {dt:.2f}s, speedup: {dt/ct:.2f}x")
+    
+    cu_cat: 58.76s, dirty_cat: 84.54s, speedup: 1.44x
     """
 
     transformers_: List[Tuple[str, Union[str, TransformerMixin], List[str]]]
@@ -874,9 +915,3 @@ class TableVectorizer(ColumnTransformer):
         return self.get_feature_names_out(input_features)
     
     #### AttributeError: Transformer numeric (type StandardScaler) does not provide get_feature_names.
-
-@deprecated("use TableVectorizer instead.")
-class SuperVectorizer(TableVectorizer):
-    """Deprecated name of TableVectorizer."""
-
-    pass

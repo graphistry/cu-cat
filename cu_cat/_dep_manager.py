@@ -2,6 +2,21 @@ import importlib
 
 
 class DepManager:
+    """Easily keep track of dependencies in a project.
+    Parameters
+    ----------
+    package : str
+        The name of the package to import.
+    
+    Attributes
+    ----------
+    pkgs : dict
+        A dictionary of the imported packages.
+        
+    Examples
+    --------
+    >>> numpy = deps.numpy
+    """
     def __init__(self):
         self.pkgs = {}
 
