@@ -18,9 +18,12 @@ from ._deduplicate import compute_ngram_distance, deduplicate
 from ._datetime_encoder import DatetimeEncoder
 from ._dep_manager import DepManager
 from ._gap_encoder import GapEncoder  # type: ignore
-from ._table_vectorizer import SuperVectorizer, TableVectorizer
+from ._table_vectorizer import TableVectorizer
 
 from ._version import get_versions
+__version__ = get_versions()["version"]
+del get_versions
+
 
 __version__ = get_versions()["version"]
 del get_versions
@@ -28,7 +31,7 @@ del get_versions
 __all__ = [
     "DatetimeEncoder",
     "GapEncoder",
-    "SuperVectorizer",
+    "TableVectorizer",
     "TableVectorizer",
     "DepManager",
     "deduplicate",

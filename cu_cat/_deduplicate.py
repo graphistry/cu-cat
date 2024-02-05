@@ -5,12 +5,18 @@ sometimes appear in the data with small variations and/or misspellings.
 """
 from typing import List, Literal, Optional, Sequence, Tuple, Union
 
-import numpy as np
-import pandas as pd
 from scipy.cluster.hierarchy import fcluster, linkage
 from scipy.spatial.distance import pdist, squareform
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import silhouette_score
+from ._dep_manager import deps
+cuml = deps.cuml
+if cuml:
+    import cudf as pd, cupy as np
+    from cuml.feature_extraction.text import TfidfVectorizer
+    from cuml.metrics.cluster import silhouette_score
+else:
+    import numpy as np, pandas as pd
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics import silhouette_score
 
 
 def compute_ngram_distance(

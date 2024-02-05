@@ -193,7 +193,7 @@ texinfo_documents = [
     (
         master_doc,
         "CuCat",
-        u"CuCat Documentation",
+        "CuCat Documentation",
         author,
         "PyGraphistry",
         "One line description of project.",

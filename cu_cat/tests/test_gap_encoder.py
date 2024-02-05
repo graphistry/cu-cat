@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 import pytest
-from numpy.testing import assert_array_equal
-from sklearn.exceptions import NotFittedError
 from sklearn.model_selection import train_test_split
 
 from cu_cat import GapEncoder, TableVectorizer
@@ -10,6 +8,7 @@ from cu_cat.datasets._fetching import fetch_midwest_survey
 from cu_cat.tests.utils import generate_data
 
 MODULES = [pd]
+
 
 @pytest.mark.parametrize(
     ["hashing", "init", "rescale_W", "rescale_rho", "add_words"],
@@ -161,16 +160,16 @@ def test_get_feature_names_out_redundent():
 
 def test_check_fitted_gap_encoder():
     """Test that calling transform before fit raises an error"""
-import numpy as np, pandas as pd
-from cu_cat import GapEncoder
-X = pd.DataFrame(np.array([["alice"], ["bob"]]))
-enc = GapEncoder(n_components=2, random_state=42)
-# with pytest.raises(NotFittedError):
-    # enc.transform(X)
+    import pandas as pd
+    from cu_cat import GapEncoder
+    X = pd.DataFrame(np.array([["alice"], ["bob"]]))
+    enc = GapEncoder(n_components=2, random_state=42)
+    # with pytest.raises(NotFittedError):
+        # enc.transform(X)
 
-# Check that it works after fit
-enc.fit(X)
-enc.transform(X)
+    # Check that it works after fit
+    enc.fit(X)
+    enc.transform(X)
 
 
 def test_small_sample():
@@ -195,6 +194,7 @@ def test_transform_shape():
     topics2 = enc.get_feature_names_out()
     assert len(topics1) == len(topics2)
 
+
 def test_transform_deterministic():
     """Non-regression test for #188"""
     dataset = fetch_midwest_survey()
@@ -209,4 +209,3 @@ def test_transform_deterministic():
     topics2 = enc.get_feature_names_out()  # fit_tarnsform used by pyg so not worried about this
     # assert_array_equal(topics1, topics2)
     assert len(topics1) == len(topics2)
-

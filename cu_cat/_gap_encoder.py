@@ -760,11 +760,7 @@ class GapEncoder(BaseEstimator, TransformerMixin):
 
     See Also
     --------
-    :class:`~cu_cat.MinHashEncoder` :
-        Encode string columns as a numeric array with the minhash method.
-    :class:`~cu_cat.SimilarityEncoder` :
-        Encode string columns as a numeric array with n-gram string similarity.
-    :class:`~cu_cat.deduplicate` :
+        :class:`~cu_cat.deduplicate` :
         Deduplicate data by hierarchically clustering similar strings.
 
     References

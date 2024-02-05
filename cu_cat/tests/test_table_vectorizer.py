@@ -1,17 +1,15 @@
 from __future__ import annotations
-import joblib, subprocess
 from time import time
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.exceptions import NotFittedError
-from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
-from sklearn.utils._testing import assert_array_equal, skip_if_no_parallel
+from sklearn.preprocessing import StandardScaler
+
 from sklearn.utils.validation import check_is_fitted
 
 from cu_cat._gap_encoder import GapEncoder
-from cu_cat._table_vectorizer import _infer_date_format, TableVectorizer
-from cu_cat.tests.utils import transformers_list_equal
+from cu_cat._table_vectorizer import TableVectorizer
 from cu_cat._dep_manager import deps
 dirty_cat = deps.dirty_cat
 
@@ -23,7 +21,8 @@ def check_same_transformers(
     expected_transformers: dict, actual_transformers: list
 ) -> None:
     # Construct the dict from the actual transformers
-    actual_transformers_dict = {name: cols for name, trans, cols in actual_transformers}
+    actual_transformers_dict = {name: cols for name, trans,
+                                cols in actual_transformers}
     assert actual_transformers_dict == expected_transformers
 
 
@@ -113,9 +112,9 @@ def _get_mixed_types_array() -> np.ndarray:
         ]
     ).T
 
+
 def _get_list_of_lists() -> list:
     return _get_numpy_array().tolist()
-
 
 
 def _test_possibilities(X) -> None:
@@ -182,6 +181,7 @@ def _test_possibilities(X) -> None:
     check_same_transformers(
         expected_transformers_np_cast, vectorizer_cast.transformers_
     )
+
 
 def test_with_clean_data() -> None:
     """
@@ -259,25 +259,6 @@ def test_fit() -> None:
         assert check_is_fitted(table_vec)
 
 
-
-# def test_fit_transform_equiv() -> None:
-#     """
-#     We will test the equivalence between using `.fit_transform(X)`
-#     and `.fit(X).transform(X).`
-#     """
-#     for X in [
-#         _get_clean_dataframe(),
-#         _get_dirty_dataframe(categorical_dtype="object"),
-#         _get_dirty_dataframe(categorical_dtype="category"),
-#         _get_mixed_types_dataframe(),
-#         _get_mixed_types_array(),
-#     ]:
-#         enc1_x1 = TableVectorizer().fit_transform(X)
-#         enc2_x1 = TableVectorizer().fit(X).transform(X)
-
-#         assert np.allclose(enc1_x1, enc2_x1, rtol=0, atol=0, equal_nan=True)
-
-
 def test_check_fitted_table_vectorizer() -> None:
     """Test that calling transform before fit raises an error"""
     X = _get_clean_dataframe()
@@ -288,49 +269,6 @@ def test_check_fitted_table_vectorizer() -> None:
     # Test that calling transform after fit works
     tv.fit(X)
     tv.transform(X)
-
-
-# def test_deterministic(pipeline) -> None:
-#     """
-#     Tests that running the same TableVectorizer multiple times with the same
-#     (deterministic) components results in the same output.
-#     """
-#     X = _get_dirty_dataframe()
-#     X_enc_prev = pipeline.fit_transform(X)
-#     for _ in range(5):
-#         X_enc = pipeline.fit_transform(X)
-#         np.testing.assert_array_equal(X_enc, X_enc_prev)
-#         X_enc_prev = X_enc
-
-
-# def test_mixed_types() -> None:
-#     # TODO: datetime/str mixed types
-#     # don't work
-#     df = _get_mixed_types_dataframe()
-#     table_vec = TableVectorizer()
-#     table_vec.fit_transform(df)
-#     # check that the types are correctly inferred
-#     table_vec.fit_transform(df)
-#     expected_transformers_df = {
-#         "numeric": ["int_str", "float_str", "int_float"],
-#         "low_card_cat": ["bool_str"],
-#     }
-#     check_same_transformers(expected_transformers_df, table_vec.transformers_)
-
-
-
-# def test_changing_types_int_float() -> None:
-#     # The TableVectorizer shouldn't cast floats to ints
-#     # even if only ints were seen during fit
-#     X_fit, X_transform = (
-#         pd.DataFrame(pd.Series([1, 2, 3])),
-#         pd.DataFrame(pd.Series([1, 2, 3.3])),
-#     )
-#     table_vec = TableVectorizer()
-#     table_vec.fit_transform(X_fit)
-#     res = table_vec.transform(X_transform)
-#     assert np.allclose(res, np.array([[1.0], [2.0], [3.3]]))
-
 
 
 def test_HN():
@@ -345,10 +283,11 @@ def test_HN():
     t = time()
     bb = dirty_cat.TableVectorizer().fit_transform(askHN)
     dt = time() - t
-    # assert aa.shape[0] == bb.shape[0]
+    assert aa.shape[0] == bb.shape[0]
     assert ct < dt
     # else:
     #     assert aa.shape[0] == askHN.shape[0]
+
 
 def test_red_team():
     df = pd.read_csv('https://gist.githubusercontent.com/silkspace/c7b50d0c03dc59f63c48d68d696958ff/raw/31d918267f86f8252d42d2e9597ba6fc03fcdac2/redteam_50k.csv', index_col=0)
@@ -366,7 +305,7 @@ def test_red_team():
     t = time()
     bb = dirty_cat.TableVectorizer().fit_transform(tdf)
     dt = time() - t
-    # assert aa.shape[0] == bb.shape[0]
+    assert aa.shape[0] == bb.shape[0]
     assert ct < dt
     # else:
     #     assert aa.shape[0] == tdf.shape[0]
@@ -377,7 +316,7 @@ def test_malware():
     T = edf.Label.apply(lambda x: True if 'Botnet' in x else False)
     bot = edf[T]
     nbot = edf[~T]
-    print(f'Botnet abundance: {100*len(bot)/len(edf):0.2f}%')# so botnet traffic makes up a tiny fraction of total
+    print(f'Botnet abundance: {100*len(bot)/len(edf):0.2f}%')  # so botnet traffic makes up a tiny fraction of total
 
     # let's balance the dataset in a 10-1 ratio, for speed and demonstrative purposes
     negs = nbot.sample(10*len(bot))
@@ -391,12 +330,13 @@ def test_malware():
     t = time()
     bb = dirty_cat.TableVectorizer().fit_transform(edf)
     dt = time() - t
-    # assert aa.shape[0] == bb.shape[0]
+    assert aa.shape[0] == bb.shape[0]
     assert ct < dt
     # else:
         # assert aa.shape[0] == edf.shape[0]
 
-def test_20newsgroups():
+
+def test_small_news():
     from sklearn.datasets import fetch_20newsgroups
     n_samples = 1000
 
@@ -408,7 +348,7 @@ def test_20newsgroups():
     )
 
     news = news[:n_samples]
-    news=pd.DataFrame(news)
+    news = pd.DataFrame(news)
     table_vec = TableVectorizer()
     t = time()
     aa = table_vec.fit_transform((news))
@@ -418,34 +358,32 @@ def test_20newsgroups():
     bb = dirty_cat.TableVectorizer().fit_transform(news)
     dt = time() - t
     assert aa.shape[0] == bb.shape[0]
-    # assert ct < dt ## only GPU is faster
+    # assert ct < dt  # only GPU is faster
     # else:
         # assert aa.shape[0] == news.shape[0]
 
-def test_large_news():
-    from sklearn.datasets import fetch_20newsgroups
-    n_samples = 2000
 
-    news, _ = fetch_20newsgroups(
-        shuffle=True,
-        random_state=1,
-        remove=("headers", "footers", "quotes"),
-        return_X_y=True,
-    )
+# def test_large_news():
+#     from sklearn.datasets import fetch_20newsgroups
+#     n_samples = 3000
 
-    news = news[:n_samples]
-    news=pd.DataFrame(news)
-    table_vec = TableVectorizer()
-    t = time()
-    aa = table_vec.fit_transform((news))
-    ct = time() - t
-    # if deps.dirty_cat:
-    t = time()
-    bb = dirty_cat.TableVectorizer().fit_transform(news)
-    dt = time() - t
-    assert aa.shape[0] == bb.shape[0]
-    # assert ct < dt ## only GPU is fatser
-    # else:
-    #     assert aa.shape[0] == news.shape[0]
+#     news, _ = fetch_20newsgroups(
+#         shuffle=True,
+#         random_state=1,
+#         remove=("headers", "footers", "quotes"),
+#         return_X_y=True,
+#     )
 
-    
+#     news = news[:n_samples]
+#     news = pd.DataFrame(news)
+#     table_vec = TableVectorizer()
+#     t = time()
+#     aa = table_vec.fit_transform((news))
+#     ct = time() - t
+#     # if deps.dirty_cat:
+#     t = time()
+#     bb = dirty_cat.TableVectorizer().fit_transform(news)
+#     dt = time() - t
+#     assert aa.shape[0] == bb.shape[0]
+#     assert ct < dt  # only GPU is fatser, but also this gets killed by github
+

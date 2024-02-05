@@ -17,7 +17,7 @@ core_requires = [
   'psutil',
   'build',
   'dirty-cat',  # only for pytest speed comparison
-#   'cuml', # cannot test on github actions
+#   'cuml', ## cannot test on github actions
 #   'cudf',
 #   'cupy'
 ]
