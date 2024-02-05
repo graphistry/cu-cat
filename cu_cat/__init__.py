@@ -21,10 +21,12 @@ from ._gap_encoder import GapEncoder  # type: ignore
 from ._table_vectorizer import SuperVectorizer, TableVectorizer
 
 from ._version import get_versions
-
 __version__ = get_versions()["version"]
 del get_versions
 
+
+__version__ = get_versions()["version"]
+del get_versions
 
 __all__ = [
     "DatetimeEncoder",
