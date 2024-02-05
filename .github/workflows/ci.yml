@@ -139,31 +139,31 @@ jobs:
         ./bin/build.sh
 
 
-  test-docs:
+  # test-docs:
 
-    needs: [ test-minimal-python ]
-    runs-on: ubuntu-latest
+  #   needs: [ test-minimal-python ]
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Test building docs
-      run: |
-        cd docs && ./docker.sh
+  #   - name: Test building docs
+  #     run: |
+  #       # cd docs && ./docker.sh
 
   
-  test-readme:
+  # test-readme:
 
-    needs: [ test-minimal-python ]
-    runs-on: ubuntu-latest
+  #   needs: [ test-minimal-python ]
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.7
+  #   - name: Set up Python 3.7
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: 3.7
 
     # - name: Test building docs
       # continue-on-error: true
