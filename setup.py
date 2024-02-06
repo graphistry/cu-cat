@@ -9,6 +9,7 @@ def unique_flatten_dict(d):
 core_requires = [
   'numpy',
   'pandas',
+  'scipy',
   'setuptools',
   'typing-extensions',
   'pyarrow>=0.15.0',
