@@ -9,15 +9,13 @@ def unique_flatten_dict(d):
 core_requires = [
   'numpy',
   'pandas',
-  'scipy',
   'setuptools',
   'typing-extensions',
   'pyarrow>=0.15.0',
   'scikit-learn<=1.3.2',
-  'flake8>=5.0',
   'psutil',
-  'build',
   'dirty-cat',  # only for pytest speed comparison
+  'scipy',
 #   'cuml', ## cannot test on github actions
 #   'cudf',
 #   'cupy'
@@ -39,8 +37,8 @@ extras_require = {
 
   **dev_extras,
 
-  #kitchen sink for contributors, skips ai
-  'dev': unique_flatten_dict(dev_extras),
+    #kitchen sink for contributors, skips ai
+    'dev': unique_flatten_dict(dev_extras),
 
 }
 # if __name__ == "__main__":
@@ -64,4 +62,3 @@ setup(
     # dependency_links=['https://pypi.nvidia.com'],
     keywords=['cudf', 'cuml', 'GPU', 'Rapids']
 )
-
