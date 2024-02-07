@@ -139,17 +139,17 @@ jobs:
         ./bin/build.sh
 
 
-  # test-docs:
+  test-docs:
 
-  #   needs: [ test-minimal-python ]
-  #   runs-on: ubuntu-latest
+    needs: [ test-minimal-python ]
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #   - uses: actions/checkout@v4
+    steps:
+    - uses: actions/checkout@v4
 
-  #   - name: Test building docs
-  #     run: |
-  #       # cd docs && ./docker.sh
+    - name: Test building docs
+      run: |
+        # cd docs && ./docker.sh
 
   
   # test-readme:
