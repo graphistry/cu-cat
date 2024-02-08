@@ -46,7 +46,7 @@ jobs:
         python -m venv cu_cat
         source cu_cat/bin/activate
         python -m pip install --upgrade pip
-        python -m pip install -e .[test, testspeed]
+        python -m pip install -e .[test, dirty-cat]
 
     - name: Lint
       run: |
@@ -58,7 +58,7 @@ jobs:
         source cu_cat/bin/activate
         ./bin/typecheck.sh
 
-    - name: Minimal tests
+    - name: Core tests
       run: |
         source cu_cat/bin/activate
         ./bin/test-core.sh
@@ -99,7 +99,7 @@ jobs:
         python -m venv cu_cat
         source cu_cat/bin/activate
         python -m pip install --upgrade pip
-        python -m pip install -e .[test,rapids,testspeed]
+        python -m pip install -e .[test,rapids,dirty-cat]
 
     - name: Lint
       run: |
@@ -111,7 +111,7 @@ jobs:
         source cu_cat/bin/activate
         ./bin/typecheck.sh
 
-    - name: Core tests
+    - name: RAPIDS tests
       run: |
         source cu_cat/bin/activate
         ./bin/test-rapids.sh

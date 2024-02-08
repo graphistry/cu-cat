@@ -29,8 +29,9 @@ dev_extras = {
     ],
     'build': ['build']
 }
+
 base_extras_light = {
-  'testspeed': ['dirty-cat'],
+  'dirty-cat': ['dirty-cat'],
 }
 
 base_extras_heavy = {
@@ -45,10 +46,10 @@ extras_require = {
   **base_extras_heavy,
   **dev_extras,
 
-  #kitchen sink for users -- not recommended
+  #kitchen sink for GPU users -- recommended
   'all': unique_flatten_dict(base_extras),
 
-  #kitchen sink for contributors, skips ai
+  #kitchen sink for contributors, skips rapids
   'dev': unique_flatten_dict(base_extras_light) + unique_flatten_dict(dev_extras),
 
 }
