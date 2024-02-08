@@ -18,7 +18,7 @@ on:
 jobs:
 
 
-  test-minimal-python:
+  test-core:
 
     runs-on: ubuntu-latest
 
@@ -61,12 +61,12 @@ jobs:
     - name: Minimal tests
       run: |
         source cu_cat/bin/activate
-        ./bin/test-minimal.sh
+        ./bin/test-core.sh
 
 
-  test-core-rapids:
+  test-rapids:
 
-    needs: [ test-minimal-python ]
+    needs: [ test-core ]
     runs-on: ubuntu-latest
 
     strategy:
@@ -114,11 +114,11 @@ jobs:
     - name: Core tests
       run: |
         source cu_cat/bin/activate
-        ./bin/test-core.sh
+        ./bin/test-rapids.sh
 
   test-build:
 
-    needs: [ test-minimal-python ]
+    needs: [ test-core ]
     runs-on: ubuntu-latest
 
     steps:
@@ -146,7 +146,7 @@ jobs:
 
   test-docs:
 
-    needs: [ test-minimal-python ]
+    needs: [ test-core ]
     runs-on: ubuntu-latest
 
     steps:
@@ -159,7 +159,7 @@ jobs:
   
   # test-readme:
 
-  #   needs: [ test-minimal-python ]
+  #   needs: [ test-core ]
   #   runs-on: ubuntu-latest
 
   #   steps:
