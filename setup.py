@@ -30,11 +30,11 @@ dev_extras = {
     'build': ['build']
 }
 base_extras_light = {
-  'dirty-cat',  # only for pytest speed comparison
+  'dirty-cat': ['dirty_cat'],
 }
 
 base_extras_heavy = {
-  'rapids': ['cuml', 'cudf', 'cupy'],  
+  'rapids': ['cuml', 'cudf', 'cupy']
 }
 
 base_extras = {**base_extras_light, **base_extras_heavy}
