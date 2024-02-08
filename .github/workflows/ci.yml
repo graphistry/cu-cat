@@ -46,7 +46,7 @@ jobs:
         python -m venv cu_cat
         source cu_cat/bin/activate
         python -m pip install --upgrade pip
-        python -m pip install -e .[test, dirty-cat]
+        python -m pip install -e .[test,dirty-cat]
 
     - name: Lint
       run: |
