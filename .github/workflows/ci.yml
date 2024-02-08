@@ -102,16 +102,19 @@ jobs:
         python -m pip install -e .[test,rapids,dirty-cat]
 
     - name: Lint
+      if: env.RAPIDS_INSTALLED == 'true'
       run: |
         source cu_cat/bin/activate
         ./bin/lint.sh
 
     - name: Type check
+      if: env.RAPIDS_INSTALLED == 'true'
       run: |
         source cu_cat/bin/activate
         ./bin/typecheck.sh
 
     - name: RAPIDS tests
+      if: env.RAPIDS_INSTALLED == 'true'
       run: |
         source cu_cat/bin/activate
         ./bin/test-rapids.sh
