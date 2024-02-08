@@ -64,7 +64,7 @@ jobs:
         ./bin/test-minimal.sh
 
 
-  test-core-python:
+  test-core-rapids:
 
     needs: [ test-minimal-python ]
     runs-on: ubuntu-latest
@@ -88,13 +88,18 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Check if RAPIDS is installed
+      id: check_rapids
+      run: |
+        python -c "import cudf" && echo "RAPIDS_INSTALLED=true" >> $GITHUB_ENV || echo "RAPIDS_INSTALLED=false" >> $GITHUB_ENV
+
     - name: Install test dependencies
+      if: env.RAPIDS_INSTALLED == 'true'
       run: |
         python -m venv cu_cat
         source cu_cat/bin/activate
         python -m pip install --upgrade pip
-        python -m pip install -e .[test]
-        # python -m pip install --extra-index-url=https://pypi.nvidia.com cuml-cu12==23.12.00 cudf-cu12==23.12.00 #cugraph-cu11 pylibraft_cu11 raft_dask_cu11 dask_cudf_cu11 pylibcugraph_cu11 pylibraft_cu11
+        python -m pip install -e .[test,rapids]
 
     - name: Lint
       run: |

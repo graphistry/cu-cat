@@ -14,11 +14,7 @@ core_requires = [
   'pyarrow>=0.15.0',
   'scikit-learn<=1.3.2',
   'psutil',
-  'dirty-cat',  # only for pytest speed comparison
   'scipy',
-  'cuml', ## cannot test on github actions
-  'cudf',
-  'cupy'
 ]
 
 stubs = [
@@ -33,15 +29,30 @@ dev_extras = {
     ],
     'build': ['build']
 }
+base_extras_light = {
+  'dirty-cat',  # only for pytest speed comparison
+}
+
+base_extras_heavy = {
+  'rapids': ['cuml', 'cudf', 'cupy'],  
+}
+
+base_extras = {**base_extras_light, **base_extras_heavy}
+
 extras_require = {
 
+  **base_extras_light,
+  **base_extras_heavy,
   **dev_extras,
 
-    #kitchen sink for contributors, skips ai
-    'dev': unique_flatten_dict(dev_extras),
+  #kitchen sink for users -- not recommended
+  'all': unique_flatten_dict(base_extras),
+
+  #kitchen sink for contributors, skips ai
+  'dev': unique_flatten_dict(base_extras_light) + unique_flatten_dict(dev_extras),
 
 }
-# if __name__ == "__main__":
+
 setup(
     name='cu-cat',
     version=versioneer.get_version(),
