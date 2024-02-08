@@ -30,7 +30,7 @@ dev_extras = {
     'build': ['build']
 }
 base_extras_light = {
-  'speed-test': ['dirty_cat'],
+  'testspeed': ['dirty_cat'],
 }
 
 base_extras_heavy = {

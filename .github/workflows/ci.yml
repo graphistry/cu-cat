@@ -46,7 +46,7 @@ jobs:
         python -m venv cu_cat
         source cu_cat/bin/activate
         python -m pip install --upgrade pip
-        python -m pip install -e .[test, speed-test]
+        python -m pip install -e .[test, testspeed]
 
     - name: Lint
       run: |
@@ -99,7 +99,7 @@ jobs:
         python -m venv cu_cat
         source cu_cat/bin/activate
         python -m pip install --upgrade pip
-        python -m pip install -e .[test,rapids,speed-test]
+        python -m pip install -e .[test,rapids,testspeed]
 
     - name: Lint
       run: |
