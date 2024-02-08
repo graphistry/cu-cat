@@ -12,9 +12,9 @@ core_requires = [
   'setuptools',
   'typing-extensions',
   'pyarrow>=0.15.0',
-  'scikit-learn<=1.3.2',
   'psutil',
   'scipy',
+  'scikit-learn<=1.3.2',
 ]
 
 stubs = [
@@ -31,11 +31,11 @@ dev_extras = {
 }
 
 base_extras_light = {
-  'dirty-cat': ['dirty-cat'],
+  'dirty-cat': ['dirty-cat']
 }
 
 base_extras_heavy = {
-  'rapids': ['cuml', 'cudf', 'cupy']
+  'rapids': ['cuml', 'cudf', 'cupy'],
 }
 
 base_extras = {**base_extras_light, **base_extras_heavy}
