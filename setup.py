@@ -53,7 +53,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/graphistry/cu-cat',
     download_url= 'https://github.com/graphistry/cu-cat',
-    python_requires='>=3.9',
+    python_requires='>=3.8',
     author='The Graphistry Team',
     author_email='pygraphistry@graphistry.com',
     install_requires=core_requires,
