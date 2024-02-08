@@ -28,6 +28,7 @@ __all__ = [
     "DatetimeEncoder",
     "GapEncoder",
     "TableVectorizer",
+    "TableVectorizer",
     "DepManager",
     "deduplicate",
     "compute_ngram_distance"
