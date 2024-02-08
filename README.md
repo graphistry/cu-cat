@@ -1,6 +1,6 @@
 
 # **cu-cat** 
-<img src="examples/cu_cat.png" alt="drawing" width="200"/>
+<img src="https://github.com/graphistry/cu-cat/blob/e2bae616f84aab8e6d5e173fc5363370d7680dc6/examples/cu_cat.png?raw=true" alt="cu_cat" width="200"/>
 
 ****cu-cat**** is an end-to-end gpu Python library that encodes
 categorical variables into machine-learnable numerics. It is a cuda
@@ -28,11 +28,11 @@ We have routinely experienced boosts of 2x on smaller datasets to 10x and more a
 
 There is an inflection point when overhead of transing data to GPU is offset by speed boost, as we can see here. The axis represent unique features being inferred.
 
-![image](examples/cucat_V_dirty.png)
+![small](https://github.com/graphistry/cu-cat/blob/e2bae616f84aab8e6d5e173fc5363370d7680dc6/examples/cucat_V_dirty.png?raw=true)
 
 As we can see, with scale the divergence in speed is obvious.
 
-![image](examples/big_cucat_V_dirty.png)
+![cu_cat scaling](https://github.com/graphistry/cu-cat/blob/e2bae616f84aab8e6d5e173fc5363370d7680dc6/examples/big_cucat_V_dirty.png?raw=true)
 
 However, this graph does not mean to imply the trend goes on forever, as currently **cu-cat** is single GPU and cannot batch (as the transfer cost is too much for our current needs), and thus each dataset, and indeed GPU + GPU memory, is unique, and thus these plots are meant merely for demonstrative purposes.
 GPU = colab T4 + 15gb mem and colab CPU + 12gb memory

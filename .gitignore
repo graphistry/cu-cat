@@ -20,7 +20,7 @@ var/
 .installed.cfg
 *.egg
 *.pkl
-
+.env
 .pytest_cache/
 
 # PyInstaller

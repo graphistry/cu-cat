@@ -12,13 +12,7 @@ core_requires = [
   'setuptools',
   'typing-extensions',
   'pyarrow>=0.15.0',
-  'scikit-learn<=1.3.2',
   'psutil',
-  'dirty-cat',  # only for pytest speed comparison
-  'scipy',
-#   'cuml', ## cannot test on github actions
-#   'cudf',
-#   'cupy'
 ]
 
 stubs = [
@@ -33,15 +27,34 @@ dev_extras = {
     ],
     'build': ['build']
 }
+
+base_extras_light = {
+  'dirty-cat': [
+    'dirty-cat',
+    'scipy',
+    'scikit-learn<=1.3.2',]
+}
+
+base_extras_heavy = {
+  'rapids': ['cuml', 'cudf', 'cupy'],
+}
+
+base_extras = {**base_extras_light, **base_extras_heavy}
+
 extras_require = {
 
+  **base_extras_light,
+  **base_extras_heavy,
   **dev_extras,
 
-    #kitchen sink for contributors, skips ai
-    'dev': unique_flatten_dict(dev_extras),
+  #kitchen sink for GPU users -- recommended
+  'all': unique_flatten_dict(base_extras),
+
+  #kitchen sink for contributors, skips rapids
+  'dev': unique_flatten_dict(base_extras_light) + unique_flatten_dict(dev_extras),
 
 }
-# if __name__ == "__main__":
+
 setup(
     name='cu-cat',
     version=versioneer.get_version(),
@@ -53,7 +66,8 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/graphistry/cu-cat',
     download_url= 'https://github.com/graphistry/cu-cat',
-    python_requires='>=3.9',
+    python_requires='>=3.8',
+
     author='The Graphistry Team',
     author_email='pygraphistry@graphistry.com',
     install_requires=core_requires,
