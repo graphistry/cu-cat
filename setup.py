@@ -31,9 +31,7 @@ dev_extras = {
 }
 
 base_extras_light = {
-  'dirty-cat': [
-    'dirty-cat'
-  ]
+  'dirty-cat'
 }
 
 base_extras_heavy = {
