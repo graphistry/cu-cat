@@ -15,10 +15,10 @@ Table_Vectorizer
     :undoc-members:
     :show-inheritance:
 
-DeDuplicater
+_deduplicate
 ==================
 
-.. automodule:: cu_cat._deduplicater
+.. automodule:: cu_cat._deduplicate
     :members:
     :undoc-members:
     :show-inheritance:
