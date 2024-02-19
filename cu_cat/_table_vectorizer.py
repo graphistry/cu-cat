@@ -541,7 +541,7 @@ class TableVectorizer(ColumnTransformer):
         num_col = X.select_dtypes(include=['int64','float64']).columns
         for i in num_col:
             X[i] = X[i].fillna(0)
-            X[i] = pd.to_numeric(X[i],downcast='float',errors='ignore')
+            X[i] = pd.to_numeric(X[i],downcast='float',errors='ignore')  # type: ignore
 
         for col in X.columns:            
             # Convert pandas' NaN value (pd.NA) to numpy NaN value (np.nan)
