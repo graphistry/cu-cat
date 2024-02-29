@@ -200,6 +200,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         the topics W.
         """
         self.Xt_ = df_type(X)
+        X = X[X.str.len() >3]  # cudf CV has trouble with shorter strings
         # if deps.cudf and parse_version(cuml.__version__) > parse_version("23.04"):
             # X.apply(lambda x: str((x)).zfill(4)) ## need at least >3 chars for gap encoder
         # cuml.set_global_output_type('cupy')
@@ -238,8 +239,12 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
             unq_X, lookup = np.unique(X.astype(str), return_inverse=True)
         elif 'cudf' in str(getmodule(X)) and 'cuml' in self.engine:
             unq_X = X.unique()
-            tmp, lookup = np.unique(X.to_arrow(), return_inverse=True)
-        unq_V = self.ngrams_count_.fit_transform(unq_X)
+            tmp, lookup = np.unique(X.to_pandas(), return_inverse=True)
+        try:
+            unq_V = self.ngrams_count_.fit_transform(unq_X)
+        except IndexError:
+            unq_X = unq_X[unq_X.str.len() > 3]  # cuml CV has trouble with shorter strings
+            unq_V = self.ngrams_count_.fit_transform(unq_X)
         if self.add_words:  # Add word counts to unq_V
             unq_V2 = self.word_count_.fit_transform(unq_X)
             unq_V = sparse.hstack((unq_V, unq_V2), format="csr")
@@ -349,6 +354,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
         # Check if first item has str or np.str_ type
 
         self.Xt_= df_type(X)
+        X = X[X.str.len() >3]
         # Make n-grams counts matrix unq_V
         # if deps.cudf and parse_version(cuml.__version__) > parse_version("23.04"):
         #     X = X.replace('nan',np.nan).fillna('0o0o0')
@@ -540,6 +546,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
             unseen_X = cudf.Series(unseen_X)
         else:
             unseen_X = np.setdiff1d(X.astype(str), np.array([*self.H_dict_]))
+        
         if unseen_X.size > 0:
             unseen_V = self.ngrams_count_.transform(unseen_X)
             if self.add_words:
@@ -570,6 +577,7 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
             Transformed input.
         """
         t = time()
+        X = X[X.str.len() >3]
         check_is_fitted(self, "H_dict_")
         # Check if first item has str or np.str_ type
         # if deps.cudf and parse_version(cuml.__version__) > parse_version("23.04"):
@@ -581,7 +589,12 @@ class GapEncoderColumn(BaseEstimator, TransformerMixin):
             unq_X = X.unique()
             self.gmem = get_gpu_memory()[0]
         # Build the n-grams counts matrix V for the string data to encode
-        unq_V = self.ngrams_count_.transform(unq_X)#.astype(str))
+        try:
+            unq_V = self.ngrams_count_.transform(unq_X)
+        except IndexError:
+            unq_X = unq_X[unq_X.str.len() > 3]  # cuml CV has trouble with shorter strings
+            unq_V = self.ngrams_count_.transform(unq_X)
+        # unq_V = self.ngrams_count_.transform(unq_X)#.astype(str))
         if self.add_words:  # Add words counts
             unq_V2 = self.word_count_.transform(unq_X.astype(str))
             unq_V = sparse.hstack((unq_V, unq_V2), format="csr")
@@ -950,7 +963,6 @@ class GapEncoder(BaseEstimator, TransformerMixin):
         :class:`~cu_cat.GapEncoder`
             Fitted :class:`~cu_cat.GapEncoder` instance (self).
         """
-
         X, y = make_safe_gpu_dataframes(X, None, self.engine)
 
         # Check that n_samples >= n_components
@@ -1013,6 +1025,7 @@ class GapEncoder(BaseEstimator, TransformerMixin):
         """
         check_is_fitted(self, "fitted_models_")
         # Check input data shape
+
         X = check_input(X)
         X = self._handle_missing(X)
         X_enc = []
@@ -1115,7 +1128,7 @@ def _multiplicative_update_w(
         W = cp.multiply(A, cp.reciprocal(B))
         if rescale_W:
             _rescale_W(W, A)
-        gc.collect()
+        # gc.collect()
 
     else:
         try:
@@ -1164,7 +1177,7 @@ def _multiplicative_update_w_smallfast(
         if rescale_W:
             _rescale_W(W, A)
         del C,R,T,Ht,Vt
-        gc.collect()
+        # gc.collect()
         cp._default_memory_pool.free_all_blocks()
 
     else:
